@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/omp/SD/AS_OIS/src/FIFO/FIFO.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/ActiveEntity/AECustomer.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/EntranceHall/IEntranceHall_Control.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/ActiveEntity/AEControl.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/EntranceHall/IEntranceHall_Manager.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/OutsideHall/IOutsideHall_Customer.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/Idle/IIdle_Manager.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/EntranceHall/IEntranceHall_Customer.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/Communication/CServer.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/FIFO/IFIFO.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/Idle/IIdle_Control.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/OutsideHall/SAOutsideHall.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/Main/OIS.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/Idle/SAIdle.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/Communication/CClient.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/OutsideHall/IOutsideHall_Manager.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/Idle/IIdle_Customer.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/OutsideHall/IOutsideHall_Control.java</file>
+            <file>file:/home/omp/SD/AS_OIS/src/EntranceHall/SAEntranceHall.java</file>
+        </group>
+    </open-files>
+</project-private>
