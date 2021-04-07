@@ -9,9 +9,9 @@ import ActiveEntity.AECustomer;
 import Idle.IIdle_Customer;
 import Idle.SAIdle;
 import OutsideHall.IOutsideHall_Customer;
-import SAOutsideHall.SAOutsideHall;
-/**
- *
+import OutsideHall.SAOutsideHall;
+
+/*
  * @author omp
  */
 public class OIS extends javax.swing.JFrame {
