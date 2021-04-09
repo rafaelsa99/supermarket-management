@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SAEntranceHall;
+package SACorridor;
 
 import FIFO.FIFO;
 import java.util.concurrent.locks.Condition;
@@ -11,30 +11,22 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
- * @author omp
+ * @author luisc
  */
-public class SAEntranceHall implements IEntranceHall_Customer,
-                                       IEntranceHall_Manager,
-                                       IEntranceHall_Control {
+public class SACorridor implements ICorridor_Control,
+                                   ICorridor_Customer {
     
     ReentrantLock rl;
-    Condition authorization;
+    ReentrantLock rl2;
+    Condition emptySpace;
+    Condition movement;
     FIFO fifo;
-    boolean isAuthorized;
+    boolean emptySpacePaymentHall;
+    boolean canMove;
     boolean isSuspended;
 
-    public SAEntranceHall(int maxCostumers) {
+    public SACorridor(int maxCostumers) {
         this.fifo = new FIFO(maxCostumers);
-    }
-
-    @Override
-    public void enter(int costumerId) {
-        this.fifo.in(costumerId);
-    }
-
-    @Override
-    public void accept() {
-        this.fifo.out();
     }
 
     @Override
@@ -54,6 +46,21 @@ public class SAEntranceHall implements IEntranceHall_Customer,
 
     @Override
     public void end() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void enter(int customerId) {
+        this.fifo.in(customerId);
+    }
+
+    @Override
+    public void freeSlot() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void move(int customerId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

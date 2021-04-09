@@ -10,5 +10,13 @@ package SAEntranceHall;
  * @author omp
  */
 public interface IEntranceHall_Control {
-    
+
+    public void suspend();
+
+    public void resume();
+
+    public void stop();
+
+    public void end();
+
 }

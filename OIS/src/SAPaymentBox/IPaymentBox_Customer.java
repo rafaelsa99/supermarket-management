@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SAEntranceHall;
+package SAPaymentBox;
 
 /**
  *
- * @author omp
+ * @author luisc
  */
-public interface IEntranceHall_Customer {
+public interface IPaymentBox_Customer {
 
-    public void enter(int customerId);
+    public void enter(int costumerId);
+    public void freeSlot();
 }

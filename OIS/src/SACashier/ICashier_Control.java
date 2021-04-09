@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SAOutsideHall;
+package SACashier;
 
 /**
  *
- * @author omp
+ * @author luisc
  */
-public interface IOutsideHall_Control {
+public interface ICashier_Control {
+
+    public void start();
 
     public void suspend();
 
@@ -18,4 +20,5 @@ public interface IOutsideHall_Control {
     public void stop();
 
     public void end();
+
 }

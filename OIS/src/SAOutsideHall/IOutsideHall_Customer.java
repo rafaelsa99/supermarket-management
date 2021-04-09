@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package OutsideHall;
+package SAOutsideHall;
 
 /**
  *
  * @author omp
  */
 public interface IOutsideHall_Customer {
-    public void in( int customerId );
+
+    public void enter(int customerId);
 }

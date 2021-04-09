@@ -3,13 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SAEntranceHall;
+package SACorridor;
 
 /**
  *
  * @author omp
  */
-public interface IEntranceHall_Customer {
+public interface ICorridor_Control {
 
-    public void enter(int customerId);
+    public void suspend();
+
+    public void resume();
+
+    public void stop();
+
+    public void end();
+
 }

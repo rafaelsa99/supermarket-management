@@ -8,8 +8,8 @@ package Main;
 import ActiveEntity.AECustomer;
 import Idle.IIdle_Customer;
 import Idle.SAIdle;
-import OutsideHall.IOutsideHall_Customer;
-import OutsideHall.SAOutsideHall;
+import SAOutsideHall.IOutsideHall_Customer;
+import SAOutsideHall.SAOutsideHall;
 
 /*
  * @author omp
@@ -40,7 +40,7 @@ public class OIS extends javax.swing.JFrame {
         for ( int i = 0; i < MAX_CUSTOMERS; i++ ) {
             aeCustomer[ i ] = new AECustomer( MAX_CUSTOMERS,
                                               (IIdle_Customer) idle,
-                                              (IOutsideHall_Customer) outsideHall);
+                                              (OutsideHall.IOutsideHall_Customer)  outsideHall);
             aeCustomer[ i ].start();
         }
         
