@@ -3,7 +3,7 @@ package ActiveEntity;
 
 import Idle.IIdle_Customer;
 import Idle.SAIdle;
-import OutsideHall.IOutsideHall_Customer;
+import SAOutsideHall.IOutsideHall_Customer;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -35,7 +35,7 @@ public class AECustomer extends Thread {
             // thread avança para Idle
             idle.idle(customerId );
             // se simulação activa (não suspend, não stop, não end), thread avança para o outsideHall
-            outsideHall.in( customerId );
+            outsideHall.enter( customerId );
             // mais
         }
     }
