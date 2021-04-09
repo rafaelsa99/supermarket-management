@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SAEntranceHall;
+package SAManager;
 
 /**
  *
- * @author omp
+ * @author luisc
  */
-public interface IEntranceHall_Customer {
+public interface IManager_Manager {
 
-    public void enter(int customerId);
+    public void idle();
 }

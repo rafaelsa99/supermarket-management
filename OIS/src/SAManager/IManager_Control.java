@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SAOutsideHall;
+package SAManager;
 
 /**
  *
- * @author omp
+ * @author luisc
  */
-public interface IOutsideHall_Control {
+public interface IManager_Control {
+
+    public void start();
 
     public void suspend();
 
