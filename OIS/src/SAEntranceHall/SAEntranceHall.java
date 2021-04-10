@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package SAEntranceHall;
 
 import FIFO.FIFO;
@@ -11,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
- * @author omp
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class SAEntranceHall implements IEntranceHall_Customer,
                                        IEntranceHall_Manager,

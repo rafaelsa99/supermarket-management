@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * No caso de o fifo ser criado com a dimensão = 99, não seria necessário 
  * verificar se está cheio.
  * 
- * @author omp
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class FIFO implements IFIFO {
     
