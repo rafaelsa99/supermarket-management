@@ -40,7 +40,7 @@ public class OIS extends javax.swing.JFrame {
         for ( int i = 0; i < MAX_CUSTOMERS; i++ ) {
             aeCustomer[ i ] = new AECustomer( MAX_CUSTOMERS,
                                               (IIdle_Customer) idle,
-                                              (OutsideHall.IOutsideHall_Customer)  outsideHall);
+                                              (IOutsideHall_Customer)  outsideHall);
             aeCustomer[ i ].start();
         }
         
