@@ -1,6 +1,7 @@
 
 package SACorridor;
 
+import Common.STCustomer;
 import FIFO.FIFO;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -46,8 +47,9 @@ public class SACorridor implements ICorridor_Control,
     }
 
     @Override
-    public void enter(int customerId) {
+    public STCustomer enter(int customerId) {
         this.fifo.in(customerId);
+        return STCustomer.PAYMENT_HALL;
     }
 
     @Override

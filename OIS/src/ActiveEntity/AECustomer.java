@@ -61,6 +61,7 @@ public class AECustomer extends Thread {
     @Override
     public void run() {
         STCustomer stCustomer = STCustomer.IDLE;
+        int corridorNumber;
         while (true) {
             // thread avança para Idle
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
@@ -71,6 +72,7 @@ public class AECustomer extends Thread {
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             // se simulação activa (não suspend, não stop, não end), thread avança para o entranceHall
             stCustomer = iEntranceHall.enter(customerId);
+            corridorNumber = stCustomer.getValue();
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             //notifica manager que saiu do entrance hall e há espaço livre
             iManager.entranceHall_freeSlot();
@@ -78,8 +80,15 @@ public class AECustomer extends Thread {
             if(stCustomer == STCustomer.CORRIDOR_HALL_1 || 
                stCustomer == STCustomer.CORRIDOR_HALL_2 ||
                stCustomer == STCustomer.CORRIDOR_HALL_3)
-                stCustomer = iCorridorHall[stCustomer.getValue()].enter(customerId);
+                stCustomer = iCorridorHall[corridorNumber].enter(customerId);
+            iManager.corridorHall_freeSlot(corridorNumber);
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            //Entra no Corridor que lhe foi atribuido
+            if(stCustomer == STCustomer.CORRIDOR_1 || 
+               stCustomer == STCustomer.CORRIDOR_2 ||
+               stCustomer == STCustomer.CORRIDOR_3)
+                stCustomer = iCorridor[corridorNumber].enter(customerId);
+            iCorridorHall[corridorNumber].freeSlot();
             // ...
         }
     }

@@ -62,7 +62,7 @@ public class OIS extends javax.swing.JFrame {
         final SACorridorHall[] saCorridorHall = new SACorridorHall[N_CORRIDOR];
         final SACorridor[] saCorridor = new SACorridor[N_CORRIDOR];
         for (int i = 0; i < N_CORRIDOR; i++) {
-            saCorridorHall[i] = new SACorridorHall(SIZE_CORRIDOR_HALL, corridorNumbers[i]);
+            saCorridorHall[i] = new SACorridorHall(SIZE_CORRIDOR_HALL, corridorNumbers[i], SIZE_CORRIDOR);
             saCorridor[i] = new SACorridor(SIZE_CORRIDOR);
         }
         final SAPaymentHall saPaymentHall = new SAPaymentHall(SIZE_PAYMENT_HALL);
