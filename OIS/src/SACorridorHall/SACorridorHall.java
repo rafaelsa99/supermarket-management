@@ -1,6 +1,7 @@
 
 package SACorridorHall;
 
+import Common.STCustomer;
 import FIFO.FIFO;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -15,11 +16,13 @@ public class SACorridorHall implements ICorridorHall_Control,
     ReentrantLock rl;
     Condition emptySpac;
     FIFO fifo;
+    STCustomer corridorNumber;
     boolean emptySpaceCorridor;
     boolean isSuspended;
 
-    public SACorridorHall(int maxCostumers) {
+    public SACorridorHall(int maxCostumers, STCustomer corridorNumber) {
         this.fifo = new FIFO(maxCostumers);
+        this.corridorNumber = corridorNumber;
     }
     
     @Override
@@ -43,8 +46,9 @@ public class SACorridorHall implements ICorridorHall_Control,
     }
 
     @Override
-    public void enter(int customerId) {
+    public STCustomer enter(int customerId) {
         this.fifo.in(customerId);
+        return corridorNumber;
     }
 
     @Override

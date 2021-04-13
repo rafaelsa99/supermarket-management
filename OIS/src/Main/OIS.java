@@ -2,8 +2,10 @@
 package Main;
 
 import ActiveEntity.AECashier;
+import ActiveEntity.AEControl;
 import ActiveEntity.AECustomer;
 import ActiveEntity.AEManager;
+import Common.STCustomer;
 import SACashier.ICashier_Cashier;
 import SACashier.ICashier_Customer;
 import SACashier.SACashier;
@@ -34,13 +36,6 @@ import SAPaymentHall.SAPaymentHall;
  */
 public class OIS extends javax.swing.JFrame {
 
-    private final int MAX_CUSTOMERS = 99;
-    private final int N_CORRIDOR = 3;
-    private final int SIZE_ENTRANCE_HALL = 6;
-    private final int SIZE_CORRIDOR_HALL = 3;
-    private final int SIZE_CORRIDOR = 2;
-    private final int SIZE_PAYMENT_HALL = 3;
-
     /**
      * Creates new form OIS
      */
@@ -50,27 +45,29 @@ public class OIS extends javax.swing.JFrame {
     }
 
     private void initOIS() {
-
+        final int MAX_CUSTOMERS = 99;
+        final int N_CORRIDOR = 3;
+        final int SIZE_ENTRANCE_HALL = 6;
+        final int SIZE_CORRIDOR_HALL = 3;
+        final int SIZE_CORRIDOR = 2;
+        final int SIZE_PAYMENT_HALL = 3;
+        final STCustomer[] corridorNumbers = {STCustomer.CORRIDOR_1, 
+                                             STCustomer.CORRIDOR_2, 
+                                             STCustomer.CORRIDOR_3};
         final SACustomer saCustomer = new SACustomer(MAX_CUSTOMERS);
-        final SAManager saManager = new SAManager();
+        final SAManager saManager = new SAManager(N_CORRIDOR, SIZE_ENTRANCE_HALL, SIZE_CORRIDOR_HALL);
         final SACashier saCashier = new SACashier();
         final SAOutsideHall saOutsideHall = new SAOutsideHall(MAX_CUSTOMERS);
         final SAEntranceHall saEntranceHall = new SAEntranceHall(SIZE_ENTRANCE_HALL);
         final SACorridorHall[] saCorridorHall = new SACorridorHall[N_CORRIDOR];
         final SACorridor[] saCorridor = new SACorridor[N_CORRIDOR];
         for (int i = 0; i < N_CORRIDOR; i++) {
-            saCorridorHall[i] = new SACorridorHall(SIZE_CORRIDOR_HALL);
+            saCorridorHall[i] = new SACorridorHall(SIZE_CORRIDOR_HALL, corridorNumbers[i]);
             saCorridor[i] = new SACorridor(SIZE_CORRIDOR);
         }
         final SAPaymentHall saPaymentHall = new SAPaymentHall(SIZE_PAYMENT_HALL);
         final SAPaymentBox sAPaymentBox = new SAPaymentBox();
 
-        final AEManager aeManager = new AEManager((IManager_Manager) saManager, (IOutsideHall_Manager) saOutsideHall,
-                                                   (IEntranceHall_Manager) saEntranceHall);
-        aeManager.start();
-        final AECashier aeCashier = new AECashier((IPaymentHall_Cashier) saPaymentHall, 
-                                        (IPaymentBox_Cashier) sAPaymentBox, (ICashier_Cashier) saCashier);
-        aeCashier.start();
         final AECustomer[] aeCustomer = new AECustomer[MAX_CUSTOMERS];
         for (int i = 0; i < MAX_CUSTOMERS; i++) {
             aeCustomer[i] = new AECustomer(i, (ICustomer_Customer) saCustomer,
@@ -80,13 +77,24 @@ public class OIS extends javax.swing.JFrame {
                     (ICashier_Customer) saCashier, (IManager_Customer) saManager);
             aeCustomer[i].start();
         }
-
+        final AEManager aeManager = new AEManager((IManager_Manager) saManager, (IOutsideHall_Manager) saOutsideHall,
+                                                   (IEntranceHall_Manager) saEntranceHall);
+        aeManager.start();
+        final AECashier aeCashier = new AECashier((IPaymentHall_Cashier) saPaymentHall, 
+                                        (IPaymentBox_Cashier) sAPaymentBox, (ICashier_Cashier) saCashier);
+        aeCashier.start();
+        final AEControl aeControl = new AEControl(saCustomer, saManager, saCashier,
+                                                  saOutsideHall, saEntranceHall, saCorridorHall, 
+                                                  saCorridor, saPaymentHall, sAPaymentBox);
+        aeControl.start();
+        
         try {
             aeManager.join();
             aeCashier.join();
             for (int i = 0; i < MAX_CUSTOMERS; i++) {
                 aeCustomer[i].join();
             }
+            aeControl.join();
         } catch (Exception ex) {
         }
 

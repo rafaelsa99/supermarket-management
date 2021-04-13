@@ -7,7 +7,7 @@ package SAManager;
  */
 public interface IManager_Control {
 
-    public void start();
+    public void start(int nCustomers);
 
     public void suspend();
 

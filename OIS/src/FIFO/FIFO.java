@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * No caso de o fifo ser criado com a dimensão = 99, não seria necessário 
  * verificar se está cheio.
  * 
- * @author Rafael Sá (104552), Luís Laranjeira (81526)
+ * @author Rafael Sá (104552), Luís Laranjeira (81526) (Based on the professor implementation)
  */
 public class FIFO implements IFIFO {
     
@@ -107,7 +107,7 @@ public class FIFO implements IFIFO {
                 cFull.signal();
             // decrementar número de customers no fifo
             count--;
-      
+
         } catch ( Exception ex ) {}
         finally {
             rl.unlock();

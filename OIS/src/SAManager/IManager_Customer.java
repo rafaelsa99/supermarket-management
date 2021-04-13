@@ -9,5 +9,5 @@ public interface IManager_Customer {
 
     public void entranceHall_freeSlot();
 
-    public void corridorHall_freeSlot();
+    public void corridorHall_freeSlot(int numCorridor);
 }

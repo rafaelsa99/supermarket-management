@@ -12,6 +12,8 @@ import SAManager.IManager_Control;
 import SAOutsideHall.IOutsideHall_Control;
 import SAPaymentBox.IPaymentBox_Control;
 import SAPaymentHall.IPaymentHall_Control;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Esta entidade é responsável por fazer executar os comandos originados no OCC
@@ -56,7 +58,8 @@ public class AEControl extends Thread {
     }
     
     public void start( int nCustomers, Socket socket ) {
-        iCustomer.start( nCustomers );
+        iCustomer.start(nCustomers);
+        iManager.start(nCustomers);
     }
     public void end() {
         // terminar Customers em idle
@@ -69,5 +72,14 @@ public class AEControl extends Thread {
     @Override
     public void run() {
         // ver qual a msg recebida, executar comando e responder
+        
+        /*PARA TESTE*/    
+        try {  
+            sleep(500, 500);
+        } catch (InterruptedException ex) {
+        }
+        System.out.println("CONTROL: Start");
+        start(20, null);
+        /*FIM TESTE*/
     }
 }

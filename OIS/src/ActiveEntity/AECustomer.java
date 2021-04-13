@@ -1,5 +1,6 @@
 package ActiveEntity;
 
+import Common.STCustomer;
 import SACashier.ICashier_Customer;
 import SACorridor.ICorridor_Customer;
 import SACorridorHall.ICorridorHall_Customer;
@@ -59,12 +60,27 @@ public class AECustomer extends Thread {
 
     @Override
     public void run() {
+        STCustomer stCustomer = STCustomer.IDLE;
         while (true) {
             // thread avança para Idle
-            iCustomer.idle(customerId);
+            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            stCustomer = iCustomer.idle(customerId);
+            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             // se simulação activa (não suspend, não stop, não end), thread avança para o outsideHall
-            iOutsideHall.enter(customerId);
-            // mais
+            stCustomer = iOutsideHall.enter(customerId);
+            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            // se simulação activa (não suspend, não stop, não end), thread avança para o entranceHall
+            stCustomer = iEntranceHall.enter(customerId);
+            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            //notifica manager que saiu do entrance hall e há espaço livre
+            iManager.entranceHall_freeSlot();
+            //Entra no CorridorHall que lhe foi atribuido
+            if(stCustomer == STCustomer.CORRIDOR_HALL_1 || 
+               stCustomer == STCustomer.CORRIDOR_HALL_2 ||
+               stCustomer == STCustomer.CORRIDOR_HALL_3)
+                stCustomer = iCorridorHall[stCustomer.getValue()].enter(customerId);
+            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            // ...
         }
     }
 }

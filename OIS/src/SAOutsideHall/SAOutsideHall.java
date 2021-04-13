@@ -1,6 +1,7 @@
 
 package SAOutsideHall;
 
+import Common.STCustomer;
 import FIFO.FIFO;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -15,7 +16,7 @@ public class SAOutsideHall implements IOutsideHall_Manager,
    
     ReentrantLock rl;
     Condition authorization;
-    FIFO fifo;
+    private final FIFO fifo;
     boolean isAuthorized;
     boolean isSuspended;
 
@@ -24,8 +25,9 @@ public class SAOutsideHall implements IOutsideHall_Manager,
     }
 
     @Override
-    public void enter(int customerId) {
+    public STCustomer enter(int customerId) {
         fifo.in(customerId);
+        return STCustomer.ENTRANCE_HALL;
     }
 
     @Override
