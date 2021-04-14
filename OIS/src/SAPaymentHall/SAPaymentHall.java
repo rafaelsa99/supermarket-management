@@ -1,6 +1,7 @@
 
 package SAPaymentHall;
 
+import Common.STCashier;
 import Common.STCustomer;
 import FIFO.FIFO;
 import java.util.concurrent.locks.Condition;
@@ -25,8 +26,15 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
     }
 
     @Override
-    public void accept() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public STCustomer enter(int costumerId) {
+        this.fifo.in(costumerId);
+        return STCustomer.PAYMENT_BOX;
+    }
+    
+    @Override
+    public STCashier accept() {
+        this.fifo.out();
+        return STCashier.PAYMENT_BOX;
     }
 
     @Override
@@ -47,12 +55,6 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
     @Override
     public void end() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public STCustomer enter(int costumerId) {
-        this.fifo.in(costumerId);
-        return STCustomer.PAYMENT_BOX;
     }
     
 }

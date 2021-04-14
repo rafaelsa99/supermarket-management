@@ -99,8 +99,11 @@ public class AECustomer extends Thread {
             }
             iCorridorHall[corridorNumber].freeSlot();
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
-            if(stCustomer == STCustomer.PAYMENT_HALL)
+            if(stCustomer == STCustomer.PAYMENT_HALL){
+                iCashier.paymentHall_customerIn();
                 stCustomer = iPaymentHall.enter(customerId);
+                iCashier.paymentHall_freeSlot();
+            }
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.PAYMENT_BOX)
                 stCustomer = iPaymentBox.enter(customerId);

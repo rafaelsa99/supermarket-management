@@ -8,5 +8,6 @@ package SACashier;
 public interface ICashier_Customer {
 
     public void paymentHall_customerIn();
+    public void paymentHall_freeSlot();
 
 }

@@ -53,12 +53,13 @@ public class OIS extends javax.swing.JFrame {
         final int SIZE_PAYMENT_HALL = 2;
         final int CORRIDOR_STEPS = 10;
         final int TIMEOUT_MOVEMENT = 100;
+        final int TIMEOUT_PAYMENT = 100;
         final STCustomer[] corridorNumbers = {STCustomer.CORRIDOR_1, 
                                              STCustomer.CORRIDOR_2, 
                                              STCustomer.CORRIDOR_3};
         final SACustomer saCustomer = new SACustomer(MAX_CUSTOMERS);
         final SAManager saManager = new SAManager(N_CORRIDOR, SIZE_ENTRANCE_HALL, SIZE_CORRIDOR_HALL);
-        final SACashier saCashier = new SACashier();
+        final SACashier saCashier = new SACashier(SIZE_PAYMENT_HALL);
         final SAOutsideHall saOutsideHall = new SAOutsideHall(MAX_CUSTOMERS);
         final SAEntranceHall saEntranceHall = new SAEntranceHall(SIZE_ENTRANCE_HALL);
         final SACorridorHall[] saCorridorHall = new SACorridorHall[N_CORRIDOR];
@@ -68,7 +69,7 @@ public class OIS extends javax.swing.JFrame {
             saCorridor[i] = new SACorridor(SIZE_CORRIDOR, SIZE_PAYMENT_HALL, CORRIDOR_STEPS, TIMEOUT_MOVEMENT, MAX_CUSTOMERS, corridorNumbers[i]);
         }
         final SAPaymentHall saPaymentHall = new SAPaymentHall(SIZE_PAYMENT_HALL);
-        final SAPaymentBox sAPaymentBox = new SAPaymentBox();
+        final SAPaymentBox sAPaymentBox = new SAPaymentBox(TIMEOUT_PAYMENT);
 
         final AECustomer[] aeCustomer = new AECustomer[MAX_CUSTOMERS];
         for (int i = 0; i < MAX_CUSTOMERS; i++) {
@@ -83,7 +84,8 @@ public class OIS extends javax.swing.JFrame {
                                                    (IEntranceHall_Manager) saEntranceHall);
         aeManager.start();
         final AECashier aeCashier = new AECashier((IPaymentHall_Cashier) saPaymentHall, 
-                                        (IPaymentBox_Cashier) sAPaymentBox, (ICashier_Cashier) saCashier);
+                                                  (ICashier_Cashier) saCashier,
+                                                  (IPaymentBox_Cashier) sAPaymentBox);
         aeCashier.start();
         final AEControl aeControl = new AEControl(saCustomer, saManager, saCashier,
                                                   saOutsideHall, saEntranceHall, saCorridorHall, 

@@ -11,5 +11,4 @@ public enum STManager {
     CORRIDOR_HALL_3,
     ENTRANCE_HALL,
     IDLE;
-
 }

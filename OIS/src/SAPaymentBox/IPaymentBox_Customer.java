@@ -10,5 +10,4 @@ import Common.STCustomer;
 public interface IPaymentBox_Customer {
 
     public STCustomer enter(int costumerId);
-    public void freeSlot();
 }
