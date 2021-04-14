@@ -105,7 +105,7 @@ public class SAManager implements IManager_Control,
             while((!entranceHallHasEmptySpace || numCustomersOutsideHall == 0) && // Wait for available space
                   (!corridorHallHasEmptySpace || numCustomersEntranceHall == 0))  // TODO: Colocar restantes condições (suspend, etc.)
                 idle.await();
-            if(entranceHallHasEmptySpace){ // Check if the Entrance Hall has space
+            if(entranceHallHasEmptySpace && numCustomersOutsideHall > 0){ // Check if the Entrance Hall has space
                 emptySpacesEntranceHall -= 1; // Update number of available spaces
                 if(emptySpacesEntranceHall == 0) //If entrance hall is full, update flag
                     entranceHallHasEmptySpace = false;

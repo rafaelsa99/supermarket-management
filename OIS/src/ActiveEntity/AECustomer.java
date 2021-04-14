@@ -65,13 +65,16 @@ public class AECustomer extends Thread {
         while (true) {
             // thread avança para Idle
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
-            stCustomer = iCustomer.idle(customerId);
+            if(stCustomer == STCustomer.IDLE)
+                stCustomer = iCustomer.idle(customerId);
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             // se simulação activa (não suspend, não stop, não end), thread avança para o outsideHall
-            stCustomer = iOutsideHall.enter(customerId);
+            if(stCustomer == STCustomer.OUTSIDE_HALL)
+                stCustomer = iOutsideHall.enter(customerId);
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             // se simulação activa (não suspend, não stop, não end), thread avança para o entranceHall
-            stCustomer = iEntranceHall.enter(customerId);
+            if(stCustomer == STCustomer.ENTRANCE_HALL)
+                stCustomer = iEntranceHall.enter(customerId);
             corridorNumber = stCustomer.getValue();
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             //notifica manager que saiu do entrance hall e há espaço livre
@@ -88,8 +91,19 @@ public class AECustomer extends Thread {
                stCustomer == STCustomer.CORRIDOR_2 ||
                stCustomer == STCustomer.CORRIDOR_3)
                 stCustomer = iCorridor[corridorNumber].enter(customerId);
+            while(stCustomer == STCustomer.CORRIDOR_1 || 
+               stCustomer == STCustomer.CORRIDOR_2 ||
+               stCustomer == STCustomer.CORRIDOR_3){
+                stCustomer = iCorridor[corridorNumber].move(customerId);
+                System.out.println("CUSTOMER " + customerId + ": MOVEMENT " + stCustomer);
+            }
             iCorridorHall[corridorNumber].freeSlot();
-            // ...
+            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            if(stCustomer == STCustomer.PAYMENT_HALL)
+                stCustomer = iPaymentHall.enter(customerId);
+            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            if(stCustomer == STCustomer.PAYMENT_BOX)
+                stCustomer = iPaymentBox.enter(customerId);
         }
     }
 }

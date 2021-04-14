@@ -19,7 +19,7 @@ public class SACorridorHall implements ICorridorHall_Control,
     STCustomer corridorNumber; // Number of the corridor to which the corridor hall is associated
     boolean emptySpaceCorridor; // Flag to indicate if there is space in the Corridor
     boolean isSuspended;
-    int emptySpacesCorridor; // Number of spaces available in the Entrance Hall
+    int emptySpacesCorridor; // Number of spaces available in the Corridor
 
     public SACorridorHall(int maxCostumers, STCustomer corridorNumber, int sizeCorridor) {
         this.fifo = new FIFO(maxCostumers);
@@ -35,8 +35,11 @@ public class SACorridorHall implements ICorridorHall_Control,
         
         try{
             rl.lock();
-            if(!emptySpaceCorridor) //If there is no space in the corridor, wait in FIFO
+            if(!emptySpaceCorridor){ //If there is no space in the corridor, wait in FIFO
+                rl.unlock();
                 this.fifo.in(customerId);
+                rl.lock();
+            }
             emptySpacesCorridor -= 1; // Updates the available space in the corridor
             if(emptySpacesCorridor == 0) // Check if the corridor has become full
                 emptySpaceCorridor = false;

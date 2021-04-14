@@ -1,6 +1,7 @@
 
 package SAPaymentBox;
 
+import Common.STCustomer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -44,8 +45,8 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
     }
 
     @Override
-    public void enter(int costumerId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public STCustomer enter(int costumerId) {
+        return STCustomer.IDLE;
     }
 
     @Override

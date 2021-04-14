@@ -1,6 +1,7 @@
 
 package SAPaymentHall;
 
+import Common.STCustomer;
 import FIFO.FIFO;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -49,8 +50,9 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
     }
 
     @Override
-    public void enter(int costumerId) {
+    public STCustomer enter(int costumerId) {
         this.fifo.in(costumerId);
+        return STCustomer.PAYMENT_BOX;
     }
     
 }

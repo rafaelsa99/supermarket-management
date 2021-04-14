@@ -50,7 +50,9 @@ public class OIS extends javax.swing.JFrame {
         final int SIZE_ENTRANCE_HALL = 6;
         final int SIZE_CORRIDOR_HALL = 3;
         final int SIZE_CORRIDOR = 2;
-        final int SIZE_PAYMENT_HALL = 3;
+        final int SIZE_PAYMENT_HALL = 2;
+        final int CORRIDOR_STEPS = 10;
+        final int TIMEOUT_MOVEMENT = 100;
         final STCustomer[] corridorNumbers = {STCustomer.CORRIDOR_1, 
                                              STCustomer.CORRIDOR_2, 
                                              STCustomer.CORRIDOR_3};
@@ -63,7 +65,7 @@ public class OIS extends javax.swing.JFrame {
         final SACorridor[] saCorridor = new SACorridor[N_CORRIDOR];
         for (int i = 0; i < N_CORRIDOR; i++) {
             saCorridorHall[i] = new SACorridorHall(SIZE_CORRIDOR_HALL, corridorNumbers[i], SIZE_CORRIDOR);
-            saCorridor[i] = new SACorridor(SIZE_CORRIDOR);
+            saCorridor[i] = new SACorridor(SIZE_CORRIDOR, SIZE_PAYMENT_HALL, CORRIDOR_STEPS, TIMEOUT_MOVEMENT, MAX_CUSTOMERS, corridorNumbers[i]);
         }
         final SAPaymentHall saPaymentHall = new SAPaymentHall(SIZE_PAYMENT_HALL);
         final SAPaymentBox sAPaymentBox = new SAPaymentBox();
