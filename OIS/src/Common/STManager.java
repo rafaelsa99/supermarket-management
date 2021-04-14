@@ -10,5 +10,7 @@ public enum STManager {
     CORRIDOR_HALL_2,
     CORRIDOR_HALL_3,
     ENTRANCE_HALL,
-    IDLE;
+    IDLE,
+    STOP,
+    END;
 }

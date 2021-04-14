@@ -34,6 +34,8 @@ public class AEManager extends Thread{
         while(true){
             // thread avança para Idle
             stManager = iManager.idle();
+            if(stManager == STManager.END)
+                return;
             switch(stManager){
                 case ENTRANCE_HALL: 
                     System.out.println("MANAGER: OUTSIDE_HALL");

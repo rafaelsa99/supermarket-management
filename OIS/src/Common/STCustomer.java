@@ -16,7 +16,9 @@ public enum STCustomer {
     CORRIDOR_2(1),
     CORRIDOR_3(2),
     PAYMENT_HALL,
-    PAYMENT_BOX;
+    PAYMENT_BOX,
+    STOP,
+    END;
         
     private int value;
 

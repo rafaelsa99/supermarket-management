@@ -65,13 +65,18 @@ public class AECustomer extends Thread {
         while (true) {
             // thread avança para Idle
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
-            if(stCustomer == STCustomer.IDLE)
-                stCustomer = iCustomer.idle(customerId);
+            stCustomer = iCustomer.idle(customerId);
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            if(stCustomer == STCustomer.END)
+                return;
             // se simulação activa (não suspend, não stop, não end), thread avança para o outsideHall
             if(stCustomer == STCustomer.OUTSIDE_HALL)
                 stCustomer = iOutsideHall.enter(customerId);
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            if(stCustomer == STCustomer.STOP)
+                continue;
+            if(stCustomer == STCustomer.END)
+                return;
             // se simulação activa (não suspend, não stop, não end), thread avança para o entranceHall
             if(stCustomer == STCustomer.ENTRANCE_HALL)
                 stCustomer = iEntranceHall.enter(customerId);
@@ -79,6 +84,10 @@ public class AECustomer extends Thread {
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             //notifica manager que saiu do entrance hall e há espaço livre
             iManager.entranceHall_freeSlot();
+            if(stCustomer == STCustomer.STOP)
+                continue;
+            if(stCustomer == STCustomer.END)
+                return;
             //Entra no CorridorHall que lhe foi atribuido
             if(stCustomer == STCustomer.CORRIDOR_HALL_1 || 
                stCustomer == STCustomer.CORRIDOR_HALL_2 ||
@@ -86,6 +95,10 @@ public class AECustomer extends Thread {
                 stCustomer = iCorridorHall[corridorNumber].enter(customerId);
             iManager.corridorHall_freeSlot(corridorNumber);
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            if(stCustomer == STCustomer.STOP)
+                continue;
+            if(stCustomer == STCustomer.END)
+                return;
             //Entra no Corridor que lhe foi atribuido
             if(stCustomer == STCustomer.CORRIDOR_1 || 
                stCustomer == STCustomer.CORRIDOR_2 ||
@@ -99,14 +112,26 @@ public class AECustomer extends Thread {
             }
             iCorridorHall[corridorNumber].freeSlot();
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            if(stCustomer == STCustomer.STOP)
+                continue;
+            if(stCustomer == STCustomer.END)
+                return;
             if(stCustomer == STCustomer.PAYMENT_HALL){
                 iCashier.paymentHall_customerIn();
                 stCustomer = iPaymentHall.enter(customerId);
                 iCashier.paymentHall_freeSlot();
             }
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
+            if(stCustomer == STCustomer.STOP)
+                continue;
+            if(stCustomer == STCustomer.END)
+                return;
             if(stCustomer == STCustomer.PAYMENT_BOX)
                 stCustomer = iPaymentBox.enter(customerId);
+            if(stCustomer == STCustomer.STOP)
+                continue;
+            if(stCustomer == STCustomer.END)
+                return;
         }
     }
 }

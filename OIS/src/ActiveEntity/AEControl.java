@@ -60,6 +60,7 @@ public class AEControl extends Thread {
     public void start( int nCustomers, Socket socket ) {
         iCustomer.start(nCustomers);
         iManager.start(nCustomers);
+        iCashier.start();
     }
     public void end() {
         // terminar Customers em idle

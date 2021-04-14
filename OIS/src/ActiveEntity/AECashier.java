@@ -33,11 +33,23 @@ public class AECashier extends Thread{
             System.out.println("CASHIER: " + stCashier);
             stCashier = iCashier.idle();
             System.out.println("CASHIER: " + stCashier);
-            if(stCashier == STCashier.PAYMENT_HALL)
+            if(stCashier == STCashier.END)
+                return;
+            if(stCashier == STCashier.PAYMENT_HALL){
                 stCashier = iPaymentHall.accept();
-            System.out.println("CASHIER: " + stCashier);
-            if(stCashier == STCashier.PAYMENT_BOX)
-                stCashier = iPaymentBox.payment();
+                if(stCashier == STCashier.STOP)
+                    continue;
+                if(stCashier == STCashier.END)
+                    return;
+                System.out.println("CASHIER: " + stCashier);
+                if(stCashier == STCashier.PAYMENT_BOX){
+                    stCashier = iPaymentBox.payment();
+                    if(stCashier == STCashier.STOP)
+                        continue;
+                    if(stCashier == STCashier.END)
+                        return;
+                }
+            }
         }
     }
     

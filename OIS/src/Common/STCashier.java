@@ -8,5 +8,7 @@ package Common;
 public enum STCashier {
     IDLE,
     PAYMENT_HALL,
-    PAYMENT_BOX;
+    PAYMENT_BOX,
+    STOP,
+    END;
 }
