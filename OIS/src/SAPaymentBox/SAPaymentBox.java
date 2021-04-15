@@ -16,6 +16,7 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
 
     ReentrantLock rl;
     Condition payment;
+    Condition suspend;
     boolean isPayed;
     boolean isSuspended;
     int timeoutPayment;
@@ -23,15 +24,17 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
     public SAPaymentBox(int timeoutPayment) {
         this.rl = new ReentrantLock(true);
         this.payment = rl.newCondition();
+        this.suspend = rl.newCondition();
         this.isPayed = false;
         this.timeoutPayment = timeoutPayment;
+        this.isSuspended = false;
     }
     
     @Override
     public STCashier payment() {
         try{
             rl.lock();
-            while(!isPayed)
+            while(!isPayed || isSuspended)
                 payment.await();
             isPayed = false;
         } catch (Exception ex){}
@@ -48,6 +51,8 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
         } catch (InterruptedException ex) {}
         try{
             rl.lock();
+            while(isSuspended)
+                suspend.await();
             isPayed = true;
             payment.signal();
         } catch (Exception ex){}
@@ -59,12 +64,26 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
     
     @Override
     public void suspend() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            isSuspended = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
     @Override
     public void resume() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            isSuspended = false;
+            payment.signal();
+            suspend.signal();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
     @Override

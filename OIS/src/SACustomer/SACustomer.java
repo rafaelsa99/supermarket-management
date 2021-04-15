@@ -54,7 +54,7 @@ public class SACustomer implements ICustomer_Customer,
     public void start( int nCustomers ) {
         try{
             rl.lock();
-            while(set.isEmpty()) // If set is empty, then wait
+            while(set.size() != stay.length) // Check if all customers are in idle
                 setEmpty.await();
             for (int i = 0; i < nCustomers; i++){
                 int customerIdToLeave = set.pollFirst(); // Remove the customer with lower ID

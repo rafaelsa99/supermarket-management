@@ -12,8 +12,6 @@ import SAManager.IManager_Control;
 import SAOutsideHall.IOutsideHall_Control;
 import SAPaymentBox.IPaymentBox_Control;
 import SAPaymentHall.IPaymentHall_Control;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Esta entidade é responsável por fazer executar os comandos originados no OCC
@@ -21,7 +19,7 @@ import java.util.logging.Logger;
  * 
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
-public class AEControl extends Thread {
+public class AEControl extends Thread implements IControl{
 
     // área partilhada Customer
     private final ICustomer_Control iCustomer;
@@ -57,18 +55,55 @@ public class AEControl extends Thread {
         this.iPaymentBox = iPaymentBox;
     }
     
-    public void start( int nCustomers, Socket socket ) {
+    @Override
+    public void startSimulation( int nCustomers, Socket socket ) {
         iCustomer.start(nCustomers);
         iManager.start(nCustomers);
         iCashier.start();
     }
-    public void end() {
+    
+    @Override
+    public void stopSimulation() {
+        iManager.stop();
+        // terminar restantes Customers e outras AE
+    }
+    
+    @Override
+    public void endSimulation() {
         // terminar Customers em idle
         iCustomer.end();
         // terminar restantes Customers e outras AE
     }
-    // mais comandos 
     
+    @Override
+    public void suspendSimulation(){
+        iManager.suspend();
+        iCashier.suspend();
+        iOutsideHall.suspend();
+        iEntranceHall.suspend();
+        for (int i = 0; i < iCorridorHall.length; i++) {
+            iCorridorHall[i].suspend();
+            iCorridor[i].suspend();   
+        }
+        iPaymentHall.suspend();
+        iPaymentBox.suspend();
+        System.out.println("CONTROL: Suspend");
+    }
+    
+    @Override
+    public void resumeSimulation(){
+        iManager.resume();
+        iCashier.resume();
+        iOutsideHall.resume();
+        iEntranceHall.resume();
+        for (int i = 0; i < iCorridorHall.length; i++) {
+            iCorridorHall[i].resume();
+            iCorridor[i].resume();   
+        }
+        iPaymentHall.resume();
+        iPaymentBox.resume();
+        System.out.println("CONTROL: Resume");
+    }
     
     @Override
     public void run() {
@@ -80,7 +115,19 @@ public class AEControl extends Thread {
         } catch (InterruptedException ex) {
         }
         System.out.println("CONTROL: Start");
-        start(20, null);
+        startSimulation(20, null);
+        try { 
+            sleep(3000, 3000);
+        } catch (InterruptedException ex) {
+        }
+        
+        suspendSimulation();
+        try { 
+            sleep(3000, 3000);
+        } catch (InterruptedException ex) {
+        }
+        
+        resumeSimulation();
         /*FIM TESTE*/
     }
 }

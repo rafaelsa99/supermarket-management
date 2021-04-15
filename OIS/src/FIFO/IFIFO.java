@@ -8,4 +8,7 @@ package FIFO;
 public interface IFIFO {
     public void in( int customerId );
     public void out();
+    public void suspend();
+    public void resume();
+    public void removeAll();
 }

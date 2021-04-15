@@ -17,18 +17,21 @@ public class SACorridor implements ICorridor_Control,
     ReentrantLock rl;
     Condition[] movement;
     Condition full;
+    Condition suspend;
     STCustomer corridorNumber; // Number of the corridor 
     final int timeoutMovement;
     boolean[] canMove;
     int[] customerPosition;
     Map<Integer, Integer> customerIdx;
     int stepsSize;
+    boolean isSuspended;
 
     
     public SACorridor(int maxCostumers, int sizePaymentHall, int stepsSize, int timeoutMovement, int totalCustomers, STCustomer corridorNumber) {
         this.corridorNumber = corridorNumber;
         this.rl = new ReentrantLock(true);
         this.full = rl.newCondition();
+        this.suspend = rl.newCondition();
         this.movement = new Condition[maxCostumers];
         customerIdx = new HashMap<>();
         this.canMove = new boolean[maxCostumers];
@@ -40,13 +43,14 @@ public class SACorridor implements ICorridor_Control,
             customerPosition[i] = -1;
         }
         this.timeoutMovement = timeoutMovement;
+        this.isSuspended = false;
     }
 
     @Override
     public STCustomer enter(int customerId) {
         try{
             rl.lock();
-            if(customerIdx.size() == customerPosition.length) // Check if the corridor is full
+            while(customerIdx.size() == customerPosition.length || isSuspended) // Check if the corridor is full
                full.await();
             for (int i = 0; i < customerPosition.length; i++)
                 if(customerPosition[i] == -1)
@@ -67,11 +71,13 @@ public class SACorridor implements ICorridor_Control,
         try{
             rl.lock();
             int cId = customerIdx.get(customerId);
-            while(!canMove[cId])
+            while(!canMove[cId] || isSuspended)
                 movement[cId].await();
             try {
                 Thread.sleep(timeoutMovement);
             } catch (InterruptedException ex) {}
+            while(isSuspended)
+                suspend.await();
             customerPosition[cId] += 1; // Go to next position
             if(customerIdx.size() > 1){ // If there is more customers in the corridor, wakes up the next one
                 int nextCId = cId + 1;;
@@ -103,12 +109,28 @@ public class SACorridor implements ICorridor_Control,
     
     @Override
     public void suspend() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            isSuspended = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
     @Override
     public void resume() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            rl.lock();
+            isSuspended = false;
+            full.signal();
+            suspend.signal();
+            for (int i = 0; i < movement.length; i++)
+                movement[i].signal();
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
     }
 
     @Override

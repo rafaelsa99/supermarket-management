@@ -36,6 +36,7 @@ public class SAManager implements IManager_Control,
         numCustomersOutsideHall = 0;
         numCustomersEntranceHall = 0;
         idle = rl.newCondition();
+        isSuspended = false;
     }
     
     
@@ -53,12 +54,25 @@ public class SAManager implements IManager_Control,
 
     @Override
     public void suspend() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            isSuspended = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
     @Override
     public void resume() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            isSuspended = false;
+            idle.signal();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
     @Override
@@ -102,8 +116,9 @@ public class SAManager implements IManager_Control,
         STManager stManager = STManager.IDLE;
         try{
             rl.lock();
-            while((!entranceHallHasEmptySpace || numCustomersOutsideHall == 0) && // Wait for available space
-                  (!corridorHallHasEmptySpace || numCustomersEntranceHall == 0))  // TODO: Colocar restantes condições (suspend, etc.)
+            while(((!entranceHallHasEmptySpace || numCustomersOutsideHall == 0) && // Wait for available space
+                  (!corridorHallHasEmptySpace || numCustomersEntranceHall == 0)) ||
+                   isSuspended) 
                 idle.await();
             if(entranceHallHasEmptySpace && numCustomersOutsideHall > 0){ // Check if the Entrance Hall has space
                 emptySpacesEntranceHall -= 1; // Update number of available spaces

@@ -26,6 +26,7 @@ public class SACashier implements ICashier_Cashier,
         this.numCustomersPaymentHall = 0;
         this.emptySpacesPaymentHall = sizePaymentHall;
         this.paymentHallHasEmptySpace = true;
+        this.isSuspended = false;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class SACashier implements ICashier_Cashier,
         STCashier stCashier = STCashier.IDLE;
         try{
             rl.lock();
-            while((!paymentHallHasEmptySpace || numCustomersPaymentHall == 0))
+            while((!paymentHallHasEmptySpace || numCustomersPaymentHall == 0) || isSuspended)
                 idle.await();
             if(paymentHallHasEmptySpace && numCustomersPaymentHall > 0){
                 emptySpacesPaymentHall -= 1;
@@ -87,12 +88,25 @@ public class SACashier implements ICashier_Cashier,
 
     @Override
     public void suspend() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            isSuspended = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
     @Override
     public void resume() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            isSuspended = false;
+            idle.signal();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
     @Override

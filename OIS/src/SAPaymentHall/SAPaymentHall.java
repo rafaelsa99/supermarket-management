@@ -39,12 +39,12 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
 
     @Override
     public void suspend() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.fifo.suspend();
     }
 
     @Override
     public void resume() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.fifo.resume();
     }
 
     @Override

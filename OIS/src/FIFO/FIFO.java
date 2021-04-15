@@ -45,6 +45,8 @@ public class FIFO implements IFIFO {
     private int idxOut;
     // número de customers no fifo
     private int count = 0;
+    // flag que indica se simulação está suspensa
+    private boolean suspend;
 
     public FIFO( int maxCustomers ) {
         this.maxCustomers = maxCustomers;
@@ -60,6 +62,7 @@ public class FIFO implements IFIFO {
         cLeaving = rl.newCondition();
         idxIn = 0;
         idxOut = 0; 
+        suspend = false;
     }
     // Entrada no fifo. O NOTA: o thead Customer pode ficar bloqueado à espera de 
     // autorização para sair do fifo
@@ -70,7 +73,7 @@ public class FIFO implements IFIFO {
             rl.lock();
             
             // se fifo cheio, espera na Condition cFull
-            while ( count == maxCustomers )
+            while ( count == maxCustomers  || suspend)
                 cFull.await();
             
             // usar variável local e incrementar apontador de escrita
@@ -89,7 +92,7 @@ public class FIFO implements IFIFO {
             count++;
             
             // ciclo à espera de autorização para sair do fifo
-            while ( !leave[ idx ] )
+            while ( !leave[ idx ] || suspend)
                 // qd se faz await, permite-se q outros thread tenham acesso
                 // à zona protegida pelo lock
                 cStay[ idx ].await();
@@ -121,7 +124,7 @@ public class FIFO implements IFIFO {
         try {
             rl.lock();
             // se fifo vazio, espera
-            while ( count == 0 )
+            while ( count == 0  || suspend)
                 cEmpty.await();
             int idx = idxOut;
             // atualizar idxOut
@@ -131,11 +134,49 @@ public class FIFO implements IFIFO {
             // acordar o customer
             cStay[ idx ].signal();
             // aguardar até q Customer saia do fifo
-            while ( leave[ idx ] == true )
+            while ( leave[ idx ] == true || suspend)
                 // qd se faz await, permite-se q outros thread tenham acesso
                 // à zona protegida pelo lock
                 cLeaving.await();  
-            // atualizar count
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
+    }
+
+    @Override
+    public void suspend() {
+        try {
+            rl.lock();
+            suspend = true;
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
+    }
+
+    @Override
+    public void resume() {
+        try {
+            rl.lock();
+            suspend = false;
+            for (int i = 0; i < maxCustomers; i++)
+                cStay[i].signal();
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
+    }
+
+    @Override
+    public void removeAll() {
+        try {
+            rl.lock();
+            suspend = false;
+            for (int i = 0; i < maxCustomers; i++) {
+                leave[i] = true;
+                cStay[i].signal();
+            }
         } catch ( Exception ex ) {}
         finally {
             rl.unlock();
