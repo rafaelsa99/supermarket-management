@@ -20,20 +20,45 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
     FIFO fifo;
     boolean isAuthorized;
     boolean isSuspended;
+    boolean stop;
+    boolean end;
 
     public SAPaymentHall(int maxCustomers) {
         this.fifo = new FIFO(maxCustomers);
+        rl = new ReentrantLock(true);
+        stop = false;
+        end = false;
     }
 
     @Override
     public STCustomer enter(int costumerId) {
         this.fifo.in(costumerId);
+        try{
+            rl.lock();
+            if(stop)
+                return STCustomer.STOP;
+            if(end)
+                return STCustomer.END;
+        } catch (Exception ex){}
+        finally{
+            rl.unlock();
+        }
         return STCustomer.PAYMENT_BOX;
     }
     
     @Override
     public STCashier accept() {
         this.fifo.out();
+        try{
+            rl.lock();
+            if(stop)
+                return STCashier.STOP;
+            if(end)
+                return STCashier.END;
+        } catch (Exception ex){}
+        finally{
+            rl.unlock();
+        }
         return STCashier.PAYMENT_BOX;
     }
 
@@ -49,12 +74,38 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            stop = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
     }
 
     @Override
     public void end() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            end = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
+    }
+
+    @Override
+    public void start() {
+        try{
+            rl.lock();
+            stop = false;
+            fifo.resetFIFO();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
     
 }

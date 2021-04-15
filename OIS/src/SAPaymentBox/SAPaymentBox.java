@@ -20,6 +20,8 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
     boolean isPayed;
     boolean isSuspended;
     int timeoutPayment;
+    private boolean stop;
+    private boolean end;
 
     public SAPaymentBox(int timeoutPayment) {
         this.rl = new ReentrantLock(true);
@@ -28,6 +30,8 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
         this.isPayed = false;
         this.timeoutPayment = timeoutPayment;
         this.isSuspended = false;
+        this.stop = false;
+        this.end = false;
     }
     
     @Override
@@ -37,6 +41,10 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             while(!isPayed || isSuspended)
                 payment.await();
             isPayed = false;
+            if(stop)
+                return STCashier.STOP;
+            if(end)
+                return STCashier.END;
         } catch (Exception ex){}
         finally{
             rl.unlock();
@@ -53,6 +61,10 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             rl.lock();
             while(isSuspended)
                 suspend.await();
+            if(stop)
+                return STCustomer.STOP;
+            if(end)
+                return STCustomer.END;
             isPayed = true;
             payment.signal();
         } catch (Exception ex){}
@@ -88,12 +100,44 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            stop = true;
+            isSuspended = false;
+            isPayed = true;
+            payment.signal();
+            suspend.signal();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
     @Override
     public void end() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            end = true;
+            isSuspended = false;
+            isPayed = true;
+            payment.signal();
+            suspend.signal();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+    }
+    
+    @Override
+    public void start() {
+        try{
+            rl.lock();
+            isPayed = false;
+            stop = false;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
 }

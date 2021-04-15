@@ -47,7 +47,9 @@ public class FIFO implements IFIFO {
     private int count = 0;
     // flag que indica se simulação está suspensa
     private boolean suspend;
-
+    // flag que indica se está em curso a operação de remover todos elementos do fifo
+    private boolean removeAll;
+    
     public FIFO( int maxCustomers ) {
         this.maxCustomers = maxCustomers;
         customerId = new int[ maxCustomers ];
@@ -63,6 +65,7 @@ public class FIFO implements IFIFO {
         idxIn = 0;
         idxOut = 0; 
         suspend = false;
+        removeAll = false;
     }
     // Entrada no fifo. O NOTA: o thead Customer pode ficar bloqueado à espera de 
     // autorização para sair do fifo
@@ -75,6 +78,8 @@ public class FIFO implements IFIFO {
             // se fifo cheio, espera na Condition cFull
             while ( count == maxCustomers  || suspend)
                 cFull.await();
+            if(removeAll)
+                return;
             
             // usar variável local e incrementar apontador de escrita
             int idx = idxIn;
@@ -90,7 +95,6 @@ public class FIFO implements IFIFO {
             
             // incrementar número customers no fifo
             count++;
-            
             // ciclo à espera de autorização para sair do fifo
             while ( !leave[ idx ] || suspend)
                 // qd se faz await, permite-se q outros thread tenham acesso
@@ -123,6 +127,8 @@ public class FIFO implements IFIFO {
     public void out() {
         try {
             rl.lock();
+            if(removeAll)
+                return;
             // se fifo vazio, espera
             while ( count == 0  || suspend)
                 cEmpty.await();
@@ -162,6 +168,9 @@ public class FIFO implements IFIFO {
             suspend = false;
             for (int i = 0; i < maxCustomers; i++)
                 cStay[i].signal();
+            cFull.signal();
+            cEmpty.signal();
+            cLeaving.signal();
         } catch ( Exception ex ) {}
         finally {
             rl.unlock();
@@ -173,6 +182,7 @@ public class FIFO implements IFIFO {
         try {
             rl.lock();
             suspend = false;
+            removeAll = true;
             for (int i = 0; i < maxCustomers; i++) {
                 leave[i] = true;
                 cStay[i].signal();
@@ -182,4 +192,32 @@ public class FIFO implements IFIFO {
             rl.unlock();
         }
     }
+
+    public void resetFIFO() {
+        try {
+            rl.lock();
+            for ( int i = 0; i < maxCustomers; i++ )
+                leave[ i ] = false;
+            idxIn = 0;
+            idxOut = 0; 
+            suspend = false;
+            removeAll = false;
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
+    }
+
+    public boolean isEmpty() {
+        try {
+            rl.lock();
+            if(count > 0)
+                return false;
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
+        return true;
+    }
+    
 }

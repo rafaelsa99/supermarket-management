@@ -101,7 +101,7 @@ public class OIS extends javax.swing.JFrame {
             aeControl.join();
         } catch (Exception ex) {
         }
-
+        System.out.println("MAIN: ALL ENDED");
     }
 
     /**

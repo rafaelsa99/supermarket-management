@@ -7,6 +7,8 @@ package SAPaymentHall;
  */
 public interface IPaymentHall_Control {
 
+    public void start();
+    
     public void suspend();
 
     public void resume();

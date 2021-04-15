@@ -19,14 +19,20 @@ public class SACashier implements ICashier_Cashier,
     int emptySpacesPaymentHall;
     boolean paymentHallHasEmptySpace;
     boolean isSuspended;
+    boolean stop;
+    boolean end;
+    int sizePaymentHall;
 
     public SACashier(int sizePaymentHall) {
         this.rl = new ReentrantLock(true);
         this.idle = rl.newCondition();
+        this.sizePaymentHall = sizePaymentHall;
+        this.end = false;
         this.numCustomersPaymentHall = 0;
         this.emptySpacesPaymentHall = sizePaymentHall;
         this.paymentHallHasEmptySpace = true;
         this.isSuspended = false;
+        this.stop = false;
     }
 
     @Override
@@ -34,9 +40,11 @@ public class SACashier implements ICashier_Cashier,
         STCashier stCashier = STCashier.IDLE;
         try{
             rl.lock();
-            while((!paymentHallHasEmptySpace || numCustomersPaymentHall == 0) || isSuspended)
+            while((!paymentHallHasEmptySpace || numCustomersPaymentHall == 0) || isSuspended || stop)
                 idle.await();
-            if(paymentHallHasEmptySpace && numCustomersPaymentHall > 0){
+            if(end)
+                stCashier = STCashier.END;
+            else if(paymentHallHasEmptySpace && numCustomersPaymentHall > 0){
                 emptySpacesPaymentHall -= 1;
                 if(emptySpacesPaymentHall == 0)
                     paymentHallHasEmptySpace = false;
@@ -79,7 +87,12 @@ public class SACashier implements ICashier_Cashier,
     public void start() {
         try{
             rl.lock();
-            idle.signal();
+            this.numCustomersPaymentHall = 0;
+            this.emptySpacesPaymentHall = sizePaymentHall;
+            this.paymentHallHasEmptySpace = true;
+            this.isSuspended = false;
+            this.stop = false;
+            this.idle.signal();
         } catch(Exception ex){}
         finally{
             rl.unlock();
@@ -111,12 +124,32 @@ public class SACashier implements ICashier_Cashier,
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            stop = true;
+            isSuspended = false;
+            paymentHallHasEmptySpace = true;
+            numCustomersPaymentHall = 1;
+            idle.signal();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
     @Override
     public void end() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            end = true;
+            isSuspended = false;
+            paymentHallHasEmptySpace = true;
+            numCustomersPaymentHall = 1;
+            idle.signal();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
 }

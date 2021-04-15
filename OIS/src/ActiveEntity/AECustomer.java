@@ -64,7 +64,6 @@ public class AECustomer extends Thread {
         int corridorNumber;
         while (true) {
             // thread avança para Idle
-            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             stCustomer = iCustomer.idle(customerId);
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.END)
@@ -111,7 +110,6 @@ public class AECustomer extends Thread {
                 System.out.println("CUSTOMER " + customerId + ": MOVEMENT " + stCustomer);
             }
             iCorridorHall[corridorNumber].freeSlot();
-            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.STOP)
                 continue;
             if(stCustomer == STCustomer.END)

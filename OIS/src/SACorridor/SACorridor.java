@@ -25,7 +25,8 @@ public class SACorridor implements ICorridor_Control,
     Map<Integer, Integer> customerIdx;
     int stepsSize;
     boolean isSuspended;
-
+    boolean stop;
+    boolean end;
     
     public SACorridor(int maxCostumers, int sizePaymentHall, int stepsSize, int timeoutMovement, int totalCustomers, STCustomer corridorNumber) {
         this.corridorNumber = corridorNumber;
@@ -33,6 +34,7 @@ public class SACorridor implements ICorridor_Control,
         this.full = rl.newCondition();
         this.suspend = rl.newCondition();
         this.movement = new Condition[maxCostumers];
+        this.timeoutMovement = timeoutMovement;
         customerIdx = new HashMap<>();
         this.canMove = new boolean[maxCostumers];
         this.stepsSize = stepsSize;
@@ -42,8 +44,9 @@ public class SACorridor implements ICorridor_Control,
             canMove[i] = false;
             customerPosition[i] = -1;
         }
-        this.timeoutMovement = timeoutMovement;
         this.isSuspended = false;
+        this.stop = false;
+        this.end = false;
     }
 
     @Override
@@ -52,6 +55,10 @@ public class SACorridor implements ICorridor_Control,
             rl.lock();
             while(customerIdx.size() == customerPosition.length || isSuspended) // Check if the corridor is full
                full.await();
+            if(stop)
+                return STCustomer.STOP;
+            else if(end)
+                return STCustomer.END;
             for (int i = 0; i < customerPosition.length; i++)
                 if(customerPosition[i] == -1)
                     customerIdx.put(customerId, i);
@@ -73,11 +80,29 @@ public class SACorridor implements ICorridor_Control,
             int cId = customerIdx.get(customerId);
             while(!canMove[cId] || isSuspended)
                 movement[cId].await();
+            if(stop || end){
+                canMove[cId] = false;
+                customerPosition[cId] = -1;
+                customerIdx.remove(customerId);
+                if(stop)
+                    return STCustomer.STOP;
+                else if(end)
+                    return STCustomer.END;
+            }
             try {
                 Thread.sleep(timeoutMovement);
             } catch (InterruptedException ex) {}
             while(isSuspended)
                 suspend.await();
+            if(stop || end){
+                canMove[cId] = false;
+                customerPosition[cId] = -1;
+                customerIdx.remove(customerId);
+                if(stop)
+                    return STCustomer.STOP;
+                else if(end)
+                    return STCustomer.END;
+            }
             customerPosition[cId] += 1; // Go to next position
             if(customerIdx.size() > 1){ // If there is more customers in the corridor, wakes up the next one
                 int nextCId = cId + 1;;
@@ -135,12 +160,54 @@ public class SACorridor implements ICorridor_Control,
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            rl.lock();
+            stop = true;
+            isSuspended = false;
+            suspend.signal();
+            for (int i = 0; i < movement.length; i++){
+                canMove[i] = true;
+                movement[i].signal();
+            }
+            full.signal();
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
     }
 
     @Override
     public void end() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            rl.lock();
+            end = true;
+            isSuspended = false;
+            suspend.signal();
+            for (int i = 0; i < movement.length; i++){
+                canMove[i] = true;
+                movement[i].signal();
+            }
+            full.signal();
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
     }
  
+    @Override
+    public void start() {
+        try{
+            rl.lock();
+            for (int i = 0; i < canMove.length; i++){
+                canMove[i] = false;
+                customerPosition[i] = -1;
+            }
+            this.isSuspended = false;
+            this.stop = false;
+            customerIdx.clear();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+    }
 }

@@ -20,24 +20,33 @@ public class SAEntranceHall implements IEntranceHall_Customer,
     private final FIFO fifo;
     private boolean isAuthorized;
     private boolean isSuspended;
+    private boolean stop;
+    private boolean end;
     private STCustomer corridorHallAssigned;
 
     public SAEntranceHall(int maxCostumers) {
         this.fifo = new FIFO(maxCostumers);
         rl = new ReentrantLock(true);
+        stop = false;
+        end = false;
     }
 
     @Override
     public STCustomer enter(int costumerId) {
+        STCustomer stCustomer = STCustomer.IDLE;
         this.fifo.in(costumerId);
         try{
             rl.lock();
-            return corridorHallAssigned;
+            if(stop)
+                return STCustomer.STOP;
+            if(end)
+                return STCustomer.END;
+            stCustomer = corridorHallAssigned;
         } catch (Exception ex){}
         finally{
             rl.unlock();
         }
-        return STCustomer.IDLE;
+        return stCustomer;
     }
 
     @Override
@@ -71,12 +80,37 @@ public class SAEntranceHall implements IEntranceHall_Customer,
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            stop = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
     }
 
     @Override
     public void end() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            end = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
     }
-    
+ 
+    @Override
+    public void start() {
+        try{
+            rl.lock();
+            stop = false;
+            fifo.resetFIFO();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+    }
 }

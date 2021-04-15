@@ -18,6 +18,7 @@ public class SACustomer implements ICustomer_Customer,
     private final Condition customerLeaving;
     private final TreeSet<Integer> set;
     private boolean[] leave;
+    private boolean end;
     
     public SACustomer(int maxCustomers) {
         rl = new ReentrantLock(true);
@@ -30,6 +31,7 @@ public class SACustomer implements ICustomer_Customer,
             stay[ i ] = rl.newCondition();
             leave[ i ] = false;
         }
+        end = false;
     }
     @Override
     public STCustomer idle( int customerId ) {
@@ -37,10 +39,12 @@ public class SACustomer implements ICustomer_Customer,
         try{
             rl.lock();
             set.add(customerId); // Add customer to set
-            if(set.size() == 1) // If it is the only element, it means that the set is no longer empty
+            if(set.size() == stay.length)
                 setEmpty.signal();
             while(!leave[customerId]) // Loop waiting for the authorization to start the simulation
                 stay[customerId].await();
+            if(end)
+                return STCustomer.END;
             leave[customerId] = false;
             customerLeaving.signal(); // Notify that it has left the set
             stCustomer = STCustomer.OUTSIDE_HALL;
@@ -69,7 +73,19 @@ public class SACustomer implements ICustomer_Customer,
         }
     }
     @Override
-    public void end() {   
+    public void end() {
+        try{
+            rl.lock();
+            end = true;
+            for (int i = 0; i < stay.length; i++){
+                leave[i] = true;
+                stay[i].signal();
+            }
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        
     }
    
 }

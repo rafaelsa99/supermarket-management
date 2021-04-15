@@ -30,20 +30,20 @@ public class AECashier extends Thread{
     public void run() {
         STCashier stCashier = STCashier.IDLE;
         while(true){
-            System.out.println("CASHIER: " + stCashier);
             stCashier = iCashier.idle();
             System.out.println("CASHIER: " + stCashier);
             if(stCashier == STCashier.END)
                 return;
             if(stCashier == STCashier.PAYMENT_HALL){
                 stCashier = iPaymentHall.accept();
+                System.out.println("CASHIER: " + stCashier);
                 if(stCashier == STCashier.STOP)
                     continue;
                 if(stCashier == STCashier.END)
                     return;
-                System.out.println("CASHIER: " + stCashier);
                 if(stCashier == STCashier.PAYMENT_BOX){
                     stCashier = iPaymentBox.payment();
+                    System.out.println("CASHIER: " + stCashier);
                     if(stCashier == STCashier.STOP)
                         continue;
                     if(stCashier == STCashier.END)

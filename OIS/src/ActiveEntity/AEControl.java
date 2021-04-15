@@ -57,22 +57,51 @@ public class AEControl extends Thread implements IControl{
     
     @Override
     public void startSimulation( int nCustomers, Socket socket ) {
+        iOutsideHall.start();
+        iEntranceHall.start();
+        for (int i = 0; i < iCorridorHall.length; i++) {
+            iCorridorHall[i].start();
+            iCorridor[i].start();   
+        }
+        iPaymentHall.start();
+        iPaymentBox.start();
         iCustomer.start(nCustomers);
         iManager.start(nCustomers);
         iCashier.start();
+        System.out.println("CONTROL: Start");
     }
     
     @Override
     public void stopSimulation() {
         iManager.stop();
-        // terminar restantes Customers e outras AE
+        iCashier.stop();
+        iOutsideHall.stop();
+        iEntranceHall.stop();
+        for (int i = 0; i < iCorridorHall.length; i++) {
+            iCorridorHall[i].stop();
+            iCorridor[i].stop();   
+        }
+        iPaymentHall.stop();
+        iPaymentBox.stop();
+        System.out.println("CONTROL: Stop");
     }
     
     @Override
     public void endSimulation() {
+        // terminar restantes Customers e outras AE
+        iManager.end();
+        iCashier.end();
+        iOutsideHall.end();
+        iEntranceHall.end();
+        for (int i = 0; i < iCorridorHall.length; i++) {
+            iCorridorHall[i].end();
+            iCorridor[i].end();   
+        }
+        iPaymentHall.end();
+        iPaymentBox.end();
         // terminar Customers em idle
         iCustomer.end();
-        // terminar restantes Customers e outras AE
+        System.out.println("CONTROL: End");
     }
     
     @Override
@@ -114,20 +143,32 @@ public class AEControl extends Thread implements IControl{
             sleep(500, 500);
         } catch (InterruptedException ex) {
         }
-        System.out.println("CONTROL: Start");
+        
         startSimulation(20, null);
         try { 
-            sleep(3000, 3000);
+            sleep(1500, 1500);
         } catch (InterruptedException ex) {
         }
         
         suspendSimulation();
         try { 
-            sleep(3000, 3000);
+            sleep(1500, 1500);
         } catch (InterruptedException ex) {
         }
         
         resumeSimulation();
+        try { 
+            sleep(3000, 3000);
+        } catch (InterruptedException ex) {
+        }
+        //endSimulation();
+        stopSimulation();
+        try { 
+            sleep(3000, 3000);
+        } catch (InterruptedException ex) {
+        }
+        
+        startSimulation(40, null);
         /*FIM TESTE*/
     }
 }

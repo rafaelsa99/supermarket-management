@@ -7,6 +7,8 @@ package SAPaymentBox;
  */
 public interface IPaymentBox_Control {
 
+    public void start();
+    
     public void suspend();
 
     public void resume();

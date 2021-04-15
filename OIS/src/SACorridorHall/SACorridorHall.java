@@ -20,14 +20,20 @@ public class SACorridorHall implements ICorridorHall_Control,
     boolean emptySpaceCorridor; // Flag to indicate if there is space in the Corridor
     boolean isSuspended;
     int emptySpacesCorridor; // Number of spaces available in the Corridor
-
+    boolean stop;
+    boolean end;
+    int sizeCorridor;
+    
     public SACorridorHall(int maxCostumers, STCustomer corridorNumber, int sizeCorridor) {
         this.fifo = new FIFO(maxCostumers);
         this.corridorNumber = corridorNumber;
         this.rl = new ReentrantLock(true);
         this.emptySpace = rl.newCondition();
+        this.sizeCorridor = sizeCorridor;
         this.emptySpaceCorridor = true;
         this.emptySpacesCorridor = sizeCorridor;
+        this.stop = false;
+        this.end = false;
     }
     
     @Override
@@ -43,6 +49,10 @@ public class SACorridorHall implements ICorridorHall_Control,
             emptySpacesCorridor -= 1; // Updates the available space in the corridor
             if(emptySpacesCorridor == 0) // Check if the corridor has become full
                 emptySpaceCorridor = false;
+            if(stop)
+                return STCustomer.STOP;
+            if(end)
+                return STCustomer.END;
         } catch(Exception ex){}
         finally{
             rl.unlock();
@@ -55,7 +65,7 @@ public class SACorridorHall implements ICorridorHall_Control,
         try{
             rl.lock();
             emptySpacesCorridor += 1; // Updates the available space in the corridor
-            if(emptySpaceCorridor) // If there was already space in the corridor, doesn't take anyone out of the FIFO
+            if(emptySpaceCorridor || fifo.isEmpty()) // If there was already space in the corridor, doesn't take anyone out of the FIFO
                 return;
             emptySpaceCorridor = true; // Updates the flag
         } catch(Exception ex){}
@@ -77,12 +87,39 @@ public class SACorridorHall implements ICorridorHall_Control,
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            stop = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
     }
 
     @Override
     public void end() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            end = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
     }
 
+    @Override
+    public void start() {
+        try{
+            rl.lock();
+            this.emptySpaceCorridor = true;
+            this.emptySpacesCorridor = sizeCorridor;
+            this.stop = false;
+            fifo.resetFIFO();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+    }
 }

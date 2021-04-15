@@ -23,20 +23,28 @@ public class SAManager implements IManager_Control,
     private boolean entranceHallHasEmptySpace; // Flag to indicate if there is space in Entrance Hall
     private boolean corridorHallHasEmptySpace; // Flag to indicate if there is space in any Corridor Hall
     private boolean isSuspended;
+    private boolean stop;
+    private boolean end;
     private boolean isAuto;
+    private int sizeEntranceHall;
+    private int sizeCorridorHall;
 
     public SAManager(int nCorridors, int sizeEntranceHall, int sizeCorridorHall) {
         rl = new ReentrantLock(true);
+        idle = rl.newCondition();
+        emptySpacesCorridorHall = new int[nCorridors];
+        this.sizeCorridorHall = sizeCorridorHall;
+        this.sizeEntranceHall = sizeEntranceHall;
         emptySpacesEntranceHall = sizeEntranceHall;
         entranceHallHasEmptySpace = true;
         corridorHallHasEmptySpace = true;
-        emptySpacesCorridorHall = new int[nCorridors];
         for (int i = 0; i < nCorridors; i++)
             emptySpacesCorridorHall[i] = sizeCorridorHall;
         numCustomersOutsideHall = 0;
         numCustomersEntranceHall = 0;
-        idle = rl.newCondition();
         isSuspended = false;
+        stop = false;
+        end = false;
     }
     
     
@@ -44,6 +52,14 @@ public class SAManager implements IManager_Control,
     public void start(int nCustomers) {
         try{
             rl.lock();
+            emptySpacesEntranceHall = sizeEntranceHall;
+            entranceHallHasEmptySpace = true;
+            corridorHallHasEmptySpace = true;
+            for (int i = 0; i < emptySpacesCorridorHall.length; i++)
+                emptySpacesCorridorHall[i] = sizeCorridorHall;
+            numCustomersEntranceHall = 0;
+            isSuspended = false;
+            stop = false;
             numCustomersOutsideHall = nCustomers; // Updates the number of Customers in the Outside Hall
             idle.signal();
         } catch(Exception ex){}
@@ -77,12 +93,32 @@ public class SAManager implements IManager_Control,
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            stop = true;
+            isSuspended = false;
+            entranceHallHasEmptySpace = true;
+            numCustomersOutsideHall = 1;
+            idle.signal();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
     @Override
     public void end() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            end = true;
+            isSuspended = false;
+            entranceHallHasEmptySpace = true;
+            numCustomersOutsideHall = 1;
+            idle.signal();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 
     @Override
@@ -118,9 +154,11 @@ public class SAManager implements IManager_Control,
             rl.lock();
             while(((!entranceHallHasEmptySpace || numCustomersOutsideHall == 0) && // Wait for available space
                   (!corridorHallHasEmptySpace || numCustomersEntranceHall == 0)) ||
-                   isSuspended) 
+                   isSuspended || stop) 
                 idle.await();
-            if(entranceHallHasEmptySpace && numCustomersOutsideHall > 0){ // Check if the Entrance Hall has space
+            if(end)
+                stManager = STManager.END;
+            else if(entranceHallHasEmptySpace && numCustomersOutsideHall > 0){ // Check if the Entrance Hall has space
                 emptySpacesEntranceHall -= 1; // Update number of available spaces
                 if(emptySpacesEntranceHall == 0) //If entrance hall is full, update flag
                     entranceHallHasEmptySpace = false;
