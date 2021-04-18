@@ -1,17 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package SAPaymentHall;
 
+import Common.STCashier;
+import Common.STCustomer;
 import FIFO.FIFO;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
- * @author luisc
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class SAPaymentHall implements IPaymentHall_Cashier, 
                                       IPaymentHall_Control, 
@@ -22,39 +20,92 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
     FIFO fifo;
     boolean isAuthorized;
     boolean isSuspended;
+    boolean stop;
+    boolean end;
 
     public SAPaymentHall(int maxCustomers) {
         this.fifo = new FIFO(maxCustomers);
+        rl = new ReentrantLock(true);
+        stop = false;
+        end = false;
     }
 
     @Override
-    public void accept() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public STCustomer enter(int costumerId) {
+        this.fifo.in(costumerId);
+        try{
+            rl.lock();
+            if(stop)
+                return STCustomer.STOP;
+            if(end)
+                return STCustomer.END;
+        } catch (Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        return STCustomer.PAYMENT_BOX;
+    }
+    
+    @Override
+    public STCashier accept() {
+        this.fifo.out();
+        try{
+            rl.lock();
+            if(stop)
+                return STCashier.STOP;
+            if(end)
+                return STCashier.END;
+        } catch (Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        return STCashier.PAYMENT_BOX;
     }
 
     @Override
     public void suspend() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.fifo.suspend();
     }
 
     @Override
     public void resume() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.fifo.resume();
     }
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            stop = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
     }
 
     @Override
     public void end() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            end = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
     }
 
     @Override
-    public void enter(int costumerId) {
-        this.fifo.in(costumerId);
+    public void start() {
+        try{
+            rl.lock();
+            stop = false;
+            fifo.resetFIFO();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
     
 }

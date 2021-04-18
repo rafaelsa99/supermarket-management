@@ -1,18 +1,38 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Main;
 
+import ActiveEntity.AECashier;
+import ActiveEntity.AEControl;
 import ActiveEntity.AECustomer;
-import Idle.IIdle_Customer;
-import Idle.SAIdle;
+import ActiveEntity.AEManager;
+import Common.STCustomer;
+import SACashier.ICashier_Cashier;
+import SACashier.ICashier_Customer;
+import SACashier.SACashier;
+import SACorridor.ICorridor_Customer;
+import SACorridor.SACorridor;
+import SACorridorHall.ICorridorHall_Customer;
+import SACorridorHall.SACorridorHall;
+import SACustomer.SACustomer;
 import SAOutsideHall.IOutsideHall_Customer;
 import SAOutsideHall.SAOutsideHall;
+import SACustomer.ICustomer_Customer;
+import SAEntranceHall.IEntranceHall_Customer;
+import SAEntranceHall.IEntranceHall_Manager;
+import SAEntranceHall.SAEntranceHall;
+import SAManager.IManager_Customer;
+import SAManager.IManager_Manager;
+import SAManager.SAManager;
+import SAOutsideHall.IOutsideHall_Manager;
+import SAPaymentBox.IPaymentBox_Cashier;
+import SAPaymentBox.IPaymentBox_Customer;
+import SAPaymentBox.SAPaymentBox;
+import SAPaymentHall.IPaymentHall_Cashier;
+import SAPaymentHall.IPaymentHall_Customer;
+import SAPaymentHall.SAPaymentHall;
 
 /*
- * @author omp
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class OIS extends javax.swing.JFrame {
 
@@ -23,37 +43,67 @@ public class OIS extends javax.swing.JFrame {
         initComponents();
         initOIS();
     }
+
     private void initOIS() {
         final int MAX_CUSTOMERS = 99;
-        final int N_CORRIDOR_HALL = 3;
         final int N_CORRIDOR = 3;
         final int SIZE_ENTRANCE_HALL = 6;
         final int SIZE_CORRIDOR_HALL = 3;
-        // ....
-        
-        final SAIdle idle = new SAIdle();
-        final SAOutsideHall outsideHall =  new SAOutsideHall( MAX_CUSTOMERS );
-        // outras SA ...
-        
-        final AECustomer[] aeCustomer = new AECustomer[ MAX_CUSTOMERS ];
-        
-        for ( int i = 0; i < MAX_CUSTOMERS; i++ ) {
-            aeCustomer[ i ] = new AECustomer( MAX_CUSTOMERS,
-                                              (IIdle_Customer) idle,
-                                              (IOutsideHall_Customer)  outsideHall);
-            aeCustomer[ i ].start();
+        final int SIZE_CORRIDOR = 2;
+        final int SIZE_PAYMENT_HALL = 2;
+        final int CORRIDOR_STEPS = 10;
+        final int TIMEOUT_MOVEMENT = 100;
+        final int TIMEOUT_PAYMENT = 100;
+        final STCustomer[] corridorNumbers = {STCustomer.CORRIDOR_1, 
+                                             STCustomer.CORRIDOR_2, 
+                                             STCustomer.CORRIDOR_3};
+        final SACustomer saCustomer = new SACustomer(MAX_CUSTOMERS);
+        final SAManager saManager = new SAManager(N_CORRIDOR, SIZE_ENTRANCE_HALL, SIZE_CORRIDOR_HALL);
+        final SACashier saCashier = new SACashier(SIZE_PAYMENT_HALL);
+        final SAOutsideHall saOutsideHall = new SAOutsideHall(MAX_CUSTOMERS);
+        final SAEntranceHall saEntranceHall = new SAEntranceHall(SIZE_ENTRANCE_HALL);
+        final SACorridorHall[] saCorridorHall = new SACorridorHall[N_CORRIDOR];
+        final SACorridor[] saCorridor = new SACorridor[N_CORRIDOR];
+        for (int i = 0; i < N_CORRIDOR; i++) {
+            saCorridorHall[i] = new SACorridorHall(SIZE_CORRIDOR_HALL, corridorNumbers[i], SIZE_CORRIDOR);
+            saCorridor[i] = new SACorridor(SIZE_CORRIDOR, SIZE_PAYMENT_HALL, CORRIDOR_STEPS, TIMEOUT_MOVEMENT, MAX_CUSTOMERS, corridorNumbers[i]);
         }
-        
-        
-        
-        // ...
+        final SAPaymentHall saPaymentHall = new SAPaymentHall(SIZE_PAYMENT_HALL);
+        final SAPaymentBox sAPaymentBox = new SAPaymentBox(TIMEOUT_PAYMENT);
+
+        final AECustomer[] aeCustomer = new AECustomer[MAX_CUSTOMERS];
+        for (int i = 0; i < MAX_CUSTOMERS; i++) {
+            aeCustomer[i] = new AECustomer(i, (ICustomer_Customer) saCustomer,
+                    (IOutsideHall_Customer) saOutsideHall, (IEntranceHall_Customer) saEntranceHall,
+                    (ICorridorHall_Customer[]) saCorridorHall, (ICorridor_Customer[]) saCorridor,
+                    (IPaymentHall_Customer) saPaymentHall, (IPaymentBox_Customer) sAPaymentBox,
+                    (ICashier_Customer) saCashier, (IManager_Customer) saManager);
+            aeCustomer[i].start();
+        }
+        final AEManager aeManager = new AEManager((IManager_Manager) saManager, (IOutsideHall_Manager) saOutsideHall,
+                                                   (IEntranceHall_Manager) saEntranceHall);
+        aeManager.start();
+        final AECashier aeCashier = new AECashier((IPaymentHall_Cashier) saPaymentHall, 
+                                                  (ICashier_Cashier) saCashier,
+                                                  (IPaymentBox_Cashier) sAPaymentBox);
+        aeCashier.start();
+        final AEControl aeControl = new AEControl(saCustomer, saManager, saCashier,
+                                                  saOutsideHall, saEntranceHall, saCorridorHall, 
+                                                  saCorridor, saPaymentHall, sAPaymentBox);
+        aeControl.start();
         
         try {
-            for ( int i = 0; i < MAX_CUSTOMERS; i++ )
-                aeCustomer[ i ].join();
-        } catch ( Exception ex ) {}    
-            
+            aeManager.join();
+            aeCashier.join();
+            for (int i = 0; i < MAX_CUSTOMERS; i++) {
+                aeCustomer[i].join();
+            }
+            aeControl.join();
+        } catch (Exception ex) {
+        }
+        System.out.println("MAIN: ALL ENDED");
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

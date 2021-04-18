@@ -1,59 +1,125 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package SACorridorHall;
 
+import Common.STCustomer;
 import FIFO.FIFO;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
- * @author luisc
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class SACorridorHall implements ICorridorHall_Control,
                                        ICorridorHall_Customer {
     
     ReentrantLock rl;
-    Condition emptySpac;
+    Condition emptySpace;
     FIFO fifo;
-    boolean emptySpaceCorridor;
+    STCustomer corridorNumber; // Number of the corridor to which the corridor hall is associated
+    boolean emptySpaceCorridor; // Flag to indicate if there is space in the Corridor
     boolean isSuspended;
-
-    public SACorridorHall(int maxCostumers) {
+    int emptySpacesCorridor; // Number of spaces available in the Corridor
+    boolean stop;
+    boolean end;
+    int sizeCorridor;
+    
+    public SACorridorHall(int maxCostumers, STCustomer corridorNumber, int sizeCorridor) {
         this.fifo = new FIFO(maxCostumers);
+        this.corridorNumber = corridorNumber;
+        this.rl = new ReentrantLock(true);
+        this.emptySpace = rl.newCondition();
+        this.sizeCorridor = sizeCorridor;
+        this.emptySpaceCorridor = true;
+        this.emptySpacesCorridor = sizeCorridor;
+        this.stop = false;
+        this.end = false;
     }
     
     @Override
-    public void suspend() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void resume() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void end() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void enter(int customerId) {
-        this.fifo.in(customerId);
+    public STCustomer enter(int customerId) {
+        
+        try{
+            rl.lock();
+            if(!emptySpaceCorridor){ //If there is no space in the corridor, wait in FIFO
+                rl.unlock();
+                this.fifo.in(customerId);
+                rl.lock();
+            }
+            emptySpacesCorridor -= 1; // Updates the available space in the corridor
+            if(emptySpacesCorridor == 0) // Check if the corridor has become full
+                emptySpaceCorridor = false;
+            if(stop)
+                return STCustomer.STOP;
+            if(end)
+                return STCustomer.END;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        return corridorNumber;
     }
 
     @Override
     public void freeSlot() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            emptySpacesCorridor += 1; // Updates the available space in the corridor
+            if(emptySpaceCorridor || fifo.isEmpty()) // If there was already space in the corridor, doesn't take anyone out of the FIFO
+                return;
+            emptySpaceCorridor = true; // Updates the flag
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        this.fifo.out(); // Call the next customer to enter in the corridor
     }
     
+    @Override
+    public void suspend() {
+        this.fifo.suspend();
+    }
+
+    @Override
+    public void resume() {
+        this.fifo.resume();
+    }
+
+    @Override
+    public void stop() {
+        try{
+            rl.lock();
+            stop = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
+    }
+
+    @Override
+    public void end() {
+        try{
+            rl.lock();
+            end = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
+    }
+
+    @Override
+    public void start() {
+        try{
+            rl.lock();
+            this.emptySpaceCorridor = true;
+            this.emptySpacesCorridor = sizeCorridor;
+            this.stop = false;
+            fifo.resetFIFO();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+    }
 }

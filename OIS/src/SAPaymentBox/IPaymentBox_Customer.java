@@ -1,16 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package SAPaymentBox;
+
+import Common.STCustomer;
 
 /**
  *
- * @author luisc
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public interface IPaymentBox_Customer {
 
-    public void enter(int costumerId);
-    public void freeSlot();
+    public STCustomer enter(int costumerId);
 }

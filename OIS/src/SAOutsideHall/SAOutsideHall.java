@@ -1,10 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package SAOutsideHall;
 
+import Common.STCustomer;
 import FIFO.FIFO;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -19,17 +16,33 @@ public class SAOutsideHall implements IOutsideHall_Manager,
    
     ReentrantLock rl;
     Condition authorization;
-    FIFO fifo;
+    private final FIFO fifo;
     boolean isAuthorized;
     boolean isSuspended;
-
+    private boolean stop;
+    private boolean end;
+    
     public SAOutsideHall( int maxCustomers ) {
-        this.fifo = new FIFO(maxCustomers);   
+        this.fifo = new FIFO(maxCustomers);  
+        rl = new ReentrantLock(true);
+        stop = false;
+        end = false;
     }
 
     @Override
-    public void enter(int customerId) {
+    public STCustomer enter(int customerId) {
         fifo.in(customerId);
+        try{
+            rl.lock();
+            if(stop)
+                return STCustomer.STOP;
+            if(end)
+                return STCustomer.END;
+        } catch (Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        return STCustomer.ENTRANCE_HALL;
     }
 
     @Override
@@ -39,21 +52,47 @@ public class SAOutsideHall implements IOutsideHall_Manager,
 
     @Override
     public void suspend() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.fifo.suspend();
     }
 
     @Override
     public void resume() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.fifo.resume();
     }
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            stop = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
     }
 
     @Override
     public void end() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            rl.lock();
+            end = true;
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
+        fifo.removeAll();
+    }
+    
+    @Override
+    public void start() {
+        try{
+            rl.lock();
+            stop = false;
+            fifo.resetFIFO();
+        } catch(Exception ex){}
+        finally{
+            rl.unlock();
+        }
     }
 }

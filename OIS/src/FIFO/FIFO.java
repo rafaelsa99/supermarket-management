@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * No caso de o fifo ser criado com a dimensão = 99, não seria necessário 
  * verificar se está cheio.
  * 
- * @author omp
+ * @author Rafael Sá (104552), Luís Laranjeira (81526) (Based on the professor implementation)
  */
 public class FIFO implements IFIFO {
     
@@ -45,7 +45,11 @@ public class FIFO implements IFIFO {
     private int idxOut;
     // número de customers no fifo
     private int count = 0;
-
+    // flag que indica se simulação está suspensa
+    private boolean suspend;
+    // flag que indica se está em curso a operação de remover todos elementos do fifo
+    private boolean removeAll;
+    
     public FIFO( int maxCustomers ) {
         this.maxCustomers = maxCustomers;
         customerId = new int[ maxCustomers ];
@@ -60,6 +64,8 @@ public class FIFO implements IFIFO {
         cLeaving = rl.newCondition();
         idxIn = 0;
         idxOut = 0; 
+        suspend = false;
+        removeAll = false;
     }
     // Entrada no fifo. O NOTA: o thead Customer pode ficar bloqueado à espera de 
     // autorização para sair do fifo
@@ -70,8 +76,10 @@ public class FIFO implements IFIFO {
             rl.lock();
             
             // se fifo cheio, espera na Condition cFull
-            while ( count == maxCustomers )
+            while ( count == maxCustomers  || suspend)
                 cFull.await();
+            if(removeAll)
+                return;
             
             // usar variável local e incrementar apontador de escrita
             int idx = idxIn;
@@ -87,9 +95,8 @@ public class FIFO implements IFIFO {
             
             // incrementar número customers no fifo
             count++;
-            
             // ciclo à espera de autorização para sair do fifo
-            while ( !leave[ idx ] )
+            while ( !leave[ idx ] || suspend)
                 // qd se faz await, permite-se q outros thread tenham acesso
                 // à zona protegida pelo lock
                 cStay[ idx ].await();
@@ -107,7 +114,7 @@ public class FIFO implements IFIFO {
                 cFull.signal();
             // decrementar número de customers no fifo
             count--;
-      
+
         } catch ( Exception ex ) {}
         finally {
             rl.unlock();
@@ -120,8 +127,10 @@ public class FIFO implements IFIFO {
     public void out() {
         try {
             rl.lock();
+            if(removeAll)
+                return;
             // se fifo vazio, espera
-            while ( count == 0 )
+            while ( count == 0  || suspend)
                 cEmpty.await();
             int idx = idxOut;
             // atualizar idxOut
@@ -131,14 +140,84 @@ public class FIFO implements IFIFO {
             // acordar o customer
             cStay[ idx ].signal();
             // aguardar até q Customer saia do fifo
-            while ( leave[ idx ] == true )
+            while ( leave[ idx ] == true || suspend)
                 // qd se faz await, permite-se q outros thread tenham acesso
                 // à zona protegida pelo lock
                 cLeaving.await();  
-            // atualizar count
         } catch ( Exception ex ) {}
         finally {
             rl.unlock();
         }
     }
+
+    @Override
+    public void suspend() {
+        try {
+            rl.lock();
+            suspend = true;
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
+    }
+
+    @Override
+    public void resume() {
+        try {
+            rl.lock();
+            suspend = false;
+            for (int i = 0; i < maxCustomers; i++)
+                cStay[i].signal();
+            cFull.signal();
+            cEmpty.signal();
+            cLeaving.signal();
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
+    }
+
+    @Override
+    public void removeAll() {
+        try {
+            rl.lock();
+            suspend = false;
+            removeAll = true;
+            for (int i = 0; i < maxCustomers; i++) {
+                leave[i] = true;
+                cStay[i].signal();
+            }
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
+    }
+
+    public void resetFIFO() {
+        try {
+            rl.lock();
+            for ( int i = 0; i < maxCustomers; i++ )
+                leave[ i ] = false;
+            idxIn = 0;
+            idxOut = 0; 
+            suspend = false;
+            removeAll = false;
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
+    }
+
+    public boolean isEmpty() {
+        try {
+            rl.lock();
+            if(count > 0)
+                return false;
+        } catch ( Exception ex ) {}
+        finally {
+            rl.unlock();
+        }
+        return true;
+    }
+    
 }

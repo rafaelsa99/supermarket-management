@@ -1,16 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package SAPaymentBox;
 
 /**
  *
- * @author luisc
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public interface IPaymentBox_Control {
 
+    public void start();
+    
     public void suspend();
 
     public void resume();

@@ -1,15 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package SAEntranceHall;
+
+import Common.STManager;
 
 /**
  *
- * @author omp
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public interface IEntranceHall_Manager {
 
-    public void accept();
+    public void accept(STManager numCorridor);
 }
