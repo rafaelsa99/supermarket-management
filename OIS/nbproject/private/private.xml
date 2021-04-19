@@ -2,16 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/home/rafael/Desktop/TP_AS/supermarket-management/OIS/src/ActiveEntity/AEManager.java</file>
-            <file>file:/home/rafael/Desktop/TP_AS/supermarket-management/OIS/src/ActiveEntity/AECustomer.java</file>
-            <file>file:/home/rafael/Desktop/TP_AS/supermarket-management/OIS/src/Common/STManager.java</file>
-            <file>file:/home/rafael/Desktop/TP_AS/supermarket-management/OIS/src/ActiveEntity/AEControl.java</file>
-            <file>file:/home/rafael/Desktop/TP_AS/supermarket-management/OIS/src/SACorridor/SACorridor.java</file>
-            <file>file:/home/rafael/Desktop/TP_AS/supermarket-management/OIS/src/Common/STCustomer.java</file>
-            <file>file:/home/rafael/Desktop/TP_AS/supermarket-management/OIS/src/SAManager/SAManager.java</file>
-            <file>file:/home/rafael/Desktop/TP_AS/supermarket-management/OIS/src/ActiveEntity/AECashier.java</file>
-            <file>file:/home/rafael/Desktop/TP_AS/supermarket-management/OIS/src/Common/STCashier.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
