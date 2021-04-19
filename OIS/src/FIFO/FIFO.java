@@ -28,6 +28,8 @@ public class FIFO implements IFIFO {
     private final int customerId[];
     // array para Condition de bloqueio (uma por customer)
     private final Condition cStay[];
+    // array para Condition de entrar no fifo por ordem (uma por customer)
+    private final Condition cEnter[];
     // Conditio  de bloqueio de fifo cheio
     private final Condition cFull;
     // Condition de bloqueio de fifo vazio
@@ -45,18 +47,24 @@ public class FIFO implements IFIFO {
     private int idxOut;
     // número de customers no fifo
     private int count = 0;
+    // último id a entrar no fifo
+    private int lastIdIn = -1;
     // flag que indica se simulação está suspensa
     private boolean suspend;
     // flag que indica se está em curso a operação de remover todos elementos do fifo
     private boolean removeAll;
+    // flag que indica se é necessário os IDs serem sequenciais
+    private boolean order;
     
-    public FIFO( int maxCustomers ) {
+    public FIFO( int maxCustomers, boolean order) {
         this.maxCustomers = maxCustomers;
         customerId = new int[ maxCustomers ];
         cStay = new Condition[ maxCustomers ];
+        cEnter = new Condition[ maxCustomers ];
         leave = new boolean[ maxCustomers ];
         for ( int i = 0; i < maxCustomers; i++ ) {
             cStay[ i ] = rl.newCondition();
+            cEnter[ i ] = rl.newCondition();
             leave[ i ] = false;
         }
         cFull = rl.newCondition();
@@ -66,7 +74,14 @@ public class FIFO implements IFIFO {
         idxOut = 0; 
         suspend = false;
         removeAll = false;
+        this.order = order;
+        this.lastIdIn = -1;
     }
+    
+    public FIFO( int maxCustomers ) {
+        this(maxCustomers, false);
+    }
+    
     // Entrada no fifo. O NOTA: o thead Customer pode ficar bloqueado à espera de 
     // autorização para sair do fifo
     @Override
@@ -81,11 +96,17 @@ public class FIFO implements IFIFO {
             if(removeAll)
                 return;
             
+            // se for necessário manter a ordem de entrada, aguarda a sua vez
+            if(order){
+                while((lastIdIn + 1) != customerId)
+                    cEnter[customerId].await();
+            }
             // usar variável local e incrementar apontador de escrita
             int idx = idxIn;
             idxIn = (++idxIn) % maxCustomers;
             // inserir customer no fifo
             this.customerId[ idx ] = customerId;
+            this.lastIdIn = customerId;
             
             // o fifo poderá estar vazio, pelo q neste caso a Customer poderá
             // estar à espera q um Customer chegue. Necessério avisar Manager
@@ -95,6 +116,9 @@ public class FIFO implements IFIFO {
             
             // incrementar número customers no fifo
             count++;
+            // se for necessário manter a ordem, acorda Customer com o próximo ID (se estiver à espera)
+            if(order)
+                cEnter[lastIdIn + 1].signal();
             // ciclo à espera de autorização para sair do fifo
             while ( !leave[ idx ] || suspend)
                 // qd se faz await, permite-se q outros thread tenham acesso
@@ -102,7 +126,7 @@ public class FIFO implements IFIFO {
                 cStay[ idx ].await();
 
             // Customer selecionado está a sair do fifo
-            
+
             // atualizar variável de bloqueio
             leave[ idx ] = false;
             // avisar Manager que Customer vai sair. Manager espera na
@@ -193,6 +217,7 @@ public class FIFO implements IFIFO {
         }
     }
 
+    @Override
     public void resetFIFO() {
         try {
             rl.lock();
@@ -200,6 +225,7 @@ public class FIFO implements IFIFO {
                 leave[ i ] = false;
             idxIn = 0;
             idxOut = 0; 
+            lastIdIn = -1;
             suspend = false;
             removeAll = false;
         } catch ( Exception ex ) {}
@@ -208,6 +234,7 @@ public class FIFO implements IFIFO {
         }
     }
 
+    @Override
     public boolean isEmpty() {
         try {
             rl.lock();
@@ -219,5 +246,4 @@ public class FIFO implements IFIFO {
         }
         return true;
     }
-    
 }

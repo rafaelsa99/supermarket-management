@@ -65,9 +65,9 @@ public class SACorridorHall implements ICorridorHall_Control,
         try{
             rl.lock();
             emptySpacesCorridor += 1; // Updates the available space in the corridor
-            if(emptySpaceCorridor || fifo.isEmpty()) // If there was already space in the corridor, doesn't take anyone out of the FIFO
-                return;
             emptySpaceCorridor = true; // Updates the flag
+            if(emptySpacesCorridor > 1 || fifo.isEmpty()) // If there was already space in the corridor, doesn't take anyone out of the FIFO
+                return;
         } catch(Exception ex){}
         finally{
             rl.unlock();

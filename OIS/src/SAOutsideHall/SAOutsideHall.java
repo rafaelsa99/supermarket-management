@@ -23,7 +23,7 @@ public class SAOutsideHall implements IOutsideHall_Manager,
     private boolean end;
     
     public SAOutsideHall( int maxCustomers ) {
-        this.fifo = new FIFO(maxCustomers);  
+        this.fifo = new FIFO(maxCustomers, true);  
         rl = new ReentrantLock(true);
         stop = false;
         end = false;

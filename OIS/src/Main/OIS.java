@@ -41,6 +41,7 @@ public class OIS extends javax.swing.JFrame {
      */
     public OIS() {
         initComponents();
+        this.setVisible(true);
         initOIS();
     }
 
@@ -66,7 +67,7 @@ public class OIS extends javax.swing.JFrame {
         final SACorridor[] saCorridor = new SACorridor[N_CORRIDOR];
         for (int i = 0; i < N_CORRIDOR; i++) {
             saCorridorHall[i] = new SACorridorHall(SIZE_CORRIDOR_HALL, corridorNumbers[i], SIZE_CORRIDOR);
-            saCorridor[i] = new SACorridor(SIZE_CORRIDOR, SIZE_PAYMENT_HALL, CORRIDOR_STEPS, TIMEOUT_MOVEMENT, MAX_CUSTOMERS, corridorNumbers[i]);
+            saCorridor[i] = new SACorridor(SIZE_CORRIDOR, SIZE_PAYMENT_HALL, CORRIDOR_STEPS, TIMEOUT_MOVEMENT, N_CORRIDOR, corridorNumbers[i]);
         }
         final SAPaymentHall saPaymentHall = new SAPaymentHall(SIZE_PAYMENT_HALL);
         final SAPaymentBox sAPaymentBox = new SAPaymentBox(TIMEOUT_PAYMENT);
@@ -159,7 +160,7 @@ public class OIS extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new OIS().setVisible(true);
+                new OIS();
             }
         });
     }
