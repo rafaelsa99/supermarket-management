@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
- * @author omp 
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class SAOutsideHall implements IOutsideHall_Manager,
                                       IOutsideHall_Customer,

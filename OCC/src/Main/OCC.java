@@ -5,55 +5,46 @@
  */
 package Main;
 
-import ActiveEntity.AECustomer;
 import Idle.IIdle_Customer;
 import Idle.SAIdle;
-import OutsideHall.IOutsideHall_Customer;
-import OutsideHall.SAOutsideHall;
+import Common.STCustomer;
+import Common.STManager;
+import Common.STCashier;
+import java.util.List;
+import Configurations.Configurations;
+
 /**
  *
- * @author omp
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
-public class OIS extends javax.swing.JFrame {
+public class OCC extends javax.swing.JFrame {
+
+    String simulationState;
+    List<STCustomer> costumersState;
+    STManager managerState;
+    STCashier cashierState;
+    static Configurations confs = new Configurations();
 
     /**
-     * Creates new form OIS
+     * Creates new form OCC
      */
-    public OIS() {
+    public OCC() {
         initComponents();
-        initOIS();
+        initOCC();
     }
-    private void initOIS() {
-        final int MAX_CUSTOMERS = 99;
-        final int N_CORRIDOR_HALL = 3;
-        final int N_CORRIDOR = 3;
-        final int SIZE_ENTRANCE_HALL = 6;
-        final int SIZE_CORRIDOR_HALL = 3;
-        // ....
-        
-        final SAIdle idle = new SAIdle();
-        final SAOutsideHall outsideHall =  new SAOutsideHall( MAX_CUSTOMERS );
-        // outras SA ...
-        
-        final AECustomer[] aeCustomer = new AECustomer[ MAX_CUSTOMERS ];
-        
-        for ( int i = 0; i < MAX_CUSTOMERS; i++ ) {
-            aeCustomer[ i ] = new AECustomer( MAX_CUSTOMERS,
-                                              (IIdle_Customer) idle,
-                                              (IOutsideHall_Customer) outsideHall);
-            aeCustomer[ i ].start();
-        }
-        
-        
-        
-        // ...
-        
-        try {
-            for ( int i = 0; i < MAX_CUSTOMERS; i++ )
-                aeCustomer[ i ].join();
-        } catch ( Exception ex ) {}    
-            
+
+    private void initOCC() {
+        this.simulationState = "END";
+
+        // Socket Server that update states
+
+        // Switch that defines simulation state (Depends on how the input of the
+        // interface works)
+
+        // Update configurations based on how the interface works
+
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -63,21 +54,125 @@ public class OIS extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jnumberOfCostumers = new javax.swing.JSpinner();
+        jLabelNCostumers = new javax.swing.JLabel();
+        jLabelCMTimeOut = new javax.swing.JLabel();
+        jcostumerMovementTimeOut = new javax.swing.JComboBox<>();
+        jLabelSupervisoMode = new javax.swing.JLabel();
+        jSupervisorMode = new javax.swing.JComboBox<>();
+        jSupervisorTimeOut = new javax.swing.JComboBox<>();
+        jLabelPaymentTime = new javax.swing.JLabel();
+        jPaymentTimeOut = new javax.swing.JComboBox<>();
+        jButtonResume = new javax.swing.JButton();
+        jButtonStart = new javax.swing.JButton();
+        jButtonSuspend = new javax.swing.JButton();
+        jButtonStop = new javax.swing.JButton();
+        jButtonEnd = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        jnumberOfCostumers.setModel(new javax.swing.SpinnerNumberModel(10, 0, 99, 1));
+        jnumberOfCostumers.setToolTipText("");
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+        jLabelNCostumers.setText("Number Of Costumers");
+
+        jLabelCMTimeOut.setText("Costumer Movement TimeOut");
+        jLabelCMTimeOut.setToolTipText("");
+
+        jcostumerMovementTimeOut.setModel(new javax.swing.DefaultComboBoxModel<>(Configurations.getMovementTimeOutPossibilities()));
+        jcostumerMovementTimeOut.setSelectedIndex(1);
+
+        jLabelSupervisoMode.setText("Supervisor Mode");
+
+        jSupervisorMode.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Auto", "Manual" }));
+
+        jSupervisorTimeOut.setModel(new javax.swing.DefaultComboBoxModel<>(Configurations.getOperatingTimeOutPossibilities()));
+            jcostumerMovementTimeOut.setSelectedIndex(1);
+
+            jLabelPaymentTime.setText("Costumer Time Payment");
+
+            jPaymentTimeOut.setModel(new javax.swing.DefaultComboBoxModel<>(Configurations.getMovementTimeOutPossibilities()));
+            jcostumerMovementTimeOut.setSelectedIndex(1);
+
+            jButtonResume.setText("Resume");
+
+            jButtonStart.setText("Start");
+
+            jButtonSuspend.setText("Suspend");
+
+            jButtonStop.setText("Stop");
+
+            jButtonEnd.setText("End");
+
+            javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+            getContentPane().setLayout(layout);
+            layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabelCMTimeOut)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jcostumerMovementTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabelNCostumers)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jnumberOfCostumers, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabelSupervisoMode)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jSupervisorMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jSupervisorTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabelPaymentTime)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jPaymentTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jButtonStart, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButtonResume, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButtonSuspend, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButtonStop, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButtonEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            );
+            layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jnumberOfCostumers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabelNCostumers))
+                    .addGap(18, 18, 18)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabelCMTimeOut)
+                        .addComponent(jcostumerMovementTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(18, 18, 18)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabelSupervisoMode)
+                        .addComponent(jSupervisorMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jSupervisorTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(18, 18, 18)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabelPaymentTime)
+                        .addComponent(jPaymentTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(18, 18, 18)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButtonResume, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonStart, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonSuspend, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonStop, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap(195, Short.MAX_VALUE))
+            );
+
+            pack();
+        }// </editor-fold>//GEN-END:initComponents
 
     /**
      * @param args the command line arguments
@@ -96,24 +191,38 @@ public class OIS extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(OIS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(OIS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(OIS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(OIS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OCC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new OIS().setVisible(true);
+             public void run() {
+                new OCC().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonEnd;
+    private javax.swing.JButton jButtonResume;
+    private javax.swing.JButton jButtonStart;
+    private javax.swing.JButton jButtonStop;
+    private javax.swing.JButton jButtonSuspend;
+    private javax.swing.JLabel jLabelCMTimeOut;
+    private javax.swing.JLabel jLabelNCostumers;
+    private javax.swing.JLabel jLabelPaymentTime;
+    private javax.swing.JLabel jLabelSupervisoMode;
+    private javax.swing.JComboBox<Integer> jPaymentTimeOut;
+    private javax.swing.JComboBox<String> jSupervisorMode;
+    private javax.swing.JComboBox<Integer> jSupervisorTimeOut;
+    private javax.swing.JComboBox<Integer> jcostumerMovementTimeOut;
+    private javax.swing.JSpinner jnumberOfCostumers;
     // End of variables declaration//GEN-END:variables
 }
