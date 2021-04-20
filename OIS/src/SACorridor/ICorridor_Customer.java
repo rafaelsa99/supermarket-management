@@ -11,7 +11,5 @@ public interface ICorridor_Customer {
 
     public STCustomer enter(int customerId);
 
-    public void freeSlot();
-
     public STCustomer move(int customerId);
 }

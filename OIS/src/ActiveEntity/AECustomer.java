@@ -3,6 +3,7 @@ package ActiveEntity;
 import Common.STCustomer;
 import SACashier.ICashier_Customer;
 import SACorridor.ICorridor_Customer;
+import SACorridor.SACorridor;
 import SACorridorHall.ICorridorHall_Customer;
 import SAOutsideHall.IOutsideHall_Customer;
 import SACustomer.ICustomer_Customer;
@@ -118,7 +119,7 @@ public class AECustomer extends Thread {
                 iCashier.paymentHall_customerIn();
                 stCustomer = iPaymentHall.enter(customerId);
                 iCashier.paymentHall_freeSlot();
-                iCorridor[corridorNumber].freeSlot();
+                SACorridor.freeSlot();
             }
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.STOP)
