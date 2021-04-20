@@ -58,4 +58,14 @@ public class Configurations implements IConfigurations {
         return operatingTimeOutPossibilities;
     }
 
+    //Ex: NC:10|CT:100|PT:0|OM:true|OT:0
+    public String getConfigurations(){
+        return new String("NC:" + this.totalNumberOfCostumers + "|CT:" + this.movementTimeOut + "|PT:" + this.timeToPay + "|OM:" + Boolean.toString(this.operatingMode) + "|OT:" + this.operatingTimeOut);
+    }
+
+    public int getTotalNumberOfCostumers() {
+        return totalNumberOfCostumers;
+    }
+    
+    
 }

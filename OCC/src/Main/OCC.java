@@ -12,6 +12,8 @@ import Common.STManager;
 import Common.STCashier;
 import java.util.List;
 import Configurations.Configurations;
+import javax.swing.table.DefaultTableModel;
+import Communication.CClient;
 
 /**
  *
@@ -21,9 +23,12 @@ public class OCC extends javax.swing.JFrame {
 
     String simulationState;
     STCustomer[] costumersState;
+    STCustomer costumerState; 
     STManager managerState;
     STCashier cashierState;
+    DefaultTableModel model;
     static Configurations confs = new Configurations();
+    CClient cclient;
 
     /**
      * Creates new form OCC
@@ -35,14 +40,7 @@ public class OCC extends javax.swing.JFrame {
 
     private void initOCC() {
         this.simulationState = "END";
-
-        // Socket Server that update states
-
-        // Switch that defines simulation state (Depends on how the input of the
-        // interface works)
-
-        // Update configurations based on how the interface works
-
+        this.cclient = new CClient("localhost", 6745);
     }
 
     /**
@@ -118,6 +116,11 @@ public class OCC extends javax.swing.JFrame {
         
         jManualSupervisor.setText("Next Costumer");
         
+        jManualSupervisor.setEnabled(false);
+        jButtonResume.setEnabled(false);
+        jButtonSuspend.setEnabled(false);
+        jButtonStop.setEnabled(false);
+        
         jButtonResume.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonResumeActionPerformed(evt);
@@ -164,21 +167,21 @@ public class OCC extends javax.swing.JFrame {
 
 
         jTableCostumers.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][] { { null, null } },
+                new Object[][] { },
                 new String[] { "Identification", "State" }));
         jScrollPaneCostumers.setViewportView(jTableCostumers);
 
         jTabbedStatus.addTab("Costumers", jScrollPaneCostumers);
 
         jTableManager.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][] { { null, null } },
+                new Object[][] { },
                 new String[] { "Identification", "State" }));
         jScrollPane2.setViewportView(jTableManager);
 
         jTabbedStatus.addTab("Manager", jScrollPane2);
 
         jTableCashier.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][] { { null, null } },
+                new Object[][] { },
                 new String[] { "Identification", "State" }));
         jScrollPane3.setViewportView(jTableCashier);
 
@@ -278,11 +281,18 @@ public class OCC extends javax.swing.JFrame {
     private void jManualSupervisorActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jManualSupervisorActionPerformed
         // TODO add your handling code here:
         System.out.println("Next");
+        this.cclient.sendMessage("NX");
     }// GEN-LAST:event_jManualSupervisorActionPerformed
 
     private void jButtonStartActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonStartActionPerformed
         // TODO add your handling code here:
+        this.simulationState = "START";
         System.out.println("Start");
+        // Socket Server that update 
+        
+        jButtonStart.setEnabled(false);
+        jButtonSuspend.setEnabled(true);
+        jButtonStop.setEnabled(true);
         
         confs.setTotalNumberOfCostumers(Integer.parseInt(jnumberOfCostumers.getValue().toString()));
         confs.setMovementTimeOut(Integer.parseInt(jcostumerMovementTimeOut.getSelectedItem().toString()));
@@ -295,36 +305,109 @@ public class OCC extends javax.swing.JFrame {
             confs.setOperatingMode(true);
         }
         
+        System.out.println(confs.getConfigurations());       
+        for(int i = 0; i <= confs.getTotalNumberOfCostumers(); i++){
+            initializeState("Costumer", i, costumerState.IDLE );
+        }
+        this.cclient.openServer();
+        
+        this.cclient.sendMessage(confs.getConfigurations());
+        
     }// GEN-LAST:event_jButtonStartActionPerformed
 
     private void jButtonResumeActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonResumeActionPerformed
         // TODO add your handling code here:
+        this.simulationState = "RESUME";
         System.out.println("Resume");
+        jButtonResume.setEnabled(false);
+        jButtonSuspend.setEnabled(true);
     }// GEN-LAST:event_jButtonResumeActionPerformed
     
     
     private void jButtonSuspendActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSuspendActionPerformed
         // TODO add your handling code here:
+        this.simulationState = "SUSPEND";
         System.out.println("Suspend");
+        jButtonResume.setEnabled(true);
+        jButtonSuspend.setEnabled(false);
     }// GEN-LAST:event_jButtonSuspendActionPerformed
     
     
     private void jButtonStopActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonStopActionPerformed
         // TODO add your handling code here:
+        this.simulationState = "STOP";
         System.out.println("Stop");
+        jButtonStop.setEnabled(false);
+        jButtonResume.setEnabled(false);
+        jButtonSuspend.setEnabled(false);
+        jButtonStart.setEnabled(true);
+        
+        cleanTables();
+        this.cclient.closeServer();
+        
+        //updateState("Costumer", 0, managerState.CORRIDOR_HALL_3 );
     }// GEN-LAST:event_jButtonStopActionPerformed
     
     private void jButtonEndActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonEndActionPerformed
         // TODO add your handling code here:
+        this.simulationState = "END";
         System.out.println("End");
+        System.exit(0);
     }// GEN-LAST:event_jButtonEndActionPerformed
 
+    
+   public void updateState(String tab, int id, Object state){
+        switch(tab){
+            case "Costumer":
+                jTableCostumers.setValueAt(state, id, 1);
+                break;
+            case "Manager":
+                jTableManager.setValueAt(state, id, 1);
+                break;
+            case "Cashier":
+                jTableCashier.setValueAt(state, id, 1);
+                break;
+            default:
+                break;
+        }
+   }
+   
+      public void initializeState(String tab, int id, Object state){
+        switch(tab){
+            case "Costumer":
+                model = (DefaultTableModel) jTableCostumers.getModel();
+                model.addRow(new Object[]{id,state});
+                break;
+            case "Manager":
+                model = (DefaultTableModel) jTableManager.getModel();
+                model.addRow(new Object[]{id,state});
+                break;
+            case "Cashier":
+                model = (DefaultTableModel) jTableCashier.getModel();
+                model.addRow(new Object[]{id,state});
+                break;
+            default:
+                break;
+        }
+   }
+    
+   public void cleanTables(){
+        model = (DefaultTableModel) jTableCostumers.getModel();
+        model.setRowCount(0);
+        model = (DefaultTableModel) jTableManager.getModel();
+        model.setRowCount(0);
+        model = (DefaultTableModel) jTableCashier.getModel();
+        model.setRowCount(0);
+   }
+   
     
     private void jSupervisorModeActionPerformed(java.awt.event.ActionEvent evt){
         if(jSupervisorMode.getSelectedItem().toString().equals("Manual")){
             jSupervisorTimeOut.setEnabled(false);
+            jManualSupervisor.setEnabled(true);
         }else{
             jSupervisorTimeOut.setEnabled(true);
+            jManualSupervisor.setEnabled(false);
         }
     }
     
