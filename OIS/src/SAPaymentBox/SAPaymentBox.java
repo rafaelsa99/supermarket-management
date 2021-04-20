@@ -14,12 +14,12 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
                                      IPaymentBox_Control,
                                      IPaymentBox_Customer {
 
-    ReentrantLock rl;
-    Condition payment;
-    Condition suspend;
-    boolean isPayed;
-    boolean isSuspended;
-    int timeoutPayment;
+    private final ReentrantLock rl;
+    private final Condition payment;
+    private final Condition suspend;
+    private boolean isPayed;
+    private boolean isSuspended;
+    private final int timeoutPayment;
     private boolean stop;
     private boolean end;
 
@@ -45,7 +45,7 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
                 return STCashier.STOP;
             if(end)
                 return STCashier.END;
-        } catch (Exception ex){}
+        } catch (InterruptedException ex){}
         finally{
             rl.unlock();
         }
@@ -67,7 +67,7 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
                 return STCustomer.END;
             isPayed = true;
             payment.signal();
-        } catch (Exception ex){}
+        } catch (InterruptedException ex){}
         finally{
             rl.unlock();
         }
@@ -139,5 +139,4 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             rl.unlock();
         }
     }
-
 }

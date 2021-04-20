@@ -3,7 +3,6 @@ package SAOutsideHall;
 
 import Common.STCustomer;
 import FIFO.FIFO;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -14,16 +13,13 @@ public class SAOutsideHall implements IOutsideHall_Manager,
                                       IOutsideHall_Customer,
                                       IOutsideHall_Control {
    
-    ReentrantLock rl;
-    Condition authorization;
+    private final ReentrantLock rl;
     private final FIFO fifo;
-    boolean isAuthorized;
-    boolean isSuspended;
     private boolean stop;
     private boolean end;
     
     public SAOutsideHall( int maxCustomers ) {
-        this.fifo = new FIFO(maxCustomers);  
+        this.fifo = new FIFO(maxCustomers, true);  
         rl = new ReentrantLock(true);
         stop = false;
         end = false;

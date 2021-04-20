@@ -60,7 +60,7 @@ public class AECustomer extends Thread {
 
     @Override
     public void run() {
-        STCustomer stCustomer = STCustomer.IDLE;
+        STCustomer stCustomer;
         int corridorNumber;
         while (true) {
             // thread avança para Idle
@@ -118,6 +118,7 @@ public class AECustomer extends Thread {
                 iCashier.paymentHall_customerIn();
                 stCustomer = iPaymentHall.enter(customerId);
                 iCashier.paymentHall_freeSlot();
+                iCorridor[corridorNumber].freeSlot();
             }
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.STOP)

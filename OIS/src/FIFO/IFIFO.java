@@ -11,4 +11,6 @@ public interface IFIFO {
     public void suspend();
     public void resume();
     public void removeAll();
+    public void resetFIFO();
+    public boolean isEmpty();
 }

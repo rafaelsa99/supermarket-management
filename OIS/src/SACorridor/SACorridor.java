@@ -2,6 +2,7 @@
 package SACorridor;
 
 import Common.STCustomer;
+import FIFO.FIFO;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
@@ -14,21 +15,28 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SACorridor implements ICorridor_Control,
                                    ICorridor_Customer {
     
-    ReentrantLock rl;
-    Condition[] movement;
-    Condition full;
-    Condition suspend;
-    STCustomer corridorNumber; // Number of the corridor 
-    final int timeoutMovement;
-    boolean[] canMove;
-    int[] customerPosition;
-    Map<Integer, Integer> customerIdx;
-    int stepsSize;
-    boolean isSuspended;
-    boolean stop;
-    boolean end;
+    private final ReentrantLock rl;
+    private final Condition[] movement;
+    private final Condition full;
+    private final Condition suspend;
+    private final STCustomer corridorNumber; // Number of the corridor 
+    private final int timeoutMovement;
+    private final boolean[] canMove;
+    private final int[] customerPosition;
+    private final Map<Integer, Integer> customerIdx;
+    private final int stepsSize;
+    private boolean isSuspended;
+    private boolean stop;
+    private boolean end;
     
-    public SACorridor(int maxCostumers, int sizePaymentHall, int stepsSize, int timeoutMovement, int totalCustomers, STCustomer corridorNumber) {
+    private static ReentrantLock rls;
+    private static boolean emptySpacePaymentHall;
+    private static FIFO fifo;
+    private static int emptySpacesPaymentHall;
+    private static int sizePaymentHall;
+    
+    
+    public SACorridor(int maxCostumers, int sizePaymentHall, int stepsSize, int timeoutMovement, int nCorridors, STCustomer corridorNumber) {
         this.corridorNumber = corridorNumber;
         this.rl = new ReentrantLock(true);
         this.full = rl.newCondition();
@@ -47,6 +55,12 @@ public class SACorridor implements ICorridor_Control,
         this.isSuspended = false;
         this.stop = false;
         this.end = false;
+        SACorridor.sizePaymentHall = sizePaymentHall;
+        SACorridor.emptySpacesPaymentHall = sizePaymentHall;
+        SACorridor.emptySpacePaymentHall = true;
+        SACorridor.rls = new ReentrantLock(true);
+        SACorridor.fifo = new FIFO(nCorridors * maxCostumers);
+        
     }
 
     @Override
@@ -66,7 +80,7 @@ public class SACorridor implements ICorridor_Control,
                 canMove[customerIdx.get(customerId)] = true;
             //TODO: Verificar se posição 0 está livre (será mesmo necessário?)
             customerPosition[customerIdx.get(customerId)] = 0;
-        } catch(Exception ex){}
+        } catch(InterruptedException ex){}
         finally{
             rl.unlock();
         }
@@ -105,7 +119,7 @@ public class SACorridor implements ICorridor_Control,
             }
             customerPosition[cId] += 1; // Go to next position
             if(customerIdx.size() > 1){ // If there is more customers in the corridor, wakes up the next one
-                int nextCId = cId + 1;;
+                int nextCId = cId + 1;
                 if((cId + 1) == customerIdx.size())
                     nextCId = 0;
                 canMove[cId] = false;
@@ -115,12 +129,31 @@ public class SACorridor implements ICorridor_Control,
             if(customerPosition[cId] == (stepsSize - 1)){ // Check if reached the end of the corridor
                 canMove[cId] = false;
                 customerPosition[cId] = -1;
-                if(customerIdx.size() == customerPosition.length) // Check if the corridor is full
-                    full.signal();
                 customerIdx.remove(customerId);
+                rl.unlock();
+                SACorridor.rls.lock();
+                try {
+                    if(!SACorridor.emptySpacePaymentHall){ // If there is no space in the payment hall, wait in FIFO
+                        SACorridor.rls.unlock();
+                        SACorridor.fifo.in(customerId);
+                        SACorridor.rls.lock();
+                    }
+                    SACorridor.emptySpacesPaymentHall -= 1; // Updates the number of available spaces in the paymentHall
+                    if(SACorridor.emptySpacesPaymentHall == 0)
+                        SACorridor.emptySpacePaymentHall = false;
+                } finally {
+                    SACorridor.rls.unlock();
+                }
+                rl.lock();
+                if(stop)
+                    return STCustomer.STOP;
+                if(end)
+                    return STCustomer.END;
+                if((customerIdx.size() + 1) == customerPosition.length) // Check if the corridor was full
+                    full.signal();
                 return STCustomer.PAYMENT_HALL;
             }
-        } catch(Exception ex){}
+        } catch(InterruptedException ex){}
         finally{
             rl.unlock();
         }
@@ -129,11 +162,22 @@ public class SACorridor implements ICorridor_Control,
     
     @Override
     public void freeSlot() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            SACorridor.rls.lock();
+            SACorridor.emptySpacesPaymentHall += 1;
+            SACorridor.emptySpacePaymentHall = true;
+            if(SACorridor.emptySpacesPaymentHall > 1 || SACorridor.fifo.isEmpty())
+                return;
+        } catch(Exception ex){}
+        finally{
+            SACorridor.rls.unlock();
+        }
+        SACorridor.fifo.out();
     }
     
     @Override
     public void suspend() {
+        SACorridor.fifo.suspend();
         try{
             rl.lock();
             isSuspended = true;
@@ -150,12 +194,13 @@ public class SACorridor implements ICorridor_Control,
             isSuspended = false;
             full.signal();
             suspend.signal();
-            for (int i = 0; i < movement.length; i++)
-                movement[i].signal();
+            for (Condition cMovement : movement)
+                cMovement.signal();
         } catch ( Exception ex ) {}
         finally {
             rl.unlock();
         }
+        SACorridor.fifo.resume();
     }
 
     @Override
@@ -174,6 +219,7 @@ public class SACorridor implements ICorridor_Control,
         finally {
             rl.unlock();
         }
+        SACorridor.fifo.removeAll();
     }
 
     @Override
@@ -192,6 +238,7 @@ public class SACorridor implements ICorridor_Control,
         finally {
             rl.unlock();
         }
+        SACorridor.fifo.removeAll();
     }
  
     @Override
@@ -209,5 +256,14 @@ public class SACorridor implements ICorridor_Control,
         finally{
             rl.unlock();
         }
+        try{
+            SACorridor.rls.lock();
+            SACorridor.emptySpacesPaymentHall = SACorridor.sizePaymentHall;
+            SACorridor.emptySpacePaymentHall = true;
+        } catch(Exception ex){}
+        finally{
+            SACorridor.rls.unlock();
+        }
+        SACorridor.fifo.resetFIFO();
     }
 }

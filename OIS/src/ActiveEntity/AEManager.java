@@ -29,7 +29,7 @@ public class AEManager extends Thread{
 
     @Override
     public void run() {
-        STManager stManager = STManager.IDLE;
+        STManager stManager;
         
         while(true){
             // thread avança para Idle

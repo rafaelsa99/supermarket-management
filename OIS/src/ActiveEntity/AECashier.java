@@ -28,7 +28,7 @@ public class AECashier extends Thread{
 
     @Override
     public void run() {
-        STCashier stCashier = STCashier.IDLE;
+        STCashier stCashier;
         while(true){
             stCashier = iCashier.idle();
             System.out.println("CASHIER: " + stCashier);

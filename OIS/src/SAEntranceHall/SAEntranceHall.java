@@ -4,7 +4,6 @@ package SAEntranceHall;
 import Common.STCustomer;
 import Common.STManager;
 import FIFO.FIFO;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -16,10 +15,7 @@ public class SAEntranceHall implements IEntranceHall_Customer,
                                        IEntranceHall_Control {
     
     private final ReentrantLock rl;
-    private Condition authorization;
     private final FIFO fifo;
-    private boolean isAuthorized;
-    private boolean isSuspended;
     private boolean stop;
     private boolean end;
     private STCustomer corridorHallAssigned;

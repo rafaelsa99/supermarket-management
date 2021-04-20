@@ -4,7 +4,6 @@ package SAPaymentHall;
 import Common.STCashier;
 import Common.STCustomer;
 import FIFO.FIFO;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -15,13 +14,10 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
                                       IPaymentHall_Control, 
                                       IPaymentHall_Customer {
     
-    ReentrantLock rl;
-    Condition authorization;
-    FIFO fifo;
-    boolean isAuthorized;
-    boolean isSuspended;
-    boolean stop;
-    boolean end;
+    private final ReentrantLock rl;
+    private final FIFO fifo;
+    private boolean stop;
+    private boolean end;
 
     public SAPaymentHall(int maxCustomers) {
         this.fifo = new FIFO(maxCustomers);
@@ -107,5 +103,4 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
             rl.unlock();
         }
     }
-    
 }
