@@ -35,8 +35,7 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
                 return STCustomer.STOP;
             if(end)
                 return STCustomer.END;
-        } catch (Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         return STCustomer.PAYMENT_BOX;
@@ -51,8 +50,7 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
                 return STCashier.STOP;
             if(end)
                 return STCashier.END;
-        } catch (Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         return STCashier.PAYMENT_BOX;
@@ -73,8 +71,7 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
         try{
             rl.lock();
             stop = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         fifo.removeAll();
@@ -85,8 +82,7 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
         try{
             rl.lock();
             end = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         fifo.removeAll();
@@ -98,8 +94,7 @@ public class SAPaymentHall implements IPaymentHall_Cashier,
             rl.lock();
             stop = false;
             fifo.resetFIFO();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }

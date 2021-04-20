@@ -80,8 +80,9 @@ public class SACorridor implements ICorridor_Control,
                 canMove[customerIdx.get(customerId)] = true;
             //TODO: Verificar se posição 0 está livre (será mesmo necessário?)
             customerPosition[customerIdx.get(customerId)] = 0;
-        } catch(InterruptedException ex){}
-        finally{
+        } catch(InterruptedException ex){
+            System.err.println(ex.toString());
+        } finally{
             rl.unlock();
         }
         return corridorNumber;
@@ -105,7 +106,9 @@ public class SACorridor implements ICorridor_Control,
             }
             try {
                 Thread.sleep(timeoutMovement);
-            } catch (InterruptedException ex) {}
+            } catch (InterruptedException ex) {
+                System.err.println(ex.toString());
+            }
             while(isSuspended)
                 suspend.await();
             if(stop || end){
@@ -153,8 +156,9 @@ public class SACorridor implements ICorridor_Control,
                     full.signal();
                 return STCustomer.PAYMENT_HALL;
             }
-        } catch(InterruptedException ex){}
-        finally{
+        } catch(InterruptedException ex){
+            System.err.println(ex.toString());
+        } finally{
             rl.unlock();
         }
         return corridorNumber;
@@ -168,8 +172,7 @@ public class SACorridor implements ICorridor_Control,
             SACorridor.emptySpacePaymentHall = true;
             if(SACorridor.emptySpacesPaymentHall > 1 || SACorridor.fifo.isEmpty())
                 return;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             SACorridor.rls.unlock();
         }
         SACorridor.fifo.out();
@@ -181,8 +184,7 @@ public class SACorridor implements ICorridor_Control,
         try{
             rl.lock();
             isSuspended = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -196,8 +198,7 @@ public class SACorridor implements ICorridor_Control,
             suspend.signal();
             for (Condition cMovement : movement)
                 cMovement.signal();
-        } catch ( Exception ex ) {}
-        finally {
+        } finally {
             rl.unlock();
         }
         SACorridor.fifo.resume();
@@ -215,8 +216,7 @@ public class SACorridor implements ICorridor_Control,
                 movement[i].signal();
             }
             full.signal();
-        } catch ( Exception ex ) {}
-        finally {
+        } finally {
             rl.unlock();
         }
         SACorridor.fifo.removeAll();
@@ -234,8 +234,7 @@ public class SACorridor implements ICorridor_Control,
                 movement[i].signal();
             }
             full.signal();
-        } catch ( Exception ex ) {}
-        finally {
+        } finally {
             rl.unlock();
         }
         SACorridor.fifo.removeAll();
@@ -252,16 +251,14 @@ public class SACorridor implements ICorridor_Control,
             this.isSuspended = false;
             this.stop = false;
             customerIdx.clear();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         try{
             SACorridor.rls.lock();
             SACorridor.emptySpacesPaymentHall = SACorridor.sizePaymentHall;
             SACorridor.emptySpacePaymentHall = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             SACorridor.rls.unlock();
         }
         SACorridor.fifo.resetFIFO();

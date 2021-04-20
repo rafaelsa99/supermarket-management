@@ -51,8 +51,9 @@ public class SACashier implements ICashier_Cashier,
                 numCustomersPaymentHall -= 1;
                 stCashier = STCashier.PAYMENT_HALL;
             }
-        } catch(InterruptedException ex){}
-        finally{
+        } catch(InterruptedException ex){
+            System.err.println(ex.toString());
+        } finally{
             rl.unlock();
         }
         return stCashier;
@@ -64,8 +65,7 @@ public class SACashier implements ICashier_Cashier,
             rl.lock();
             numCustomersPaymentHall += 1;
             idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -77,8 +77,7 @@ public class SACashier implements ICashier_Cashier,
             paymentHallHasEmptySpace = true;
             emptySpacesPaymentHall += 1; // Update number of available spaces
             idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -93,8 +92,7 @@ public class SACashier implements ICashier_Cashier,
             this.isSuspended = false;
             this.stop = false;
             this.idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -104,8 +102,7 @@ public class SACashier implements ICashier_Cashier,
         try{
             rl.lock();
             isSuspended = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -116,8 +113,7 @@ public class SACashier implements ICashier_Cashier,
             rl.lock();
             isSuspended = false;
             idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -131,8 +127,7 @@ public class SACashier implements ICashier_Cashier,
             paymentHallHasEmptySpace = true;
             numCustomersPaymentHall = 1;
             idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -146,8 +141,7 @@ public class SACashier implements ICashier_Cashier,
             paymentHallHasEmptySpace = true;
             numCustomersPaymentHall = 1;
             idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }

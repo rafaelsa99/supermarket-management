@@ -49,8 +49,7 @@ public class SACorridorHall implements ICorridorHall_Control,
                 return STCustomer.STOP;
             if(end)
                 return STCustomer.END;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         return corridorNumber;
@@ -64,8 +63,7 @@ public class SACorridorHall implements ICorridorHall_Control,
             emptySpaceCorridor = true; // Updates the flag
             if(emptySpacesCorridor > 1 || fifo.isEmpty()) // If there was already space in the corridor, doesn't take anyone out of the FIFO
                 return;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         this.fifo.out(); // Call the next customer to enter in the corridor
@@ -86,8 +84,7 @@ public class SACorridorHall implements ICorridorHall_Control,
         try{
             rl.lock();
             stop = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         fifo.removeAll();
@@ -98,8 +95,7 @@ public class SACorridorHall implements ICorridorHall_Control,
         try{
             rl.lock();
             end = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         fifo.removeAll();
@@ -113,8 +109,7 @@ public class SACorridorHall implements ICorridorHall_Control,
             this.emptySpacesCorridor = sizeCorridor;
             this.stop = false;
             fifo.resetFIFO();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }

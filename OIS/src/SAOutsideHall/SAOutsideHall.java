@@ -34,8 +34,7 @@ public class SAOutsideHall implements IOutsideHall_Manager,
                 return STCustomer.STOP;
             if(end)
                 return STCustomer.END;
-        } catch (Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         return STCustomer.ENTRANCE_HALL;
@@ -61,8 +60,7 @@ public class SAOutsideHall implements IOutsideHall_Manager,
         try{
             rl.lock();
             stop = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         fifo.removeAll();
@@ -73,8 +71,7 @@ public class SAOutsideHall implements IOutsideHall_Manager,
         try{
             rl.lock();
             end = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         fifo.removeAll();
@@ -86,8 +83,7 @@ public class SAOutsideHall implements IOutsideHall_Manager,
             rl.lock();
             stop = false;
             fifo.resetFIFO();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
