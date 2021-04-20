@@ -53,7 +53,8 @@ public class OIS extends javax.swing.JFrame {
         final SACustomer saCustomer = new SACustomer(Configurations.MAX_CUSTOMERS);
         final SAManager saManager = new SAManager(Configurations.N_CORRIDOR, 
                                                   Configurations.SIZE_ENTRANCE_HALL, 
-                                                  Configurations.SIZE_CORRIDOR_HALL);
+                                                  Configurations.SIZE_CORRIDOR_HALL,
+                                                  Configurations.TIMEOUT_AUTHORIZATION);
         final SACashier saCashier = new SACashier(Configurations.SIZE_PAYMENT_HALL);
         final SAOutsideHall saOutsideHall = new SAOutsideHall(Configurations.MAX_CUSTOMERS);
         final SAEntranceHall saEntranceHall = new SAEntranceHall(Configurations.SIZE_ENTRANCE_HALL);
