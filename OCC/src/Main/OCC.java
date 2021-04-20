@@ -155,6 +155,13 @@ public class OCC extends javax.swing.JFrame {
                 jManualSupervisorActionPerformed(evt);
             }
         });
+        
+        jSupervisorMode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSupervisorModeActionPerformed(evt);
+            }
+        });
+
 
         jTableCostumers.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][] { { null, null } },
@@ -276,6 +283,18 @@ public class OCC extends javax.swing.JFrame {
     private void jButtonStartActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonStartActionPerformed
         // TODO add your handling code here:
         System.out.println("Start");
+        
+        confs.setTotalNumberOfCostumers(Integer.parseInt(jnumberOfCostumers.getValue().toString()));
+        confs.setMovementTimeOut(Integer.parseInt(jcostumerMovementTimeOut.getSelectedItem().toString()));
+        confs.setTimeToPay(Integer.parseInt(jPaymentTimeOut.getSelectedItem().toString()));
+        confs.setOperatingTimeOut(Integer.parseInt(jSupervisorTimeOut.getSelectedItem().toString()));
+        
+        if(jSupervisorMode.getSelectedItem().toString().equals("Manual")){
+            confs.setOperatingMode(false);
+        }else{
+            confs.setOperatingMode(true);
+        }
+        
     }// GEN-LAST:event_jButtonStartActionPerformed
 
     private void jButtonResumeActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonResumeActionPerformed
@@ -300,6 +319,15 @@ public class OCC extends javax.swing.JFrame {
         System.out.println("End");
     }// GEN-LAST:event_jButtonEndActionPerformed
 
+    
+    private void jSupervisorModeActionPerformed(java.awt.event.ActionEvent evt){
+        if(jSupervisorMode.getSelectedItem().toString().equals("Manual")){
+            jSupervisorTimeOut.setEnabled(false);
+        }else{
+            jSupervisorTimeOut.setEnabled(true);
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
