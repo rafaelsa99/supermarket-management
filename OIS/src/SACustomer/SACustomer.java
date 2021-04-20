@@ -17,7 +17,7 @@ public class SACustomer implements ICustomer_Customer,
     private final Condition setEmpty;
     private final Condition customerLeaving;
     private final TreeSet<Integer> set;
-    private boolean[] leave;
+    private final boolean[] leave;
     private boolean end;
     
     public SACustomer(int maxCustomers) {
@@ -48,7 +48,7 @@ public class SACustomer implements ICustomer_Customer,
             leave[customerId] = false;
             customerLeaving.signal(); // Notify that it has left the set
             stCustomer = STCustomer.OUTSIDE_HALL;
-        } catch(Exception ex){}
+        } catch(InterruptedException ex){}
         finally{
             rl.unlock();
         }
@@ -67,7 +67,7 @@ public class SACustomer implements ICustomer_Customer,
                 while(leave[customerIdToLeave])
                     customerLeaving.await(); // Wait for customer to leave the set
             }
-        } catch(Exception ex){}
+        } catch(InterruptedException ex){}
         finally{
             rl.unlock();
         }
@@ -84,8 +84,6 @@ public class SACustomer implements ICustomer_Customer,
         } catch(Exception ex){}
         finally{
             rl.unlock();
-        }
-        
+        }    
     }
-   
 }

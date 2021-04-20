@@ -15,25 +15,25 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SACorridor implements ICorridor_Control,
                                    ICorridor_Customer {
     
-    ReentrantLock rl;
-    Condition[] movement;
-    Condition full;
-    Condition suspend;
-    STCustomer corridorNumber; // Number of the corridor 
-    final int timeoutMovement;
-    boolean[] canMove;
-    int[] customerPosition;
-    Map<Integer, Integer> customerIdx;
-    int stepsSize;
-    boolean isSuspended;
-    boolean stop;
-    boolean end;
+    private final ReentrantLock rl;
+    private final Condition[] movement;
+    private final Condition full;
+    private final Condition suspend;
+    private final STCustomer corridorNumber; // Number of the corridor 
+    private final int timeoutMovement;
+    private final boolean[] canMove;
+    private final int[] customerPosition;
+    private final Map<Integer, Integer> customerIdx;
+    private final int stepsSize;
+    private boolean isSuspended;
+    private boolean stop;
+    private boolean end;
     
-    static ReentrantLock rls;
-    static boolean emptySpacePaymentHall;
-    static FIFO fifo;
-    static int emptySpacesPaymentHall;
-    static int sizePaymentHall;
+    private static ReentrantLock rls;
+    private static boolean emptySpacePaymentHall;
+    private static FIFO fifo;
+    private static int emptySpacesPaymentHall;
+    private static int sizePaymentHall;
     
     
     public SACorridor(int maxCostumers, int sizePaymentHall, int stepsSize, int timeoutMovement, int nCorridors, STCustomer corridorNumber) {
@@ -80,7 +80,7 @@ public class SACorridor implements ICorridor_Control,
                 canMove[customerIdx.get(customerId)] = true;
             //TODO: Verificar se posição 0 está livre (será mesmo necessário?)
             customerPosition[customerIdx.get(customerId)] = 0;
-        } catch(Exception ex){}
+        } catch(InterruptedException ex){}
         finally{
             rl.unlock();
         }
@@ -119,7 +119,7 @@ public class SACorridor implements ICorridor_Control,
             }
             customerPosition[cId] += 1; // Go to next position
             if(customerIdx.size() > 1){ // If there is more customers in the corridor, wakes up the next one
-                int nextCId = cId + 1;;
+                int nextCId = cId + 1;
                 if((cId + 1) == customerIdx.size())
                     nextCId = 0;
                 canMove[cId] = false;
@@ -153,7 +153,7 @@ public class SACorridor implements ICorridor_Control,
                     full.signal();
                 return STCustomer.PAYMENT_HALL;
             }
-        } catch(Exception ex){}
+        } catch(InterruptedException ex){}
         finally{
             rl.unlock();
         }
@@ -194,8 +194,8 @@ public class SACorridor implements ICorridor_Control,
             isSuspended = false;
             full.signal();
             suspend.signal();
-            for (int i = 0; i < movement.length; i++)
-                movement[i].signal();
+            for (Condition cMovement : movement)
+                cMovement.signal();
         } catch ( Exception ex ) {}
         finally {
             rl.unlock();

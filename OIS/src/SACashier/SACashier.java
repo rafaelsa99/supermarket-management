@@ -13,15 +13,15 @@ public class SACashier implements ICashier_Cashier,
                                   ICashier_Customer,
                                   ICashier_Control {
     
-    ReentrantLock rl;
-    Condition idle;
-    int numCustomersPaymentHall;
-    int emptySpacesPaymentHall;
-    boolean paymentHallHasEmptySpace;
-    boolean isSuspended;
-    boolean stop;
-    boolean end;
-    int sizePaymentHall;
+    private final ReentrantLock rl;
+    private final Condition idle;
+    private int numCustomersPaymentHall;
+    private int emptySpacesPaymentHall;
+    private boolean paymentHallHasEmptySpace;
+    private boolean isSuspended;
+    private boolean stop;
+    private boolean end;
+    private final int sizePaymentHall;
 
     public SACashier(int sizePaymentHall) {
         this.rl = new ReentrantLock(true);
@@ -51,7 +51,7 @@ public class SACashier implements ICashier_Cashier,
                 numCustomersPaymentHall -= 1;
                 stCashier = STCashier.PAYMENT_HALL;
             }
-        } catch(Exception ex){}
+        } catch(InterruptedException ex){}
         finally{
             rl.unlock();
         }
@@ -151,5 +151,4 @@ public class SACashier implements ICashier_Cashier,
             rl.unlock();
         }
     }
-
 }

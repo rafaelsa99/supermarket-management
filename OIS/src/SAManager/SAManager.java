@@ -16,7 +16,7 @@ public class SAManager implements IManager_Control,
    
     private final ReentrantLock rl;
     private final Condition idle;
-    int emptySpacesEntranceHall; // Number of spaces available in the Entrance Hall
+    private int emptySpacesEntranceHall; // Number of spaces available in the Entrance Hall
     private final int[] emptySpacesCorridorHall; // Number of spaces available in the Corridor Halls
     private int numCustomersOutsideHall; //Number of customers left to accept in the Outside Hall
     private int numCustomersEntranceHall; // Number of customers left to accept in the Entrance Hall
@@ -26,8 +26,8 @@ public class SAManager implements IManager_Control,
     private boolean stop;
     private boolean end;
     private boolean isAuto;
-    private int sizeEntranceHall;
-    private int sizeCorridorHall;
+    private final int sizeEntranceHall;
+    private final int sizeCorridorHall;
 
     public SAManager(int nCorridors, int sizeEntranceHall, int sizeCorridorHall) {
         rl = new ReentrantLock(true);
@@ -189,12 +189,10 @@ public class SAManager implements IManager_Control,
                         break;
                     }
             }
-
-        } catch(Exception ex){}
+        } catch(InterruptedException ex){}
         finally{
             rl.unlock();
         }
         return stManager;
     }
-    
 }

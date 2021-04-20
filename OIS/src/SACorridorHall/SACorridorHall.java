@@ -3,7 +3,6 @@ package SACorridorHall;
 
 import Common.STCustomer;
 import FIFO.FIFO;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -13,22 +12,19 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SACorridorHall implements ICorridorHall_Control,
                                        ICorridorHall_Customer {
     
-    ReentrantLock rl;
-    Condition emptySpace;
-    FIFO fifo;
-    STCustomer corridorNumber; // Number of the corridor to which the corridor hall is associated
-    boolean emptySpaceCorridor; // Flag to indicate if there is space in the Corridor
-    boolean isSuspended;
-    int emptySpacesCorridor; // Number of spaces available in the Corridor
-    boolean stop;
-    boolean end;
-    int sizeCorridor;
+    private final ReentrantLock rl;
+    private final FIFO fifo;
+    private final STCustomer corridorNumber; // Number of the corridor to which the corridor hall is associated
+    private boolean emptySpaceCorridor; // Flag to indicate if there is space in the Corridor
+    private int emptySpacesCorridor; // Number of spaces available in the Corridor
+    private boolean stop;
+    private boolean end;
+    private final int sizeCorridor;
     
     public SACorridorHall(int maxCostumers, STCustomer corridorNumber, int sizeCorridor) {
         this.fifo = new FIFO(maxCostumers);
         this.corridorNumber = corridorNumber;
         this.rl = new ReentrantLock(true);
-        this.emptySpace = rl.newCondition();
         this.sizeCorridor = sizeCorridor;
         this.emptySpaceCorridor = true;
         this.emptySpacesCorridor = sizeCorridor;

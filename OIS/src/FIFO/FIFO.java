@@ -139,7 +139,7 @@ public class FIFO implements IFIFO {
             // decrementar número de customers no fifo
             count--;
 
-        } catch ( Exception ex ) {}
+        } catch ( InterruptedException ex ) {}
         finally {
             rl.unlock();
         }
@@ -168,7 +168,7 @@ public class FIFO implements IFIFO {
                 // qd se faz await, permite-se q outros thread tenham acesso
                 // à zona protegida pelo lock
                 cLeaving.await();  
-        } catch ( Exception ex ) {}
+        } catch ( InterruptedException ex ) {}
         finally {
             rl.unlock();
         }

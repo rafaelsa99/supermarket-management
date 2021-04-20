@@ -60,7 +60,7 @@ public class AECustomer extends Thread {
 
     @Override
     public void run() {
-        STCustomer stCustomer = STCustomer.IDLE;
+        STCustomer stCustomer;
         int corridorNumber;
         while (true) {
             // thread avança para Idle
