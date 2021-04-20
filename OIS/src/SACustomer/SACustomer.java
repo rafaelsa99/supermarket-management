@@ -19,6 +19,7 @@ public class SACustomer implements ICustomer_Customer,
     private final TreeSet<Integer> set;
     private final boolean[] leave;
     private boolean end;
+    private boolean simulationActive;
     
     public SACustomer(int maxCustomers) {
         rl = new ReentrantLock(true);
@@ -32,6 +33,7 @@ public class SACustomer implements ICustomer_Customer,
             leave[ i ] = false;
         }
         end = false;
+        simulationActive = false;
     }
     @Override
     public STCustomer idle( int customerId ) {
@@ -39,8 +41,13 @@ public class SACustomer implements ICustomer_Customer,
         try{
             rl.lock();
             set.add(customerId); // Add customer to set
-            if(set.size() == stay.length)
+            if(set.size() == stay.length){
                 setEmpty.signal();
+                if(simulationActive){
+                    System.out.println("SHOPPING SIMULATION ENDED"); // Enviar mensagem para o OCC
+                    simulationActive = false;
+                }
+            }
             while(!leave[customerId]) // Loop waiting for the authorization to start the simulation
                 stay[customerId].await();
             if(end)
@@ -48,8 +55,9 @@ public class SACustomer implements ICustomer_Customer,
             leave[customerId] = false;
             customerLeaving.signal(); // Notify that it has left the set
             stCustomer = STCustomer.OUTSIDE_HALL;
-        } catch(InterruptedException ex){}
-        finally{
+        } catch(InterruptedException ex){
+            System.err.println(ex.toString());
+        } finally{
             rl.unlock();
         }
         return stCustomer;
@@ -60,6 +68,7 @@ public class SACustomer implements ICustomer_Customer,
             rl.lock();
             while(set.size() != stay.length) // Check if all customers are in idle
                 setEmpty.await();
+            simulationActive = true;
             for (int i = 0; i < nCustomers; i++){
                 int customerIdToLeave = set.pollFirst(); // Remove the customer with lower ID
                 leave[customerIdToLeave] = true;
@@ -67,8 +76,9 @@ public class SACustomer implements ICustomer_Customer,
                 while(leave[customerIdToLeave])
                     customerLeaving.await(); // Wait for customer to leave the set
             }
-        } catch(InterruptedException ex){}
-        finally{
+        } catch(InterruptedException ex){
+            System.err.println(ex.toString());
+        } finally{
             rl.unlock();
         }
     }
@@ -81,8 +91,7 @@ public class SACustomer implements ICustomer_Customer,
                 leave[i] = true;
                 stay[i].signal();
             }
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }    
     }

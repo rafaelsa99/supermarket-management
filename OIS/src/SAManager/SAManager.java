@@ -62,8 +62,7 @@ public class SAManager implements IManager_Control,
             stop = false;
             numCustomersOutsideHall = nCustomers; // Updates the number of Customers in the Outside Hall
             idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -73,8 +72,7 @@ public class SAManager implements IManager_Control,
         try{
             rl.lock();
             isSuspended = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -85,8 +83,7 @@ public class SAManager implements IManager_Control,
             rl.lock();
             isSuspended = false;
             idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -100,8 +97,7 @@ public class SAManager implements IManager_Control,
             entranceHallHasEmptySpace = true;
             numCustomersOutsideHall = 1;
             idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -115,8 +111,7 @@ public class SAManager implements IManager_Control,
             entranceHallHasEmptySpace = true;
             numCustomersOutsideHall = 1;
             idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -128,8 +123,7 @@ public class SAManager implements IManager_Control,
             emptySpacesEntranceHall += 1; // Update number of available spaces
             entranceHallHasEmptySpace = true;
             idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -141,8 +135,7 @@ public class SAManager implements IManager_Control,
             corridorHallHasEmptySpace = true;
             emptySpacesCorridorHall[numCorridor] += 1; // Update number of available spaces
             idle.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -189,8 +182,9 @@ public class SAManager implements IManager_Control,
                         break;
                     }
             }
-        } catch(InterruptedException ex){}
-        finally{
+        } catch(InterruptedException ex){
+            System.err.println(ex.toString());
+        } finally{
             rl.unlock();
         }
         return stManager;

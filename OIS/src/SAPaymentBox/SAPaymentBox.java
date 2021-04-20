@@ -45,8 +45,9 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
                 return STCashier.STOP;
             if(end)
                 return STCashier.END;
-        } catch (InterruptedException ex){}
-        finally{
+        } catch (InterruptedException ex){
+            System.err.println(ex.toString());
+        } finally{
             rl.unlock();
         }
         return STCashier.IDLE;
@@ -56,7 +57,9 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
     public STCustomer enter(int costumerId) {
         try {
             Thread.sleep(timeoutPayment);
-        } catch (InterruptedException ex) {}
+        } catch (InterruptedException ex) {
+            System.err.println(ex.toString());
+        }
         try{
             rl.lock();
             while(isSuspended)
@@ -67,8 +70,9 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
                 return STCustomer.END;
             isPayed = true;
             payment.signal();
-        } catch (InterruptedException ex){}
-        finally{
+        } catch (InterruptedException ex){
+            System.err.println(ex.toString());
+        } finally{
             rl.unlock();
         }
         return STCustomer.IDLE;
@@ -79,8 +83,7 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
         try{
             rl.lock();
             isSuspended = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -92,8 +95,7 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             isSuspended = false;
             payment.signal();
             suspend.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -107,8 +109,7 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             isPayed = true;
             payment.signal();
             suspend.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -122,8 +123,7 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             isPayed = true;
             payment.signal();
             suspend.signal();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }
@@ -134,8 +134,7 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             rl.lock();
             isPayed = false;
             stop = false;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }

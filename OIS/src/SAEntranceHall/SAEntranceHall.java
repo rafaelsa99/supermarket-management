@@ -38,8 +38,7 @@ public class SAEntranceHall implements IEntranceHall_Customer,
             if(end)
                 return STCustomer.END;
             stCustomer = corridorHallAssigned;
-        } catch (Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         return stCustomer;
@@ -57,8 +56,7 @@ public class SAEntranceHall implements IEntranceHall_Customer,
                 case CORRIDOR_HALL_3: 
                     corridorHallAssigned = STCustomer.CORRIDOR_HALL_3; break;
             }
-        } catch (Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         this.fifo.out();
@@ -79,8 +77,7 @@ public class SAEntranceHall implements IEntranceHall_Customer,
         try{
             rl.lock();
             stop = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         fifo.removeAll();
@@ -91,8 +88,7 @@ public class SAEntranceHall implements IEntranceHall_Customer,
         try{
             rl.lock();
             end = true;
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
         fifo.removeAll();
@@ -104,8 +100,7 @@ public class SAEntranceHall implements IEntranceHall_Customer,
             rl.lock();
             stop = false;
             fifo.resetFIFO();
-        } catch(Exception ex){}
-        finally{
+        } finally{
             rl.unlock();
         }
     }

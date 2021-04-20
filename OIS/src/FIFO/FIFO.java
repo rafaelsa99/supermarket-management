@@ -139,8 +139,9 @@ public class FIFO implements IFIFO {
             // decrementar número de customers no fifo
             count--;
 
-        } catch ( InterruptedException ex ) {}
-        finally {
+        } catch ( InterruptedException ex ) {
+            System.err.println(ex.toString());
+        } finally {
             rl.unlock();
         }
         // Customer a sair não só do fifo como tb a permitir q outros
@@ -168,8 +169,9 @@ public class FIFO implements IFIFO {
                 // qd se faz await, permite-se q outros thread tenham acesso
                 // à zona protegida pelo lock
                 cLeaving.await();  
-        } catch ( InterruptedException ex ) {}
-        finally {
+        } catch ( InterruptedException ex ) {
+            System.err.println(ex.toString());
+        } finally {
             rl.unlock();
         }
     }
@@ -179,8 +181,7 @@ public class FIFO implements IFIFO {
         try {
             rl.lock();
             suspend = true;
-        } catch ( Exception ex ) {}
-        finally {
+        } finally {
             rl.unlock();
         }
     }
@@ -195,8 +196,7 @@ public class FIFO implements IFIFO {
             cFull.signal();
             cEmpty.signal();
             cLeaving.signal();
-        } catch ( Exception ex ) {}
-        finally {
+        } finally {
             rl.unlock();
         }
     }
@@ -211,8 +211,7 @@ public class FIFO implements IFIFO {
                 leave[i] = true;
                 cStay[i].signal();
             }
-        } catch ( Exception ex ) {}
-        finally {
+        } finally {
             rl.unlock();
         }
     }
@@ -228,8 +227,7 @@ public class FIFO implements IFIFO {
             lastIdIn = -1;
             suspend = false;
             removeAll = false;
-        } catch ( Exception ex ) {}
-        finally {
+        } finally {
             rl.unlock();
         }
     }
@@ -240,8 +238,7 @@ public class FIFO implements IFIFO {
             rl.lock();
             if(count > 0)
                 return false;
-        } catch ( Exception ex ) {}
-        finally {
+        } finally {
             rl.unlock();
         }
         return true;

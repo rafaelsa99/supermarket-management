@@ -5,6 +5,7 @@ import ActiveEntity.AECashier;
 import ActiveEntity.AEControl;
 import ActiveEntity.AECustomer;
 import ActiveEntity.AEManager;
+import Common.Configurations;
 import Common.STCustomer;
 import SACashier.ICashier_Cashier;
 import SACashier.ICashier_Customer;
@@ -45,35 +46,30 @@ public class OIS extends javax.swing.JFrame {
         initOIS();
     }
 
-    private void initOIS() {
-        final int MAX_CUSTOMERS = 99;
-        final int N_CORRIDOR = 3;
-        final int SIZE_ENTRANCE_HALL = 6;
-        final int SIZE_CORRIDOR_HALL = 3;
-        final int SIZE_CORRIDOR = 2;
-        final int SIZE_PAYMENT_HALL = 2;
-        final int CORRIDOR_STEPS = 10;
-        final int TIMEOUT_MOVEMENT = 100;
-        final int TIMEOUT_PAYMENT = 100;
+    private void initOIS() {        
         final STCustomer[] corridorNumbers = {STCustomer.CORRIDOR_1, 
                                              STCustomer.CORRIDOR_2, 
                                              STCustomer.CORRIDOR_3};
-        final SACustomer saCustomer = new SACustomer(MAX_CUSTOMERS);
-        final SAManager saManager = new SAManager(N_CORRIDOR, SIZE_ENTRANCE_HALL, SIZE_CORRIDOR_HALL);
-        final SACashier saCashier = new SACashier(SIZE_PAYMENT_HALL);
-        final SAOutsideHall saOutsideHall = new SAOutsideHall(MAX_CUSTOMERS);
-        final SAEntranceHall saEntranceHall = new SAEntranceHall(SIZE_ENTRANCE_HALL);
-        final SACorridorHall[] saCorridorHall = new SACorridorHall[N_CORRIDOR];
-        final SACorridor[] saCorridor = new SACorridor[N_CORRIDOR];
-        for (int i = 0; i < N_CORRIDOR; i++) {
-            saCorridorHall[i] = new SACorridorHall(SIZE_CORRIDOR_HALL, corridorNumbers[i], SIZE_CORRIDOR);
-            saCorridor[i] = new SACorridor(SIZE_CORRIDOR, SIZE_PAYMENT_HALL, CORRIDOR_STEPS, TIMEOUT_MOVEMENT, N_CORRIDOR, corridorNumbers[i]);
+        final SACustomer saCustomer = new SACustomer(Configurations.MAX_CUSTOMERS);
+        final SAManager saManager = new SAManager(Configurations.N_CORRIDOR, 
+                                                  Configurations.SIZE_ENTRANCE_HALL, 
+                                                  Configurations.SIZE_CORRIDOR_HALL);
+        final SACashier saCashier = new SACashier(Configurations.SIZE_PAYMENT_HALL);
+        final SAOutsideHall saOutsideHall = new SAOutsideHall(Configurations.MAX_CUSTOMERS);
+        final SAEntranceHall saEntranceHall = new SAEntranceHall(Configurations.SIZE_ENTRANCE_HALL);
+        final SACorridorHall[] saCorridorHall = new SACorridorHall[Configurations.N_CORRIDOR];
+        final SACorridor[] saCorridor = new SACorridor[Configurations.N_CORRIDOR];
+        for (int i = 0; i < Configurations.N_CORRIDOR; i++) {
+            saCorridorHall[i] = new SACorridorHall(Configurations.SIZE_CORRIDOR_HALL, corridorNumbers[i], Configurations.SIZE_CORRIDOR);
+            saCorridor[i] = new SACorridor(Configurations.SIZE_CORRIDOR, Configurations.SIZE_PAYMENT_HALL,
+                                           Configurations.CORRIDOR_STEPS, Configurations.TIMEOUT_MOVEMENT, 
+                                           Configurations.N_CORRIDOR, corridorNumbers[i]);
         }
-        final SAPaymentHall saPaymentHall = new SAPaymentHall(SIZE_PAYMENT_HALL);
-        final SAPaymentBox sAPaymentBox = new SAPaymentBox(TIMEOUT_PAYMENT);
+        final SAPaymentHall saPaymentHall = new SAPaymentHall(Configurations.SIZE_PAYMENT_HALL);
+        final SAPaymentBox sAPaymentBox = new SAPaymentBox(Configurations.TIMEOUT_PAYMENT);
 
-        final AECustomer[] aeCustomer = new AECustomer[MAX_CUSTOMERS];
-        for (int i = 0; i < MAX_CUSTOMERS; i++) {
+        final AECustomer[] aeCustomer = new AECustomer[Configurations.MAX_CUSTOMERS];
+        for (int i = 0; i < Configurations.MAX_CUSTOMERS; i++) {
             aeCustomer[i] = new AECustomer(i, (ICustomer_Customer) saCustomer,
                     (IOutsideHall_Customer) saOutsideHall, (IEntranceHall_Customer) saEntranceHall,
                     (ICorridorHall_Customer[]) saCorridorHall, (ICorridor_Customer[]) saCorridor,
@@ -96,11 +92,12 @@ public class OIS extends javax.swing.JFrame {
         try {
             aeManager.join();
             aeCashier.join();
-            for (int i = 0; i < MAX_CUSTOMERS; i++) {
+            for (int i = 0; i < Configurations.MAX_CUSTOMERS; i++) {
                 aeCustomer[i].join();
             }
             aeControl.join();
         } catch (InterruptedException ex) {
+            System.err.println(ex.toString());
         }
         System.out.println("MAIN: ALL ENDED");
     }
