@@ -53,8 +53,8 @@ public class FIFO implements IFIFO {
     private boolean suspend;
     // flag que indica se está em curso a operação de remover todos elementos do fifo
     private boolean removeAll;
-    // flag que indica se é necessário os IDs serem sequenciais
-    private boolean order;
+    // flag que indica se é necessário os IDs serem sequenciais na entrada do fifo
+    private final boolean order;
     
     public FIFO( int maxCustomers, boolean order) {
         this.maxCustomers = maxCustomers;
@@ -89,9 +89,8 @@ public class FIFO implements IFIFO {
         try {
             // garantir acesso em exclusividade
             rl.lock();
-            
             // se fifo cheio, espera na Condition cFull
-            while ( count == maxCustomers  || suspend)
+            while ( count == maxCustomers)
                 cFull.await();
             if(removeAll)
                 return;

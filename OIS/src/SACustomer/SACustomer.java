@@ -2,7 +2,7 @@
 package SACustomer;
 
 import Common.STCustomer;
-import java.util.TreeSet;
+import List.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -16,14 +16,14 @@ public class SACustomer implements ICustomer_Customer,
     private final Condition[] stay;
     private final Condition setEmpty;
     private final Condition customerLeaving;
-    private final TreeSet<Integer> set;
+    private final List list;
     private final boolean[] leave;
     private boolean end;
     private boolean simulationActive;
     
     public SACustomer(int maxCustomers) {
         rl = new ReentrantLock(true);
-        set = new TreeSet<>();
+        list = new List(maxCustomers, true);
         setEmpty = rl.newCondition();
         stay = new Condition[maxCustomers];
         customerLeaving = rl.newCondition();
@@ -40,8 +40,8 @@ public class SACustomer implements ICustomer_Customer,
         STCustomer stCustomer = STCustomer.IDLE;
         try{
             rl.lock();
-            set.add(customerId); // Add customer to set
-            if(set.size() == stay.length){
+            list.in(customerId); 
+            if(list.getCount() == stay.length){
                 setEmpty.signal();
                 if(simulationActive){
                     System.out.println("SHOPPING SIMULATION ENDED"); // Enviar mensagem para o OCC
@@ -53,7 +53,7 @@ public class SACustomer implements ICustomer_Customer,
             if(end)
                 return STCustomer.END;
             leave[customerId] = false;
-            customerLeaving.signal(); // Notify that it has left the set
+            customerLeaving.signal(); // Notify that it has left the list
             stCustomer = STCustomer.OUTSIDE_HALL;
         } catch(InterruptedException ex){
             System.err.println(ex.toString());
@@ -66,15 +66,15 @@ public class SACustomer implements ICustomer_Customer,
     public void start( int nCustomers ) {
         try{
             rl.lock();
-            while(set.size() != stay.length) // Check if all customers are in idle
+            while(list.getCount()!= stay.length) // Check if all customers are in idle
                 setEmpty.await();
             simulationActive = true;
             for (int i = 0; i < nCustomers; i++){
-                int customerIdToLeave = set.pollFirst(); // Remove the customer with lower ID
+                int customerIdToLeave = list.outFirst(); // Remove the customer with lower ID
                 leave[customerIdToLeave] = true;
                 stay[customerIdToLeave].signal(); // Notify customers that the one with the lower ID can leave1
                 while(leave[customerIdToLeave])
-                    customerLeaving.await(); // Wait for customer to leave the set
+                    customerLeaving.await(); // Wait for customer to leave the list
             }
         } catch(InterruptedException ex){
             System.err.println(ex.toString());

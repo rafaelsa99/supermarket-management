@@ -26,10 +26,12 @@ public class SAManager implements IManager_Control,
     private boolean stop;
     private boolean end;
     private boolean isAuto;
+    private boolean step;
+    private int timeout;
     private final int sizeEntranceHall;
     private final int sizeCorridorHall;
 
-    public SAManager(int nCorridors, int sizeEntranceHall, int sizeCorridorHall) {
+    public SAManager(int nCorridors, int sizeEntranceHall, int sizeCorridorHall, int timeout) {
         rl = new ReentrantLock(true);
         idle = rl.newCondition();
         emptySpacesCorridorHall = new int[nCorridors];
@@ -45,6 +47,9 @@ public class SAManager implements IManager_Control,
         isSuspended = false;
         stop = false;
         end = false;
+        this.timeout = timeout;
+        this.isAuto = true;
+        this.step = false;
     }
     
     
@@ -147,40 +152,51 @@ public class SAManager implements IManager_Control,
             rl.lock();
             while(((!entranceHallHasEmptySpace || numCustomersOutsideHall == 0) && // Wait for available space
                   (!corridorHallHasEmptySpace || numCustomersEntranceHall == 0)) ||
-                   isSuspended || stop) 
+                   isSuspended || stop || (isAuto == false && step == false)) 
                 idle.await();
             if(end)
                 stManager = STManager.END;
-            else if(entranceHallHasEmptySpace && numCustomersOutsideHall > 0){ // Check if the Entrance Hall has space
-                emptySpacesEntranceHall -= 1; // Update number of available spaces
-                if(emptySpacesEntranceHall == 0) //If entrance hall is full, update flag
-                    entranceHallHasEmptySpace = false;
-                numCustomersOutsideHall -= 1; // Update number of customers in the Outside Hall
-                numCustomersEntranceHall += 1; // Update number of customers in the Entrance Hall
-                stManager = STManager.ENTRANCE_HALL;
-            } else {
-                for (int i = 0; i < emptySpacesCorridorHall.length; i++) { // Loop over the Corridor Halls
-                    if(emptySpacesCorridorHall[i] > 0){ // Check if one of the Corridor Halls has space
-                        emptySpacesCorridorHall[i] -= 1; // Update number of available spaces
-                        numCustomersEntranceHall -= 1; // Update number of customers in the Entrance Hall
-                        switch(i){
-                            case 0: stManager = STManager.CORRIDOR_HALL_1;
-                                break;
-                            case 1: stManager = STManager.CORRIDOR_HALL_2;
-                                break;
-                            case 2: stManager = STManager.CORRIDOR_HALL_3;
-                                break;
-                        }
-                        break;
-                    }   
-                }
-                // Updates the flag that indicates if there is any free space on the Corridor Hall
-                corridorHallHasEmptySpace = false;
-                for (int i = 0; i < emptySpacesCorridorHall.length; i++)
-                    if(emptySpacesCorridorHall[i] > 0){
-                        corridorHallHasEmptySpace = true;
-                        break;
+            else{ 
+                if(!isAuto)
+                    step = false;
+                else{
+                    try {
+                        Thread.sleep(timeout);
+                    } catch (InterruptedException ex) {
+                        System.err.println(ex.toString());
                     }
+                }
+                if(entranceHallHasEmptySpace && numCustomersOutsideHall > 0){ // Check if the Entrance Hall has space
+                    emptySpacesEntranceHall -= 1; // Update number of available spaces
+                    if(emptySpacesEntranceHall == 0) //If entrance hall is full, update flag
+                        entranceHallHasEmptySpace = false;
+                    numCustomersOutsideHall -= 1; // Update number of customers in the Outside Hall
+                    numCustomersEntranceHall += 1; // Update number of customers in the Entrance Hall
+                    stManager = STManager.ENTRANCE_HALL;
+                } else {
+                    for (int i = 0; i < emptySpacesCorridorHall.length; i++) { // Loop over the Corridor Halls
+                        if(emptySpacesCorridorHall[i] > 0){ // Check if one of the Corridor Halls has space
+                            emptySpacesCorridorHall[i] -= 1; // Update number of available spaces
+                            numCustomersEntranceHall -= 1; // Update number of customers in the Entrance Hall
+                            switch(i){
+                                case 0: stManager = STManager.CORRIDOR_HALL_1;
+                                    break;
+                                case 1: stManager = STManager.CORRIDOR_HALL_2;
+                                    break;
+                                case 2: stManager = STManager.CORRIDOR_HALL_3;
+                                    break;
+                            }
+                            break;
+                        }   
+                    }
+                    // Updates the flag that indicates if there is any free space on the Corridor Hall
+                    corridorHallHasEmptySpace = false;
+                    for (int i = 0; i < emptySpacesCorridorHall.length; i++)
+                        if(emptySpacesCorridorHall[i] > 0){
+                            corridorHallHasEmptySpace = true;
+                            break;
+                        }
+                }
             }
         } catch(InterruptedException ex){
             System.err.println(ex.toString());
@@ -188,5 +204,40 @@ public class SAManager implements IManager_Control,
             rl.unlock();
         }
         return stManager;
+    }
+    
+    @Override
+    public void auto(int timeout) {
+        try{
+            rl.lock();
+            isAuto = true;
+            this.timeout = timeout;
+            idle.signal();
+        } finally{
+            rl.unlock();
+        }
+    }
+    
+    @Override
+    public void manual() {
+        try{
+            rl.lock();
+            isAuto = false;
+            step = false;
+            idle.signal();
+        } finally{
+            rl.unlock();
+        }
+    }
+    
+    @Override
+    public void step() {
+        try{
+            rl.lock();
+            step = true;
+            idle.signal();
+        } finally{
+            rl.unlock();
+        }
     }
 }

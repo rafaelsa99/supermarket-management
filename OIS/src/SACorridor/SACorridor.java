@@ -3,8 +3,6 @@ package SACorridor;
 
 import Common.STCustomer;
 import FIFO.FIFO;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,12 +21,12 @@ public class SACorridor implements ICorridor_Control,
     private final int timeoutMovement;
     private final boolean[] canMove;
     private final int[] customerPosition;
-    private final Map<Integer, Integer> customerIdx;
+    private final int[] customerIdx;
     private final int stepsSize;
     private boolean isSuspended;
     private boolean stop;
     private boolean end;
-    
+    private int numCustomersOnCorridor;
     private static ReentrantLock rls;
     private static boolean emptySpacePaymentHall;
     private static FIFO fifo;
@@ -36,14 +34,14 @@ public class SACorridor implements ICorridor_Control,
     private static int sizePaymentHall;
     
     
-    public SACorridor(int maxCostumers, int sizePaymentHall, int stepsSize, int timeoutMovement, int nCorridors, STCustomer corridorNumber) {
+    public SACorridor(int maxCostumers, int sizePaymentHall, int stepsSize, int timeoutMovement, int nCorridors, STCustomer corridorNumber, int totalCustomers) {
         this.corridorNumber = corridorNumber;
         this.rl = new ReentrantLock(true);
         this.full = rl.newCondition();
         this.suspend = rl.newCondition();
         this.movement = new Condition[maxCostumers];
         this.timeoutMovement = timeoutMovement;
-        customerIdx = new HashMap<>();
+        customerIdx = new int[totalCustomers];
         this.canMove = new boolean[maxCostumers];
         this.stepsSize = stepsSize;
         this.customerPosition = new int[maxCostumers];
@@ -55,6 +53,7 @@ public class SACorridor implements ICorridor_Control,
         this.isSuspended = false;
         this.stop = false;
         this.end = false;
+        this.numCustomersOnCorridor = 0;
         SACorridor.sizePaymentHall = sizePaymentHall;
         SACorridor.emptySpacesPaymentHall = sizePaymentHall;
         SACorridor.emptySpacePaymentHall = true;
@@ -67,19 +66,21 @@ public class SACorridor implements ICorridor_Control,
     public STCustomer enter(int customerId) {
         try{
             rl.lock();
-            while(customerIdx.size() == customerPosition.length || isSuspended) // Check if the corridor is full
+            while(numCustomersOnCorridor == customerPosition.length) // Check if the corridor is full
                full.await();
             if(stop)
                 return STCustomer.STOP;
             else if(end)
                 return STCustomer.END;
             for (int i = 0; i < customerPosition.length; i++)
-                if(customerPosition[i] == -1)
-                    customerIdx.put(customerId, i);
-            if(customerIdx.size() == 1)
-                canMove[customerIdx.get(customerId)] = true;
-            //TODO: Verificar se posição 0 está livre (será mesmo necessário?)
-            customerPosition[customerIdx.get(customerId)] = 0;
+                if(customerPosition[i] == -1){
+                    customerIdx[customerId] = i;
+                    numCustomersOnCorridor += 1;
+                    break;
+                }
+            if(numCustomersOnCorridor == 1)
+                canMove[customerIdx[customerId]] = true;
+            customerPosition[customerIdx[customerId]] = 0;
         } catch(InterruptedException ex){
             System.err.println(ex.toString());
         } finally{
@@ -92,13 +93,13 @@ public class SACorridor implements ICorridor_Control,
     public STCustomer move(int customerId) {
         try{
             rl.lock();
-            int cId = customerIdx.get(customerId);
+            int cId = customerIdx[customerId];
             while(!canMove[cId] || isSuspended)
                 movement[cId].await();
             if(stop || end){
                 canMove[cId] = false;
                 customerPosition[cId] = -1;
-                customerIdx.remove(customerId);
+                numCustomersOnCorridor -= 1;
                 if(stop)
                     return STCustomer.STOP;
                 else if(end)
@@ -114,16 +115,16 @@ public class SACorridor implements ICorridor_Control,
             if(stop || end){
                 canMove[cId] = false;
                 customerPosition[cId] = -1;
-                customerIdx.remove(customerId);
+                numCustomersOnCorridor -= 1;
                 if(stop)
                     return STCustomer.STOP;
                 else if(end)
                     return STCustomer.END;
             }
             customerPosition[cId] += 1; // Go to next position
-            if(customerIdx.size() > 1){ // If there is more customers in the corridor, wakes up the next one
+            if(numCustomersOnCorridor > 1){ // If there is more customers in the corridor, wakes up the next one
                 int nextCId = cId + 1;
-                if((cId + 1) == customerIdx.size())
+                if((cId + 1) == numCustomersOnCorridor)
                     nextCId = 0;
                 canMove[cId] = false;
                 canMove[nextCId] = true;
@@ -132,7 +133,7 @@ public class SACorridor implements ICorridor_Control,
             if(customerPosition[cId] == (stepsSize - 1)){ // Check if reached the end of the corridor
                 canMove[cId] = false;
                 customerPosition[cId] = -1;
-                customerIdx.remove(customerId);
+                numCustomersOnCorridor -= 1;
                 rl.unlock();
                 SACorridor.rls.lock();
                 try {
@@ -152,7 +153,7 @@ public class SACorridor implements ICorridor_Control,
                     return STCustomer.STOP;
                 if(end)
                     return STCustomer.END;
-                if((customerIdx.size() + 1) == customerPosition.length) // Check if the corridor was full
+                if((numCustomersOnCorridor + 1) == customerPosition.length) // Check if the corridor was full
                     full.signal();
                 return STCustomer.PAYMENT_HALL;
             }
@@ -164,8 +165,7 @@ public class SACorridor implements ICorridor_Control,
         return corridorNumber;
     }
     
-    @Override
-    public void freeSlot() {
+    public static void freeSlot() {
         try{
             SACorridor.rls.lock();
             SACorridor.emptySpacesPaymentHall += 1;
@@ -250,7 +250,7 @@ public class SACorridor implements ICorridor_Control,
             }
             this.isSuspended = false;
             this.stop = false;
-            customerIdx.clear();
+            numCustomersOnCorridor = 0;
         } finally{
             rl.unlock();
         }
