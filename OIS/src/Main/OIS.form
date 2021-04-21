@@ -23,13 +23,294 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="400" max="32767" attributes="0"/>
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jOutsideHall" min="-2" pref="128" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jEntranceHall" min="-2" pref="130" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jCorridorHall3" alignment="0" min="-2" pref="165" max="-2" attributes="0"/>
+                  <Component id="jCorridorHall1" min="-2" pref="165" max="-2" attributes="0"/>
+                  <Component id="jCorridorHall2" min="-2" pref="165" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="jCorridor2" min="-2" pref="275" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jPaymentHall" min="-2" pref="165" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="jPaymentBox" min="-2" pref="165" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jCorridor1" min="-2" pref="275" max="-2" attributes="0"/>
+                          <Component id="jLabelTitle" min="-2" max="-2" attributes="0"/>
+                          <Component id="jCorridor3" min="-2" pref="275" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
+              <Component id="jLabelOutsideHall" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="67" max="-2" attributes="0"/>
+              <Component id="jLabelEntranceHall" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
+              <Component id="jLabelCorridorHall" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="167" max="-2" attributes="0"/>
+              <Component id="jLabelCorridor" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="jLabelPaymentHall" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="114" max="-2" attributes="0"/>
+              <Component id="jLabelPaymentBox" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="300" max="32767" attributes="0"/>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jLabelTitle" pref="43" max="32767" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                  <Component id="jEntranceHall" alignment="0" max="32767" attributes="0"/>
+                  <Component id="jOutsideHall" alignment="0" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jCorridorHall1" min="-2" pref="110" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="jCorridorHall2" max="32767" attributes="0"/>
+                                  <Component id="jCorridor2" max="32767" attributes="0"/>
+                                  <Component id="jPaymentHall" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="jPaymentBox" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Component id="jCorridor1" alignment="0" min="-2" pref="110" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="jCorridorHall3" min="-2" pref="110" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="jCorridor3" min="-2" pref="110" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabelOutsideHall" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabelEntranceHall" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabelCorridorHall" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabelCorridor" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabelPaymentHall" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabelPaymentBox" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="33" max="32767" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
   </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JScrollPane" name="jEntranceHall">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="jListEntranceHall">
+          <Properties>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.AbstractListModel&lt;javax.swing.JLabel&gt;() {&#xa;    javax.swing.JLabel[] icons = { };&#xa;    public int getSize() { return icons.length; }&#xa;    public javax.swing.JLabel getElementAt(int i) { return icons[i]; }&#xa;}" type="code"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;javax.swing.JLabel&gt;"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jCorridorHall2">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="jListCorridorHall2">
+          <Properties>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.AbstractListModel&lt;javax.swing.JLabel&gt;() {&#xa;    javax.swing.JLabel[] icons = { };&#xa;    public int getSize() { return icons.length; }&#xa;    public javax.swing.JLabel getElementAt(int i) { return icons[i]; }&#xa;}" type="code"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;javax.swing.JLabel&gt;"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jOutsideHall">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="jListOutsideHall">
+          <Properties>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.AbstractListModel&lt;javax.swing.JLabel&gt;() {&#xa;    javax.swing.JLabel[] icons = { };&#xa;    public int getSize() { return icons.length; }&#xa;    public javax.swing.JLabel getElementAt(int i) { return icons[i]; }&#xa;}" type="code"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;javax.swing.JLabel&gt;"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jCorridorHall1">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="jListCorridorHall1">
+          <Properties>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.AbstractListModel&lt;javax.swing.JLabel&gt;() {&#xa;    javax.swing.JLabel[] icons = { };&#xa;    public int getSize() { return icons.length; }&#xa;    public javax.swing.JLabel getElementAt(int i) { return icons[i]; }&#xa;}" type="code"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;javax.swing.JLabel&gt;"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jCorridorHall3">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="jListCorridorHall3">
+          <Properties>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.AbstractListModel&lt;javax.swing.JLabel&gt;() {&#xa;    javax.swing.JLabel[] icons = { };&#xa;    public int getSize() { return icons.length; }&#xa;    public javax.swing.JLabel getElementAt(int i) { return icons[i]; }&#xa;}" type="code"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;javax.swing.JLabel&gt;"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jCorridor1">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="jListCorridor1">
+          <Properties>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.AbstractListModel&lt;javax.swing.JLabel&gt;() {&#xa;    javax.swing.JLabel[] icons = { };&#xa;    public int getSize() { return icons.length; }&#xa;    public javax.swing.JLabel getElementAt(int i) { return icons[i]; }&#xa;}" type="code"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;javax.swing.JLabel&gt;"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jCorridor2">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="jListCorridor2">
+          <Properties>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.AbstractListModel&lt;javax.swing.JLabel&gt;() {&#xa;    javax.swing.JLabel[] icons = { };&#xa;    public int getSize() { return icons.length; }&#xa;    public javax.swing.JLabel getElementAt(int i) { return icons[i]; }&#xa;}" type="code"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;javax.swing.JLabel&gt;"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="jLabelTitle">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Tahoma" size="18" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="OurMarket in-Site Market"/>
+      </Properties>
+    </Component>
+    <Container class="javax.swing.JScrollPane" name="jCorridor3">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="jListCorridor3">
+          <Properties>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.AbstractListModel&lt;javax.swing.JLabel&gt;() {&#xa;    javax.swing.JLabel[] icons = { };&#xa;    public int getSize() { return icons.length; }&#xa;    public javax.swing.JLabel getElementAt(int i) { return icons[i]; }&#xa;}" type="code"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;javax.swing.JLabel&gt;"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jPaymentHall">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="jListPaymentHall">
+          <Properties>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.AbstractListModel&lt;javax.swing.JLabel&gt;() {&#xa;    javax.swing.JLabel[] icons = { };&#xa;    public int getSize() { return icons.length; }&#xa;    public javax.swing.JLabel getElementAt(int i) { return icons[i]; }&#xa;}" type="code"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;javax.swing.JLabel&gt;"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jPaymentBox">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="jListPaymentBox">
+          <Properties>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.AbstractListModel&lt;javax.swing.JLabel&gt;() {&#xa;    javax.swing.JLabel[] icons = { };&#xa;    public int getSize() { return icons.length; }&#xa;    public javax.swing.JLabel getElementAt(int i) { return icons[i]; }&#xa;}" type="code"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;javax.swing.JLabel&gt;"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="jLabelOutsideHall">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Outside Hall"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabelEntranceHall">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Entrance Hall"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabelCorridorHall">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Corridor Hall"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabelCorridor">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Corridor"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabelPaymentHall">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Payment Hall"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabelPaymentBox">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Payment Box"/>
+      </Properties>
+    </Component>
+  </SubComponents>
 </Form>

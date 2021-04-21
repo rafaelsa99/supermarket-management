@@ -112,17 +112,197 @@ public class OIS extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jEntranceHall = new javax.swing.JScrollPane();
+        jListEntranceHall = new javax.swing.JList<>();
+        jCorridorHall2 = new javax.swing.JScrollPane();
+        jListCorridorHall2 = new javax.swing.JList<>();
+        jOutsideHall = new javax.swing.JScrollPane();
+        jListOutsideHall = new javax.swing.JList<>();
+        jCorridorHall1 = new javax.swing.JScrollPane();
+        jListCorridorHall1 = new javax.swing.JList<>();
+        jCorridorHall3 = new javax.swing.JScrollPane();
+        jListCorridorHall3 = new javax.swing.JList<>();
+        jCorridor1 = new javax.swing.JScrollPane();
+        jListCorridor1 = new javax.swing.JList<>();
+        jCorridor2 = new javax.swing.JScrollPane();
+        jListCorridor2 = new javax.swing.JList<>();
+        jLabelTitle = new javax.swing.JLabel();
+        jCorridor3 = new javax.swing.JScrollPane();
+        jListCorridor3 = new javax.swing.JList<>();
+        jPaymentHall = new javax.swing.JScrollPane();
+        jListPaymentHall = new javax.swing.JList<>();
+        jPaymentBox = new javax.swing.JScrollPane();
+        jListPaymentBox = new javax.swing.JList<>();
+        jLabelOutsideHall = new javax.swing.JLabel();
+        jLabelEntranceHall = new javax.swing.JLabel();
+        jLabelCorridorHall = new javax.swing.JLabel();
+        jLabelCorridor = new javax.swing.JLabel();
+        jLabelPaymentHall = new javax.swing.JLabel();
+        jLabelPaymentBox = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jListEntranceHall.setModel(new javax.swing.AbstractListModel<javax.swing.JLabel>() {
+            javax.swing.JLabel[] icons = { };
+            public int getSize() { return icons.length; }
+            public javax.swing.JLabel getElementAt(int i) { return icons[i]; }
+        });
+        jEntranceHall.setViewportView(jListEntranceHall);
+
+        jListCorridorHall2.setModel(new javax.swing.AbstractListModel<javax.swing.JLabel>() {
+            javax.swing.JLabel[] icons = { };
+            public int getSize() { return icons.length; }
+            public javax.swing.JLabel getElementAt(int i) { return icons[i]; }
+        });
+        jCorridorHall2.setViewportView(jListCorridorHall2);
+
+        jListOutsideHall.setModel(new javax.swing.AbstractListModel<javax.swing.JLabel>() {
+            javax.swing.JLabel[] icons = { };
+            public int getSize() { return icons.length; }
+            public javax.swing.JLabel getElementAt(int i) { return icons[i]; }
+        });
+        jOutsideHall.setViewportView(jListOutsideHall);
+
+        jListCorridorHall1.setModel(new javax.swing.AbstractListModel<javax.swing.JLabel>() {
+            javax.swing.JLabel[] icons = { };
+            public int getSize() { return icons.length; }
+            public javax.swing.JLabel getElementAt(int i) { return icons[i]; }
+        });
+        jCorridorHall1.setViewportView(jListCorridorHall1);
+
+        jListCorridorHall3.setModel(new javax.swing.AbstractListModel<javax.swing.JLabel>() {
+            javax.swing.JLabel[] icons = { };
+            public int getSize() { return icons.length; }
+            public javax.swing.JLabel getElementAt(int i) { return icons[i]; }
+        });
+        jCorridorHall3.setViewportView(jListCorridorHall3);
+
+        jListCorridor1.setModel(new javax.swing.AbstractListModel<javax.swing.JLabel>() {
+            javax.swing.JLabel[] icons = { };
+            public int getSize() { return icons.length; }
+            public javax.swing.JLabel getElementAt(int i) { return icons[i]; }
+        });
+        jCorridor1.setViewportView(jListCorridor1);
+
+        jListCorridor2.setModel(new javax.swing.AbstractListModel<javax.swing.JLabel>() {
+            javax.swing.JLabel[] icons = { };
+            public int getSize() { return icons.length; }
+            public javax.swing.JLabel getElementAt(int i) { return icons[i]; }
+        });
+        jCorridor2.setViewportView(jListCorridor2);
+
+        jLabelTitle.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabelTitle.setText("OurMarket in-Site Market");
+
+        jListCorridor3.setModel(new javax.swing.AbstractListModel<javax.swing.JLabel>() {
+            javax.swing.JLabel[] icons = { };
+            public int getSize() { return icons.length; }
+            public javax.swing.JLabel getElementAt(int i) { return icons[i]; }
+        });
+        jCorridor3.setViewportView(jListCorridor3);
+
+        jListPaymentHall.setModel(new javax.swing.AbstractListModel<javax.swing.JLabel>() {
+            javax.swing.JLabel[] icons = { };
+            public int getSize() { return icons.length; }
+            public javax.swing.JLabel getElementAt(int i) { return icons[i]; }
+        });
+        jPaymentHall.setViewportView(jListPaymentHall);
+
+        jListPaymentBox.setModel(new javax.swing.AbstractListModel<javax.swing.JLabel>() {
+            javax.swing.JLabel[] icons = { };
+            public int getSize() { return icons.length; }
+            public javax.swing.JLabel getElementAt(int i) { return icons[i]; }
+        });
+        jPaymentBox.setViewportView(jListPaymentBox);
+
+        jLabelOutsideHall.setText("Outside Hall");
+
+        jLabelEntranceHall.setText("Entrance Hall");
+
+        jLabelCorridorHall.setText("Corridor Hall");
+
+        jLabelCorridor.setText("Corridor");
+
+        jLabelPaymentHall.setText("Payment Hall");
+
+        jLabelPaymentBox.setText("Payment Box");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jOutsideHall, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jEntranceHall, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jCorridorHall3, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCorridorHall1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCorridorHall2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jCorridor2, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPaymentHall, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPaymentBox, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jCorridor1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelTitle)
+                            .addComponent(jCorridor3, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addComponent(jLabelOutsideHall)
+                .addGap(67, 67, 67)
+                .addComponent(jLabelEntranceHall)
+                .addGap(82, 82, 82)
+                .addComponent(jLabelCorridorHall)
+                .addGap(167, 167, 167)
+                .addComponent(jLabelCorridor)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabelPaymentHall)
+                .addGap(114, 114, 114)
+                .addComponent(jLabelPaymentBox)
+                .addGap(50, 50, 50))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jEntranceHall, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jOutsideHall, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jCorridorHall1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jCorridorHall2)
+                                    .addComponent(jCorridor2)
+                                    .addComponent(jPaymentHall)
+                                    .addComponent(jPaymentBox)))
+                            .addComponent(jCorridor1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jCorridorHall3, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jCorridor3, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelOutsideHall)
+                    .addComponent(jLabelEntranceHall)
+                    .addComponent(jLabelCorridorHall)
+                    .addComponent(jLabelCorridor)
+                    .addComponent(jLabelPaymentHall)
+                    .addComponent(jLabelPaymentBox))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
         pack();
@@ -164,5 +344,32 @@ public class OIS extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jCorridor1;
+    private javax.swing.JScrollPane jCorridor2;
+    private javax.swing.JScrollPane jCorridor3;
+    private javax.swing.JScrollPane jCorridorHall1;
+    private javax.swing.JScrollPane jCorridorHall2;
+    private javax.swing.JScrollPane jCorridorHall3;
+    private javax.swing.JScrollPane jEntranceHall;
+    private javax.swing.JLabel jLabelCorridor;
+    private javax.swing.JLabel jLabelCorridorHall;
+    private javax.swing.JLabel jLabelEntranceHall;
+    private javax.swing.JLabel jLabelOutsideHall;
+    private javax.swing.JLabel jLabelPaymentBox;
+    private javax.swing.JLabel jLabelPaymentHall;
+    private javax.swing.JLabel jLabelTitle;
+    private javax.swing.JList<javax.swing.JLabel> jListCorridor1;
+    private javax.swing.JList<javax.swing.JLabel> jListCorridor2;
+    private javax.swing.JList<javax.swing.JLabel> jListCorridor3;
+    private javax.swing.JList<javax.swing.JLabel> jListCorridorHall1;
+    private javax.swing.JList<javax.swing.JLabel> jListCorridorHall2;
+    private javax.swing.JList<javax.swing.JLabel> jListCorridorHall3;
+    private javax.swing.JList<javax.swing.JLabel> jListEntranceHall;
+    private javax.swing.JList<javax.swing.JLabel> jListOutsideHall;
+    private javax.swing.JList<javax.swing.JLabel> jListPaymentBox;
+    private javax.swing.JList<javax.swing.JLabel> jListPaymentHall;
+    private javax.swing.JScrollPane jOutsideHall;
+    private javax.swing.JScrollPane jPaymentBox;
+    private javax.swing.JScrollPane jPaymentHall;
     // End of variables declaration//GEN-END:variables
 }
