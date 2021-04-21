@@ -22,10 +22,14 @@ public class CClient {
         this.portNumber = portNumber;
     }
     
-    public void openServer() {
+    public boolean openServer() {
         try {
             this.echoSocket = new Socket(this.hostName, this.portNumber);
-        } catch(Exception e){System.out.println(e);}
+            return true;
+        } catch(Exception e){
+            System.out.println(e);
+            return false;
+        }
     }
     
     public void sendMessage(String Message){

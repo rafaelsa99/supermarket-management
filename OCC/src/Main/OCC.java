@@ -14,6 +14,8 @@ import java.util.List;
 import Configurations.Configurations;
 import javax.swing.table.DefaultTableModel;
 import Communication.CClient;
+import Communication.CServer;
+import java.util.function.Function;
 
 /**
  *
@@ -28,7 +30,8 @@ public class OCC extends javax.swing.JFrame {
     STCashier cashierState;
     DefaultTableModel model;
     static Configurations confs = new Configurations();
-    CClient cclient;
+    CClient cclient = null;
+    CServer cserver;
 
     /**
      * Creates new form OCC
@@ -40,7 +43,12 @@ public class OCC extends javax.swing.JFrame {
 
     private void initOCC() {
         this.simulationState = "END";
-        this.cclient = new CClient("localhost", 6745);
+        
+        cserver = new CServer(6669);
+        cserver.openServer();
+        cserver.setOccObject(this);
+        cserver.start();
+        
     }
 
     /**
@@ -74,6 +82,12 @@ public class OCC extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         jTableCashier = new javax.swing.JTable();
         jManualSupervisor = new javax.swing.JButton();
+        jLabelPort = new javax.swing.JLabel();
+        jPortInput = new javax.swing.JTextField();
+        jHostInput = new javax.swing.JTextField();
+        jLabelHost = new javax.swing.JLabel();
+        jButtonConnect = new javax.swing.JButton();
+        jLabelConnectionStatus = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -116,10 +130,23 @@ public class OCC extends javax.swing.JFrame {
         
         jManualSupervisor.setText("Next Costumer");
         
+        jLabelPort.setText("Port");
+
+        jPortInput.setText("6666");
+
+        jHostInput.setText("localhost");
+
+        jLabelHost.setText("Host");
+
+        jButtonConnect.setText("Connect");
+
+        jLabelConnectionStatus.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+
         jManualSupervisor.setEnabled(false);
         jButtonResume.setEnabled(false);
         jButtonSuspend.setEnabled(false);
         jButtonStop.setEnabled(false);
+        jButtonStart.setEnabled(false);
         
         jButtonResume.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -165,6 +192,11 @@ public class OCC extends javax.swing.JFrame {
             }
         });
 
+        jButtonConnect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonConnectActionPerformed(evt);
+            }
+        });
 
         jTableCostumers.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][] { },
@@ -188,106 +220,112 @@ public class OCC extends javax.swing.JFrame {
         jTabbedStatus.addTab("Cashier", jScrollPane3);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(layout
-                .createSequentialGroup().addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jTabbedStatus, javax.swing.GroupLayout.DEFAULT_SIZE,
-                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createSequentialGroup().addGroup(layout
-                                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup().addComponent(jLabelCMTimeOut)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jcostumerMovementTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                65, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup().addComponent(jLabelNCostumers)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jnumberOfCostumers, javax.swing.GroupLayout.PREFERRED_SIZE, 50,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup().addComponent(jLabelSupervisoMode)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jSupervisorMode, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jSupervisorTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, 65,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18).addComponent(jManualSupervisor))
+            getContentPane().setLayout(layout);
+            layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jTabbedStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabelCMTimeOut)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jcostumerMovementTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelConnectionStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButtonConnect))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jButtonStart, javax.swing.GroupLayout.PREFERRED_SIZE, 97,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jButtonResume, javax.swing.GroupLayout.PREFERRED_SIZE, 97,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jButtonSuspend, javax.swing.GroupLayout.PREFERRED_SIZE, 97,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jButtonStop, javax.swing.GroupLayout.PREFERRED_SIZE, 97,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18).addComponent(jButtonEnd,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE, 97,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup().addComponent(jLabelPaymentTime)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jPaymentTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, 65,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap()));
-        layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup().addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jnumberOfCostumers, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabelNCostumers))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabelCMTimeOut)
-                                .addComponent(jcostumerMovementTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabelPaymentTime)
-                                .addComponent(jPaymentTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(11, 11, 11)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jManualSupervisor, javax.swing.GroupLayout.PREFERRED_SIZE, 32,
-                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabelSupervisoMode)
-                                .addComponent(jSupervisorMode, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jSupervisorTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jButtonResume, javax.swing.GroupLayout.PREFERRED_SIZE, 36,
-                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButtonStart, javax.swing.GroupLayout.PREFERRED_SIZE, 36,
-                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButtonSuspend, javax.swing.GroupLayout.PREFERRED_SIZE, 36,
-                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButtonStop, javax.swing.GroupLayout.PREFERRED_SIZE, 36,
-                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButtonEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 36,
-                                        javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jTabbedStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
-                        .addContainerGap()));
+                                    .addComponent(jLabelSupervisoMode)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(jSupervisorMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(jSupervisorTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jManualSupervisor))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jButtonStart, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jButtonResume, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jButtonSuspend, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jButtonStop, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jButtonEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabelPaymentTime)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(jPaymentTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabelNCostumers)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jnumberOfCostumers, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelHost)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jHostInput, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(12, 12, 12)
+                            .addComponent(jLabelPort)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jPortInput, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addContainerGap())
+            );
+            layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jnumberOfCostumers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabelNCostumers)
+                        .addComponent(jLabelPort)
+                        .addComponent(jPortInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jHostInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabelHost))
+                    .addGap(18, 18, 18)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabelCMTimeOut)
+                        .addComponent(jcostumerMovementTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonConnect)
+                        .addComponent(jLabelConnectionStatus))
+                    .addGap(18, 18, 18)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabelPaymentTime)
+                        .addComponent(jPaymentTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(16, 16, 16)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jManualSupervisor, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabelSupervisoMode)
+                        .addComponent(jSupervisorMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jSupervisorTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(18, 18, 18)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButtonResume, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonStart, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonSuspend, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonStop, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(18, 18, 18)
+                    .addComponent(jTabbedStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+                    .addContainerGap())
+            );
 
         pack();
     }// </editor-fold>                                             
 
     private void jManualSupervisorActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jManualSupervisorActionPerformed
         // TODO add your handling code here:
-        System.out.println("Next");
+        //System.out.println("Next");
         this.cclient.sendMessage("NX");
     }// GEN-LAST:event_jManualSupervisorActionPerformed
 
     private void jButtonStartActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonStartActionPerformed
         // TODO add your handling code here:
         this.simulationState = "START";
-        System.out.println("Start");
+        //System.out.println("Start");
         // Socket Server that update 
         
         jButtonStart.setEnabled(false);
@@ -309,8 +347,8 @@ public class OCC extends javax.swing.JFrame {
         for(int i = 0; i <= confs.getTotalNumberOfCostumers(); i++){
             initializeState("Costumer", i, costumerState.IDLE );
         }
-        this.cclient.openServer();
-        
+        initializeState("Manager", 0, managerState.END );
+        initializeState("Cashier", 0, cashierState.END );         
         this.cclient.sendMessage(confs.getConfigurations());
         
     }// GEN-LAST:event_jButtonStartActionPerformed
@@ -321,6 +359,7 @@ public class OCC extends javax.swing.JFrame {
         System.out.println("Resume");
         jButtonResume.setEnabled(false);
         jButtonSuspend.setEnabled(true);
+        this.cclient.sendMessage("RE");
     }// GEN-LAST:event_jButtonResumeActionPerformed
     
     
@@ -330,6 +369,7 @@ public class OCC extends javax.swing.JFrame {
         System.out.println("Suspend");
         jButtonResume.setEnabled(true);
         jButtonSuspend.setEnabled(false);
+        this.cclient.sendMessage("SU");
     }// GEN-LAST:event_jButtonSuspendActionPerformed
     
     
@@ -340,11 +380,9 @@ public class OCC extends javax.swing.JFrame {
         jButtonStop.setEnabled(false);
         jButtonResume.setEnabled(false);
         jButtonSuspend.setEnabled(false);
-        jButtonStart.setEnabled(true);
-        
+        jButtonStart.setEnabled(true); 
         cleanTables();
-        this.cclient.closeServer();
-        
+        this.cclient.sendMessage("ST");
         //updateState("Costumer", 0, managerState.CORRIDOR_HALL_3 );
     }// GEN-LAST:event_jButtonStopActionPerformed
     
@@ -352,11 +390,29 @@ public class OCC extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.simulationState = "END";
         System.out.println("End");
+        this.cserver.kill();
+        this.cserver.closeServer();
+        
+        if(cclient != null){
+            this.cclient.sendMessage("ED");
+            this.cclient.closeServer();
+        }
         System.exit(0);
     }// GEN-LAST:event_jButtonEndActionPerformed
-
     
-   public void updateState(String tab, int id, Object state){
+    private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonEndActionPerformed
+        // TODO add your handling code here:
+        this.cclient = new CClient(jHostInput.getText(), Integer.parseInt(jPortInput.getText()));
+        if(this.cclient.openServer()){
+            jButtonStart.setEnabled(true);
+            jButtonConnect.setEnabled(false);
+            jLabelConnectionStatus.setText("Connected!");
+        }else{
+            jLabelConnectionStatus.setText("Failed to Connect!"); 
+        }
+    }// GEN-LAST:event_jButtonEndActionPerformed
+
+   public void updateState(String tab, Object state, int id){
         switch(tab){
             case "Costumer":
                 jTableCostumers.setValueAt(state, id, 1);
@@ -372,7 +428,23 @@ public class OCC extends javax.swing.JFrame {
         }
    }
    
-      public void initializeState(String tab, int id, Object state){
+    public void updateState(String tab, Object state){
+        switch(tab){
+            case "Costumer":
+                jTableCostumers.setValueAt(state, 0, 1);
+                break;
+            case "Manager":
+                jTableManager.setValueAt(state, 0, 1);
+                break;
+            case "Cashier":
+                jTableCashier.setValueAt(state, 0, 1);
+                break;
+            default:
+                break;
+        }
+   }
+   
+    public void initializeState(String tab, int id, Object state){
         switch(tab){
             case "Costumer":
                 model = (DefaultTableModel) jTableCostumers.getModel();
@@ -408,6 +480,9 @@ public class OCC extends javax.swing.JFrame {
         }else{
             jSupervisorTimeOut.setEnabled(true);
             jManualSupervisor.setEnabled(false);
+        }
+        if(!this.simulationState.equals("END")){
+            this.cclient.sendMessage(confs.getOperatingMode());
         }
     }
     
@@ -447,20 +522,28 @@ public class OCC extends javax.swing.JFrame {
                 new OCC().setVisible(true);
             }
         });
+
+        
     }
 
     // Variables declaration - do not modify
+    private javax.swing.JButton jButtonConnect;
     private javax.swing.JButton jButtonEnd;
     private javax.swing.JButton jButtonResume;
     private javax.swing.JButton jButtonStart;
     private javax.swing.JButton jButtonStop;
     private javax.swing.JButton jButtonSuspend;
+    private javax.swing.JTextField jHostInput;
     private javax.swing.JLabel jLabelCMTimeOut;
+    private javax.swing.JLabel jLabelConnectionStatus;
+    private javax.swing.JLabel jLabelHost;
+    private javax.swing.JLabel jLabelPort;
     private javax.swing.JLabel jLabelNCostumers;
     private javax.swing.JLabel jLabelPaymentTime;
     private javax.swing.JLabel jLabelSupervisoMode;
     private javax.swing.JButton jManualSupervisor;
     private javax.swing.JComboBox<Integer> jPaymentTimeOut;
+    private javax.swing.JTextField jPortInput;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPaneCostumers;

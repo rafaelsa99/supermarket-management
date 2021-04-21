@@ -5,22 +5,26 @@
  */
 package Communication;
 
+import Main.OCC;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.function.Function;
 
 /**
  * Criar Server para receber comandos do OCC.
  *
  * @author omp
  */
-public class CServer {
+public class CServer extends Thread{
 
+    private volatile boolean isRunning = true;
     private int portNumber;
     private ServerSocket serverSocket;
+    private OCC occObject;
 
     public CServer(int portNumber) {
         this.portNumber = portNumber;
@@ -41,11 +45,64 @@ public class CServer {
         } catch(Exception e){System.out.println(e);}
     }
     
-    
     public void closeServer() {
         try {
             this.serverSocket.close();
         } catch(Exception e){System.out.println(e);}
-    }    
+    }
+    
+    public void parseMessage(String msg){
+        
+        String[] aux;
+        String type;//Manager = MA, Customer = CT, Cashier = CA
+        if(!msg.equals("stop")){
+            type = msg.substring(0, 2);
+             System.out.println(type);
+            switch(type){
+                case "MA":
+                    occObject.updateState("Manager", msg.substring(3));
+                    break;
+                case "CT":
+                    aux = msg.substring(3).split("|");
+                    for(String tuple: aux){
+                        aux = tuple.split(":");
+                        occObject.updateState("Customer", aux[1], Integer.parseInt(aux[0]));
+                    }
+                    break;
+                case "CA":
+                    occObject.updateState("Cashier", msg.substring(3));
+                    break;
+                default:
+                    System.out.println("Unexpected Type");
+                    break;
+            }
+        }
+    }
 
-}
+    public void resolveMessages(){
+        String msg="";
+        try {
+            Socket s = this.serverSocket.accept();//establishes connection   
+            DataInputStream dis=new DataInputStream(s.getInputStream());
+            while(!msg.equals("stop") && isRunning && dis.available() > 0){
+                msg = (String)dis.readUTF();
+                parseMessage(msg);
+                System.out.println("message= " + msg);
+            }
+        } catch(Exception e){System.out.println(e);}
+    }
+
+    public void setOccObject(OCC occObject) {
+        this.occObject = occObject;
+    }
+    
+    @Override
+    public void run() {
+        resolveMessages();
+    }
+    
+    public void kill() {
+       isRunning = false;
+   }
+   
+}    

@@ -66,6 +66,10 @@ public class Configurations implements IConfigurations {
     public int getTotalNumberOfCostumers() {
         return totalNumberOfCostumers;
     }
-    
-    
+
+    //Ex: OM:true|OT:0
+    public String getOperatingMode() {
+        return new String("OM:" + Boolean.toString(this.operatingMode) + "|OT:" + this.operatingTimeOut);
+    }
+       
 }
