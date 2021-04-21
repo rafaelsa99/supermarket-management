@@ -7,6 +7,8 @@ import ActiveEntity.AECustomer;
 import ActiveEntity.AEManager;
 import Common.Configurations;
 import Common.STCustomer;
+import Communication.CClient;
+import Communication.CServer;
 import SACashier.ICashier_Cashier;
 import SACashier.ICashier_Customer;
 import SACashier.SACashier;
@@ -36,6 +38,9 @@ import SAPaymentHall.SAPaymentHall;
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class OIS extends javax.swing.JFrame {
+    
+    CClient cclient = null;
+    CServer cserver;
 
     /**
      * Creates new form OIS
@@ -46,7 +51,13 @@ public class OIS extends javax.swing.JFrame {
         initOIS();
     }
 
-    private void initOIS() {        
+    private void initOIS() {
+        
+        cserver = new CServer(6669);
+        cserver.openServer();
+        cserver.setOccObject(this);
+        cserver.start();
+        
         final STCustomer[] corridorNumbers = {STCustomer.CORRIDOR_1, 
                                              STCustomer.CORRIDOR_2, 
                                              STCustomer.CORRIDOR_3};
@@ -139,6 +150,12 @@ public class OIS extends javax.swing.JFrame {
         jLabelCorridor = new javax.swing.JLabel();
         jLabelPaymentHall = new javax.swing.JLabel();
         jLabelPaymentBox = new javax.swing.JLabel();
+        jButtonConnect = new javax.swing.JButton();
+        jPortInput = new javax.swing.JTextField();
+        jLabelPort = new javax.swing.JLabel();
+        jHostInput = new javax.swing.JTextField();
+        jLabelHost = new javax.swing.JLabel();
+        jLabelConnectionStatus = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -227,6 +244,23 @@ public class OIS extends javax.swing.JFrame {
 
         jLabelPaymentBox.setText("Payment Box");
 
+        jButtonConnect.setText("Connect");
+        jButtonConnect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonConnectActionPerformed(evt);
+            }
+        });
+
+        jPortInput.setText("6666");
+
+        jLabelPort.setText("Port");
+
+        jHostInput.setText("localhost");
+
+        jLabelHost.setText("Host");
+
+        jLabelConnectionStatus.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -252,9 +286,25 @@ public class OIS extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jCorridor1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelTitle)
                             .addComponent(jCorridor3, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabelTitle)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabelConnectionStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButtonConnect))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(23, 23, 23)
+                                .addComponent(jLabelHost)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jHostInput, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(12, 12, 12)
+                                .addComponent(jLabelPort)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jPortInput, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(42, 42, 42)
@@ -275,8 +325,20 @@ public class OIS extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabelTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelPort)
+                            .addComponent(jPortInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jHostInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelHost))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButtonConnect)
+                            .addComponent(jLabelConnectionStatus))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jEntranceHall, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jOutsideHall, javax.swing.GroupLayout.Alignment.LEADING)
@@ -302,11 +364,21 @@ public class OIS extends javax.swing.JFrame {
                     .addComponent(jLabelCorridor)
                     .addComponent(jLabelPaymentHall)
                     .addComponent(jLabelPaymentBox))
-                .addContainerGap(33, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConnectActionPerformed
+        this.cclient = new CClient(jHostInput.getText(), Integer.parseInt(jPortInput.getText()));
+        if(this.cclient.openServer()){
+            jButtonConnect.setEnabled(false);
+            jLabelConnectionStatus.setText("Connected!");
+        }else{
+            jLabelConnectionStatus.setText("Failed to Connect!"); 
+        }
+    }//GEN-LAST:event_jButtonConnectActionPerformed
 
     /**
      * @param args the command line arguments
@@ -344,6 +416,7 @@ public class OIS extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonConnect;
     private javax.swing.JScrollPane jCorridor1;
     private javax.swing.JScrollPane jCorridor2;
     private javax.swing.JScrollPane jCorridor3;
@@ -351,12 +424,16 @@ public class OIS extends javax.swing.JFrame {
     private javax.swing.JScrollPane jCorridorHall2;
     private javax.swing.JScrollPane jCorridorHall3;
     private javax.swing.JScrollPane jEntranceHall;
+    private javax.swing.JTextField jHostInput;
+    private javax.swing.JLabel jLabelConnectionStatus;
     private javax.swing.JLabel jLabelCorridor;
     private javax.swing.JLabel jLabelCorridorHall;
     private javax.swing.JLabel jLabelEntranceHall;
+    private javax.swing.JLabel jLabelHost;
     private javax.swing.JLabel jLabelOutsideHall;
     private javax.swing.JLabel jLabelPaymentBox;
     private javax.swing.JLabel jLabelPaymentHall;
+    private javax.swing.JLabel jLabelPort;
     private javax.swing.JLabel jLabelTitle;
     private javax.swing.JList<javax.swing.JLabel> jListCorridor1;
     private javax.swing.JList<javax.swing.JLabel> jListCorridor2;
@@ -371,5 +448,6 @@ public class OIS extends javax.swing.JFrame {
     private javax.swing.JScrollPane jOutsideHall;
     private javax.swing.JScrollPane jPaymentBox;
     private javax.swing.JScrollPane jPaymentHall;
+    private javax.swing.JTextField jPortInput;
     // End of variables declaration//GEN-END:variables
 }
