@@ -39,7 +39,8 @@ public class AEControl extends Thread implements IControl{
     private final IPaymentHall_Control iPaymentHall;
     // área partilhada PaymentBox
     private final IPaymentBox_Control iPaymentBox;
-
+    // Comunication Server 
+    
     public AEControl(ICustomer_Control iCustomer, IManager_Control iManager, ICashier_Control iCashier, 
                      IOutsideHall_Control iOutsideHall, IEntranceHall_Control iEntranceHall, 
                      ICorridorHall_Control[] iCorridorHall, ICorridor_Control[] iCorridor, 
