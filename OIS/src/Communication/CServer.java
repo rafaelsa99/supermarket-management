@@ -6,13 +6,9 @@
 package Communication;
 
 import Main.OIS;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.function.Function;
 
 /**
  * Criar Server para receber comandos do OCC.
@@ -24,7 +20,6 @@ public class CServer extends Thread{
     private volatile boolean isRunning = true;
     private int portNumber;
     private ServerSocket serverSocket;
-    private OIS oisObject;
 
     public CServer(int portNumber) {
         this.portNumber = portNumber;
@@ -81,10 +76,6 @@ public class CServer extends Thread{
                 System.out.println("message= " + msg);
             }
         } catch(Exception e){System.out.println(e);}
-    }
-
-    public void setOccObject(OIS oisObject) {
-        this.oisObject = oisObject;
     }
     
     @Override
