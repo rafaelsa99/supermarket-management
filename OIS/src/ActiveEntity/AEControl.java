@@ -14,10 +14,14 @@ import SAPaymentBox.IPaymentBox_Control;
 import SAPaymentHall.IPaymentHall_Control;
 
 /**
- * Esta entidade é responsável por fazer executar os comandos originados no OCC
- * tais como start, stop, end, etc....
  * 
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
+ */
+
+/**
+ * Represents the Control Thread
+ * Responsable for executing the commands received by the OCC
+ * Ex: start, stop, end, etc....
  */
 public class AEControl extends Thread implements IControl{
 
@@ -55,6 +59,13 @@ public class AEControl extends Thread implements IControl{
         this.iPaymentBox = iPaymentBox;
     }
     
+    
+    /**
+    * Start a simulation based on the params received by the OCC
+    * @param nCustomers The number of Costumers to be used in the simulation
+    * @param socket The socket object to be used in the simulation
+    * 
+    */
     @Override
     public void startSimulation( int nCustomers, Socket socket ) {
         iOutsideHall.start();
@@ -71,6 +82,9 @@ public class AEControl extends Thread implements IControl{
         System.out.println("CONTROL: Start");
     }
     
+    /**
+    * Stops the Simulation
+    */
     @Override
     public void stopSimulation() {
         iManager.stop();
@@ -86,6 +100,9 @@ public class AEControl extends Thread implements IControl{
         System.out.println("CONTROL: Stop");
     }
     
+    /**
+    * Ends the Simulation
+    */
     @Override
     public void endSimulation() {
         // terminar restantes Customers e outras AE
@@ -104,6 +121,9 @@ public class AEControl extends Thread implements IControl{
         System.out.println("CONTROL: End");
     }
     
+    /**
+    * Suspends the Simulation
+    */
     @Override
     public void suspendSimulation(){
         iManager.suspend();
@@ -119,6 +139,9 @@ public class AEControl extends Thread implements IControl{
         System.out.println("CONTROL: Suspend");
     }
     
+    /**
+    * Resumes the Simulation
+    */
     @Override
     public void resumeSimulation(){
         iManager.resume();
@@ -134,6 +157,9 @@ public class AEControl extends Thread implements IControl{
         System.out.println("CONTROL: Resume");
     }
     
+    /**
+    * Run the thread simulation, responsable to change the state of the simulation
+    */
     @Override
     public void run() {
         // ver qual a msg recebida, executar comando e responder
