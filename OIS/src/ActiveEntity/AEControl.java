@@ -177,6 +177,7 @@ public class AEControl extends Thread implements IControl{
     @Override
     public void run() {
         String msg;
+        startSimulation(20, 100, 100, true, 100);
         cServer.awaitConnection();
         while(true){
             msg = cServer.awaitMessages();

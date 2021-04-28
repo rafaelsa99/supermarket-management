@@ -35,21 +35,26 @@ import SAPaymentHall.IPaymentHall_Customer;
 import SAPaymentHall.SAPaymentHall;
 import java.awt.Color;
 import java.awt.Component;
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.SwingUtilities;
 
 /*
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class OIS extends javax.swing.JFrame {
     
-    static DefaultListModel model;
-    CClient cclient;
-    CServer cserver;
-
+    private static DefaultListModel model;
+    private CClient cclient;
+    private CServer cserver;
+    private static final ReentrantLock rl = new ReentrantLock(true);
 
     /**
      * Creates new form OIS
@@ -337,11 +342,11 @@ public class OIS extends javax.swing.JFrame {
         jListCorridor37.setModel(new javax.swing.DefaultListModel());
         jCorridor37.setViewportView(jListCorridor37);
 
-        jListCorridor20.setCellRenderer(new ListItemRenderer());
+        jListCorridor38.setCellRenderer(new ListItemRenderer());
         jListCorridor38.setModel(new javax.swing.DefaultListModel());
         jCorridor38.setViewportView(jListCorridor38);
 
-        jListCorridor20.setCellRenderer(new ListItemRenderer());
+        jListCorridor39.setCellRenderer(new ListItemRenderer());
         jListCorridor39.setModel(new javax.swing.DefaultListModel());
         jCorridor39.setViewportView(jListCorridor39);
 
@@ -581,8 +586,8 @@ public class OIS extends javax.swing.JFrame {
         pack();
         
         corridor = new JList[][]{ { jListCorridor10, jListCorridor11, jListCorridor12, jListCorridor13, jListCorridor14, jListCorridor15, jListCorridor16, jListCorridor17, jListCorridor18, jListCorridor19},
-                                                       { jListCorridor20, jListCorridor21, jListCorridor22, jListCorridor23, jListCorridor24, jListCorridor25, jListCorridor26, jListCorridor27, jListCorridor28, jListCorridor29},
-                                                       { jListCorridor30, jListCorridor31, jListCorridor32, jListCorridor33, jListCorridor34, jListCorridor35, jListCorridor36, jListCorridor37, jListCorridor38, jListCorridor39}};
+                                  { jListCorridor20, jListCorridor21, jListCorridor22, jListCorridor23, jListCorridor24, jListCorridor25, jListCorridor26, jListCorridor27, jListCorridor28, jListCorridor29},
+                                  { jListCorridor30, jListCorridor31, jListCorridor32, jListCorridor33, jListCorridor34, jListCorridor35, jListCorridor36, jListCorridor37, jListCorridor38, jListCorridor39}};
         corridoHall = new JList[]{ jListCorridorHall1, jListCorridorHall2, jListCorridorHall3};
     }// </editor-fold>
 
@@ -598,89 +603,149 @@ public class OIS extends javax.swing.JFrame {
     }
     
     //Return da posição onde foi inserido o cliente
-    synchronized public static String appendCostumerToInterface(JList list, int idCostumer){
-        model = (DefaultListModel)list.getModel();
-        ImageIcon image = new javax.swing.ImageIcon(OIS.class.getResource("/Assets/customer_50x50.png")); // NOI18N
-        JLabel label = new JLabel();
-        label.setIcon(image);
-        label.setText(String.valueOf(idCostumer));
-        label.setToolTipText(String.valueOf("00" + String.valueOf(idCostumer).concat(String.valueOf(model.size()))));
-        model.addElement(label);
-        return "00" + String.valueOf(idCostumer).concat(String.valueOf(model.size()-1));
+    public static String appendCostumerToInterface(JList list, int idCostumer){
+        String graphicalID = "";
+        try {
+            rl.lock();
+            model = (DefaultListModel)list.getModel();
+            ImageIcon image = new javax.swing.ImageIcon(OIS.class.getResource("/Assets/customer_50x50.png")); // NOI18N
+            JLabel label = new JLabel();
+            label.setIcon(image);
+            label.setText(String.valueOf(idCostumer));
+            label.setToolTipText(String.valueOf("00" + String.valueOf(idCostumer).concat(String.valueOf(model.size()))));
+            model.addElement(label);
+            graphicalID = "00" + String.valueOf(idCostumer).concat(String.valueOf(model.size()-1));
+        } finally {
+            rl.unlock();
+        }
+        return graphicalID;
     }
     
-    synchronized public static String appendManagerToInterface(JList list){
-        model = (DefaultListModel)list.getModel();
-        ImageIcon image = new javax.swing.ImageIcon(OIS.class.getResource("/Assets/manager_50x50.png")); // NOI18N
-        JLabel label = new JLabel();
-        label.setIcon(image);
-        label.setText("M");
-        label.setToolTipText(String.valueOf("11" + String.valueOf(model.size())));
-        model.addElement(label);
-        return "11" + String.valueOf(model.size()-1);
+    public static String appendManagerToInterface(JList list){
+        String graphicalID = "";
+        try {
+            rl.lock();
+            model = (DefaultListModel)list.getModel();
+            ImageIcon image = new javax.swing.ImageIcon(OIS.class.getResource("/Assets/manager_50x50.png")); // NOI18N
+            JLabel label = new JLabel();
+            label.setIcon(image);
+            label.setText("M");
+            label.setToolTipText(String.valueOf("11" + String.valueOf(model.size())));
+            model.addElement(label);
+            graphicalID = "11" + String.valueOf(model.size()-1);
+        } finally {
+            rl.unlock();
+        }
+        return graphicalID;
     }
     
-    synchronized public static String appendCashierToInterface(JList list){
-        model = (DefaultListModel)list.getModel();
-        ImageIcon image = new javax.swing.ImageIcon(OIS.class.getResource("/Assets/cashier_50x50.png")); // NOI18N
-        JLabel label = new JLabel();
-        label.setIcon(image);
-        label.setText("C");
-        label.setToolTipText(String.valueOf("22" + String.valueOf(model.size())));
-        model.addElement(label);
-        return "22" + String.valueOf(model.size()-1);
+    public static String appendCashierToInterface(JList list){
+        String graphicalID = "";
+        try{
+            rl.lock();
+            model = (DefaultListModel)list.getModel();
+            ImageIcon image = new javax.swing.ImageIcon(OIS.class.getResource("/Assets/cashier_50x50.png")); // NOI18N
+            JLabel label = new JLabel();
+            label.setIcon(image);
+            label.setText("C");
+            label.setToolTipText(String.valueOf("22" + String.valueOf(model.size())));
+            model.addElement(label);
+            graphicalID = "22" + String.valueOf(model.size()-1);
+        } finally{
+            rl.unlock();
+        }
+        return graphicalID;
     }
     
     //A interface cria uma linha para cada movimento, é preciso manter o track, isto é em que linha está um dado customer(id)
-    synchronized public static String moveCostumer(JList previous, JList next, String previousIndex, int idCostumer){
-        removeCustomerFromInterface(previous, previousIndex);
+    public static String moveCostumer(JList previous, JList next, String previousIndex, int idCostumer){
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                removeCustomerFromInterface(previous, previousIndex);
+            });
+        } catch (InterruptedException | InvocationTargetException ex) {
+            System.out.println(ex.toString());        }
         return appendCostumerToInterface(next, idCostumer);
     }
     
-    synchronized public static String moveManager(JList previous, JList next, String previousIndex){
-        removeManagerFromInterface(previous, previousIndex);
+    public static String moveManager(JList previous, JList next, String previousIndex){
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                removeManagerFromInterface(previous, previousIndex);
+            });
+        } catch (InterruptedException | InvocationTargetException ex) {
+            System.out.println(ex.toString());        }
         return appendManagerToInterface(next);
     }
         
-    synchronized public static String moveCashier(JList previous, JList next, String previousIndex){
-        removeCashierFromInterface(previous, previousIndex);
+    public static String moveCashier(JList previous, JList next, String previousIndex){
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                removeCashierFromInterface(previous, previousIndex);
+            });
+        } catch (InterruptedException | InvocationTargetException ex) {
+            System.out.println(ex.toString());        }
         return appendCashierToInterface(next);
     }
     
-    synchronized public static void removeCashierFromInterface(JList list, String index){
-        model = (DefaultListModel)list.getModel();
-        JLabel actual;
-        for(int i = 0; i < model.getSize(); i++){
-            actual = (JLabel) model.get(i);
-            if(actual.getToolTipText().equals(index)){
-                model.removeElementAt(i);
-                break;
+    public static void removeCashierFromInterface(JList list, String index){
+        try{
+            rl.lock();
+            model = (DefaultListModel)list.getModel();
+            JLabel actual;
+            for(int i = 0; i < model.getSize(); i++){
+                actual = (JLabel) model.get(i);
+                if(actual.getToolTipText().equals(index)){
+                    model.remove(i);
+                    break;
+                }
             }
+        } finally{
+            rl.unlock();
         }
     }
     
-    synchronized public static void removeCustomerFromInterface(JList list, String index){
-        model = (DefaultListModel)list.getModel();
-        JLabel actual;
-        for(int i = 0; i < model.getSize(); i++){
-            actual = (JLabel) model.get(i);
-            if(actual.getToolTipText().equals(index)){
-                model.removeElementAt(i);
-                break;
+    public static void removeCustomerFromInterfaceInvoke(JList list, String index){
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                removeCustomerFromInterface(list, index);
+            });
+        } catch (InterruptedException | InvocationTargetException ex) {
+            System.out.println(ex.toString());        }
+    }
+    
+    private static void removeCustomerFromInterface(JList list, String index){
+        try{
+            rl.lock();
+            model = (DefaultListModel)list.getModel();
+            JLabel actual;
+            System.out.println(index + " " + model.getSize());
+            for(int i = 0; i < model.getSize(); i++){
+                actual = (JLabel) model.get(i);
+                if(actual.getToolTipText().equals(index)){
+                    model.remove(i);
+                    break;
+                }
             }
+        } finally{
+            rl.unlock();
         }
     }
         
-    synchronized public static void removeManagerFromInterface(JList list, String index){
-        model = (DefaultListModel)list.getModel();
-        JLabel actual;
-        for(int i = 0; i < model.getSize(); i++){
-            int test = model.getSize();
-            actual = (JLabel) model.get(i);
-            if(actual.getToolTipText().equals(index)){
-                model.removeElementAt(i);
-                break;
+    public static void removeManagerFromInterface(JList list, String index){
+        try{
+            rl.lock();
+            model = (DefaultListModel)list.getModel();
+            JLabel actual;
+            for(int i = 0; i < model.getSize(); i++){
+                actual = (JLabel) model.get(i);
+                if(actual.getToolTipText().equals(index)){
+                    model.remove(i);
+                    break;
+                }
             }
+        } finally{
+            rl.unlock();
         }
     }
     

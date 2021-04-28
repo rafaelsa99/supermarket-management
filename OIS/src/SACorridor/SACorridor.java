@@ -134,7 +134,7 @@ public class SACorridor implements ICorridor_Control,
                 canMove[nextCId] = true;
                 movement[nextCId].signal();
             }
-            if(customerPosition[cId] == (stepsSize - 1)){ // Check if reached the end of the corridor
+            if(customerPosition[cId] == stepsSize){ // Check if reached the end of the corridor
                 canMove[cId] = false;
                 customerPosition[cId] = -1;
                 numCustomersOnCorridor -= 1;

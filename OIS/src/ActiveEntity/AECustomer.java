@@ -86,7 +86,7 @@ public class AECustomer extends Thread {
             }
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.STOP){
-                OIS.removeCustomerFromInterface(OIS.jListOutsideHall, graphicalID);
+                OIS.removeCustomerFromInterfaceInvoke(OIS.jListOutsideHall, graphicalID);
                 continue;
             }
             if(stCustomer == STCustomer.END)
@@ -102,7 +102,7 @@ public class AECustomer extends Thread {
             //notifica manager que saiu do entrance hall e há espaço livre
             iManager.entranceHall_freeSlot();
             if(stCustomer == STCustomer.STOP){
-                OIS.removeCustomerFromInterface(OIS.jListEntranceHall, graphicalID);
+                OIS.removeCustomerFromInterfaceInvoke(OIS.jListEntranceHall, graphicalID);
                 continue;
             }
             if(stCustomer == STCustomer.END)
@@ -118,7 +118,7 @@ public class AECustomer extends Thread {
             iManager.corridorHall_freeSlot(corridorNumber);
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.STOP){
-                OIS.removeCustomerFromInterface(OIS.corridoHall[corridorNumber], graphicalID);
+                OIS.removeCustomerFromInterfaceInvoke(OIS.corridoHall[corridorNumber], graphicalID);
                 continue;
             }
             if(stCustomer == STCustomer.END)
@@ -147,7 +147,7 @@ public class AECustomer extends Thread {
             }
             iCorridorHall[corridorNumber].freeSlot();
             if(stCustomer == STCustomer.STOP){
-                OIS.removeCustomerFromInterface(OIS.corridor[corridorNumber][corridorPos], graphicalID);
+                OIS.removeCustomerFromInterfaceInvoke(OIS.corridor[corridorNumber][corridorPos], graphicalID);
                 continue;
             }
             if(stCustomer == STCustomer.END)
@@ -162,7 +162,7 @@ public class AECustomer extends Thread {
             }
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.STOP){
-                OIS.removeCustomerFromInterface(OIS.jListPaymentHall, graphicalID);
+                OIS.removeCustomerFromInterfaceInvoke(OIS.jListPaymentHall, graphicalID);
                 continue;
             }
             if(stCustomer == STCustomer.END)
@@ -173,12 +173,12 @@ public class AECustomer extends Thread {
                 stCustomer = iPaymentBox.enter(customerId);
             }
             if(stCustomer == STCustomer.STOP){
-                OIS.removeCustomerFromInterface(OIS.jListPaymentBox, graphicalID);
+                OIS.removeCustomerFromInterfaceInvoke(OIS.jListPaymentBox, graphicalID);
                 continue;
             }
             if(stCustomer == STCustomer.END)
                 return;
-            OIS.removeCustomerFromInterface(OIS.jListPaymentBox, graphicalID);
+            OIS.removeCustomerFromInterfaceInvoke(OIS.jListPaymentBox, graphicalID);
         }
     }
 }
