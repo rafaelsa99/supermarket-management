@@ -1,30 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Communication;
 
 import Main.OCC;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.function.Function;
 
 /**
  * Criar Server para receber comandos do OCC.
  *
- * @author omp
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class CServer extends Thread{
 
     private volatile boolean isRunning = true;
-    private int portNumber;
+    private final int portNumber;
     private ServerSocket serverSocket;
-    private OCC occObject;
 
     public CServer(int portNumber) {
         this.portNumber = portNumber;
@@ -33,7 +25,7 @@ public class CServer extends Thread{
     public void openServer() {
         try {
             this.serverSocket = new ServerSocket(this.portNumber);
-        } catch(Exception e){System.out.println(e);}
+        } catch(IOException e){System.out.println(e);}
     }
     
     public void awaitMessages(){
@@ -42,13 +34,13 @@ public class CServer extends Thread{
             DataInputStream dis=new DataInputStream(s.getInputStream());  
             String  str=(String)dis.readUTF();  
             System.out.println("message= "+str);
-        } catch(Exception e){System.out.println(e);}
+        } catch(IOException e){System.out.println(e);}
     }
     
     public void closeServer() {
         try {
             this.serverSocket.close();
-        } catch(Exception e){System.out.println(e);}
+        } catch(IOException e){System.out.println(e);}
     }
     
     public void parseMessage(String msg){
@@ -60,17 +52,14 @@ public class CServer extends Thread{
              System.out.println(type);
             switch(type){
                 case "MA":
-                    occObject.updateState("Manager", msg.substring(3));
+                    OCC.updateState("Manager", msg.substring(3));
                     break;
                 case "CT":
-                    aux = msg.substring(3).split("|");
-                    for(String tuple: aux){
-                        aux = tuple.split(":");
-                        occObject.updateState("Customer", aux[1], Integer.parseInt(aux[0]));
-                    }
+                    aux = msg.substring(3).split(":");
+                    OCC.updateState("Customer", aux[1], Integer.parseInt(aux[0]));
                     break;
                 case "CA":
-                    occObject.updateState("Cashier", msg.substring(3));
+                    OCC.updateState("Cashier", msg.substring(3));
                     break;
                 default:
                     System.out.println("Unexpected Type");
@@ -89,11 +78,7 @@ public class CServer extends Thread{
                 parseMessage(msg);
                 System.out.println("message= " + msg);
             }
-        } catch(Exception e){System.out.println(e);}
-    }
-
-    public void setOccObject(OCC occObject) {
-        this.occObject = occObject;
+        } catch(IOException e){System.out.println(e);}
     }
     
     @Override

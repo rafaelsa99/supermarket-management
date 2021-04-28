@@ -16,4 +16,5 @@ public interface ICorridor_Control {
 
     public void end();
 
+    public void setTimeoutMovement(int timeoutMovement);
 }

@@ -47,32 +47,18 @@ import javax.swing.JList;
 public class OIS extends javax.swing.JFrame {
     
     static DefaultListModel model;
-    CClient cclient = null;
+    CClient cclient;
     CServer cserver;
-    
-    //JList[] corridor1;
-    //JList[] corridor2;
-    //JList[] corridor3;
+
 
     /**
      * Creates new form OIS
      */
-    public OIS() {
+    public OIS(int serverPort) {
         initComponents();
+        cserver = new CServer(serverPort);
+        cserver.openServer();
         this.setVisible(true);
-        initOIS();
-    }
-
-    private void initOIS() {
-        
-        //corridor1 = new JList[]{ jListCorridor10, jListCorridor11, jListCorridor12, jListCorridor13, jListCorridor14, jListCorridor15, jListCorridor16, jListCorridor17, jListCorridor18, jListCorridor19};
-        //corridor2 = new JList[]{ jListCorridor20, jListCorridor21, jListCorridor22, jListCorridor23, jListCorridor24, jListCorridor25, jListCorridor26, jListCorridor27, jListCorridor28, jListCorridor29};
-        //corridor3 = new JList[]{ jListCorridor30, jListCorridor31, jListCorridor32, jListCorridor33, jListCorridor34, jListCorridor35, jListCorridor36, jListCorridor37, jListCorridor38, jListCorridor39};
-        
-        //cserver = new CServer(6669);
-        //cserver.openServer();
-        //cserver.setOccObject(this);
-        //cserver.start();
     }
 
     /**
@@ -600,23 +586,10 @@ public class OIS extends javax.swing.JFrame {
         if(this.cclient.openServer()){
             jButtonConnect.setEnabled(false);
             jLabelConnectionStatus.setText("Connected!");
+            runOIS();
         }else{
             jLabelConnectionStatus.setText("Failed to Connect!"); 
-             runOIS(); // ----------------------------------------------------------------> METER AO ESTABELECER O CONNECT
-
-        }
-        /*appendCostumerToInterface(jListOutsideHall, 0);
-        
-        appendCostumerToInterface(jListEntranceHall, 1);
-        
-        
-        appendCostumerToInterface(jListEntranceHall, 1);
-        appendCostumerToInterface(jListEntranceHall, 1);
-        appendCostumerToInterface(jListEntranceHall, 1);
-        appendManagerToInterface(jListOutsideHall);
-        
-        appendCashierToInterface(jListPaymentBox);*/
-            
+        }   
     }
     
     //Return da posição onde foi inserido o cliente
@@ -750,19 +723,19 @@ public class OIS extends javax.swing.JFrame {
                     (IOutsideHall_Customer) saOutsideHall, (IEntranceHall_Customer) saEntranceHall,
                     (ICorridorHall_Customer[]) saCorridorHall, (ICorridor_Customer[]) saCorridor,
                     (IPaymentHall_Customer) saPaymentHall, (IPaymentBox_Customer) sAPaymentBox,
-                    (ICashier_Customer) saCashier, (IManager_Customer) saManager);
+                    (ICashier_Customer) saCashier, (IManager_Customer) saManager, cclient);
             aeCustomer[i].start();
         }
         final AEManager aeManager = new AEManager((IManager_Manager) saManager, (IOutsideHall_Manager) saOutsideHall,
-                                                   (IEntranceHall_Manager) saEntranceHall);
+                                                   (IEntranceHall_Manager) saEntranceHall, cclient);
         aeManager.start();
         final AECashier aeCashier = new AECashier((IPaymentHall_Cashier) saPaymentHall, 
                                                   (ICashier_Cashier) saCashier,
-                                                  (IPaymentBox_Cashier) sAPaymentBox);
+                                                  (IPaymentBox_Cashier) sAPaymentBox, cclient);
         aeCashier.start();
         final AEControl aeControl = new AEControl(saCustomer, saManager, saCashier,
                                                   saOutsideHall, saEntranceHall, saCorridorHall, 
-                                                  saCorridor, saPaymentHall, sAPaymentBox);
+                                                  saCorridor, saPaymentHall, sAPaymentBox, cserver);
         aeControl.start();
         
         /*try {
@@ -809,7 +782,17 @@ public class OIS extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new OIS();
+                int serverPort = Configurations.SERVER_PORT;
+                if(args.length == 1){
+                    try{
+                        serverPort = Integer.parseInt(args[0]);
+                    }catch (NumberFormatException ex){
+                        System.out.println("Invalid parameter!\nParameters: [Optional: serverPort]\n");
+                    }
+                } else if (args.length > 1){
+                    System.out.println("Invalid parameters!\nParameters: [Optional: serverPort]\n");
+                }
+                new OIS(serverPort);
             }
         });
     }

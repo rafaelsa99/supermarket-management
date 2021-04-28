@@ -1,6 +1,7 @@
 package ActiveEntity;
 
 import Common.STCustomer;
+import Communication.CClient;
 import Main.OIS;
 import SACashier.ICashier_Customer;
 import SACorridor.ICorridor_Customer;
@@ -45,11 +46,13 @@ public class AECustomer extends Thread {
     private final IPaymentBox_Customer iPaymentBox;
     //Graphical ID
     private int graphicalID;
+    //Communication Client
+    private final CClient cClient;
 
     public AECustomer(int customerId, ICustomer_Customer customer, IOutsideHall_Customer outsideHall, 
                       IEntranceHall_Customer entranceHall, ICorridorHall_Customer[] corridorHall,
                       ICorridor_Customer[] corridor, IPaymentHall_Customer paymentHall,
-                      IPaymentBox_Customer paymentBox, ICashier_Customer cashier, IManager_Customer manager) {
+                      IPaymentBox_Customer paymentBox, ICashier_Customer cashier, IManager_Customer manager, CClient cc) {
         this.customerId = customerId;
         this.iCustomer = customer;
         this.iManager = manager;
@@ -60,6 +63,7 @@ public class AECustomer extends Thread {
         this.iCorridor = corridor;
         this.iPaymentHall = paymentHall;
         this.iPaymentBox = paymentBox;
+        this.cClient = cc;
     }
 
     @Override
@@ -69,12 +73,14 @@ public class AECustomer extends Thread {
         int corridorNumber;
         while (true) {
             // thread avança para Idle
+            cClient.sendMessage("CA|" + customerId + ":Idle");
             stCustomer = iCustomer.idle(customerId);
             System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.END)
                 return;
             // se simulação activa (não suspend, não stop, não end), thread avança para o outsideHall
             if(stCustomer == STCustomer.OUTSIDE_HALL){
+                cClient.sendMessage("CA|" + customerId + ":Outside Hall");
                 graphicalID = OIS.appendCostumerToInterface(OIS.jListOutsideHall, customerId);
                 stCustomer = iOutsideHall.enter(customerId);
             }
@@ -87,6 +93,7 @@ public class AECustomer extends Thread {
                 return;
             // se simulação activa (não suspend, não stop, não end), thread avança para o entranceHall
             if(stCustomer == STCustomer.ENTRANCE_HALL){
+                cClient.sendMessage("CA|" + customerId + ":Entrance Hall");
                 graphicalID = OIS.moveCostumer(OIS.jListOutsideHall, OIS.jListEntranceHall, graphicalID, customerId);
                 stCustomer = iEntranceHall.enter(customerId);
             }
@@ -104,6 +111,7 @@ public class AECustomer extends Thread {
             if(stCustomer == STCustomer.CORRIDOR_HALL_1 || 
                stCustomer == STCustomer.CORRIDOR_HALL_2 ||
                stCustomer == STCustomer.CORRIDOR_HALL_3){
+                cClient.sendMessage("CA|" + customerId + ":Corridor Hall " + corridorNumber);
                 graphicalID = OIS.moveCostumer(OIS.jListEntranceHall, OIS.corridoHall[corridorNumber], graphicalID, customerId);
                 stCustomer = iCorridorHall[corridorNumber].enter(customerId);
             }
@@ -120,6 +128,7 @@ public class AECustomer extends Thread {
             if(stCustomer == STCustomer.CORRIDOR_1 || 
                stCustomer == STCustomer.CORRIDOR_2 ||
                stCustomer == STCustomer.CORRIDOR_3){
+                cClient.sendMessage("CA|" + customerId + ":Corridor " + corridorNumber + " in position " + corridorPos);
                 graphicalID = OIS.moveCostumer(OIS.corridoHall[corridorNumber], OIS.corridor[corridorNumber][corridorPos], graphicalID, customerId);
                 stCustomer = iCorridor[corridorNumber].enter(customerId);
             }
@@ -131,6 +140,7 @@ public class AECustomer extends Thread {
                 stCustomer == STCustomer.CORRIDOR_2 ||
                 stCustomer == STCustomer.CORRIDOR_3){
                     corridorPos++;
+                    cClient.sendMessage("CA|" + customerId + ":Corridor " + corridorNumber + " in position " + corridorPos);
                     graphicalID = OIS.moveCostumer(OIS.corridor[corridorNumber][corridorPos - 1], OIS.corridor[corridorNumber][corridorPos], graphicalID, customerId);
                 }
                 System.out.println("CUSTOMER " + customerId + ": MOVEMENT " + stCustomer);
@@ -143,6 +153,7 @@ public class AECustomer extends Thread {
             if(stCustomer == STCustomer.END)
                 return;
             if(stCustomer == STCustomer.PAYMENT_HALL){
+                cClient.sendMessage("CA|" + customerId + ":Payment Hall");
                 iCashier.paymentHall_customerIn();
                 graphicalID = OIS.moveCostumer(OIS.corridor[corridorNumber][corridorPos], OIS.jListPaymentHall, graphicalID, customerId);
                 stCustomer = iPaymentHall.enter(customerId);
@@ -157,6 +168,7 @@ public class AECustomer extends Thread {
             if(stCustomer == STCustomer.END)
                 return;
             if(stCustomer == STCustomer.PAYMENT_BOX){
+                cClient.sendMessage("CA|" + customerId + ":Payment Box");
                 graphicalID = OIS.moveCostumer(OIS.jListPaymentHall, OIS.jListPaymentBox, graphicalID, customerId);
                 stCustomer = iPaymentBox.enter(customerId);
             }

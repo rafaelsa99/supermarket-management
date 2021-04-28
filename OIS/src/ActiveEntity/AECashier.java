@@ -2,6 +2,7 @@
 package ActiveEntity;
 
 import Common.STCashier;
+import Communication.CClient;
 import Main.OIS;
 import SACashier.ICashier_Cashier;
 import SAPaymentHall.IPaymentHall_Cashier;
@@ -21,12 +22,15 @@ public class AECashier extends Thread{
     private final IPaymentBox_Cashier iPaymentBox;
     //Graphical ID
     private int graphicalID;
+    //Communication Client
+    private final CClient cClient;
     
     public AECashier(IPaymentHall_Cashier iPaymentHall, ICashier_Cashier iCashier,
-                     IPaymentBox_Cashier iPaymentBox) {
+                     IPaymentBox_Cashier iPaymentBox, CClient cc) {
         this.iPaymentHall = iPaymentHall;
         this.iCashier = iCashier;
         this.iPaymentBox = iPaymentBox;
+        this.cClient = cc;
         graphicalID = OIS.appendCashierToInterface(OIS.jListIdle);
     }
 
@@ -34,11 +38,13 @@ public class AECashier extends Thread{
     public void run() {
         STCashier stCashier;
         while(true){
+            cClient.sendMessage("CA|Idle");
             stCashier = iCashier.idle();
             System.out.println("CASHIER: " + stCashier);
             if(stCashier == STCashier.END)
                 return;
             if(stCashier == STCashier.PAYMENT_HALL){
+                cClient.sendMessage("CA|Payment Hall");
                 graphicalID = OIS.moveCashier(OIS.jListIdle, OIS.jListPaymentHall, graphicalID);
                 stCashier = iPaymentHall.accept();
                 System.out.println("CASHIER: " + stCashier);
@@ -49,6 +55,7 @@ public class AECashier extends Thread{
                 if(stCashier == STCashier.END)
                     return;
                 if(stCashier == STCashier.PAYMENT_BOX){
+                    cClient.sendMessage("CA|Payment Box");
                     graphicalID = OIS.moveCashier(OIS.jListPaymentHall, OIS.jListPaymentBox, graphicalID);
                     stCashier = iPaymentBox.payment();
                     System.out.println("CASHIER: " + stCashier);

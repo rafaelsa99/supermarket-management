@@ -51,8 +51,7 @@ public class SAManager implements IManager_Control,
         this.isAuto = true;
         this.step = false;
     }
-    
-    
+
     @Override
     public void start(int nCustomers) {
         try{

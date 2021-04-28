@@ -2,6 +2,7 @@
 package ActiveEntity;
 
 import Common.STManager;
+import Communication.CClient;
 import Main.OIS;
 import SAEntranceHall.IEntranceHall_Manager;
 import SAManager.IManager_Manager;
@@ -22,13 +23,16 @@ public class AEManager extends Thread{
     private final IEntranceHall_Manager iEntranceHall;
     //Graphical ID
     private int graphicalID;
+    //Communication Client
+    private final CClient cClient;
 
     public AEManager(IManager_Manager iManager, IOutsideHall_Manager iOutsideHall, 
-                     IEntranceHall_Manager iEntranceHall) {
+                     IEntranceHall_Manager iEntranceHall, CClient cc) {
         this.iManager = iManager;
         this.iOutsideHall = iOutsideHall;
         this.iEntranceHall = iEntranceHall;
         graphicalID = OIS.appendManagerToInterface(OIS.jListIdle);
+        this.cClient = cc;
     }
 
     @Override
@@ -37,6 +41,7 @@ public class AEManager extends Thread{
         
         while(true){
             // thread avança para Idle
+            cClient.sendMessage("MA|Idle");
             stManager = iManager.idle();
             if(stManager == STManager.END){
                 System.out.println("MANAGER: END");
@@ -45,6 +50,7 @@ public class AEManager extends Thread{
             switch(stManager){
                 case ENTRANCE_HALL: 
                     System.out.println("MANAGER: OUTSIDE_HALL");
+                    cClient.sendMessage("MA|Outside Hall");
                     graphicalID = OIS.moveManager(OIS.jListIdle, OIS.jListOutsideHall, graphicalID);
                     iOutsideHall.accept();
                     graphicalID = OIS.moveManager(OIS.jListOutsideHall, OIS.jListIdle, graphicalID);
@@ -53,6 +59,7 @@ public class AEManager extends Thread{
                 case CORRIDOR_HALL_2:
                 case CORRIDOR_HALL_3:
                     System.out.println("MANAGER: ENTRANCE_HALL");
+                    cClient.sendMessage("MA|Entrance Hall");
                     graphicalID = OIS.moveManager(OIS.jListIdle, OIS.jListPaymentHall, graphicalID);
                     iEntranceHall.accept(stManager);
                     graphicalID = OIS.moveManager(OIS.jListPaymentHall, OIS.jListIdle, graphicalID);

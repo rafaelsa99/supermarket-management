@@ -16,4 +16,6 @@ public interface IPaymentBox_Control {
     public void stop();
 
     public void end();
+    
+    public void setTimeoutPayment(int timeoutPayment);
 }

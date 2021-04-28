@@ -18,7 +18,7 @@ public class SACorridor implements ICorridor_Control,
     private final Condition full;
     private final Condition suspend;
     private final STCustomer corridorNumber; // Number of the corridor 
-    private final int timeoutMovement;
+    private int timeoutMovement;
     private final boolean[] canMove;
     private final int[] customerPosition;
     private final int[] customerIdx;
@@ -87,6 +87,10 @@ public class SACorridor implements ICorridor_Control,
             rl.unlock();
         }
         return corridorNumber;
+    }
+
+    public void setTimeoutMovement(int timeoutMovement) {
+        this.timeoutMovement = timeoutMovement;
     }
     
     @Override

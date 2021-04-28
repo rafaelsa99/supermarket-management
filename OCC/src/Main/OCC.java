@@ -1,21 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Main;
 
-import Idle.IIdle_Customer;
-import Idle.SAIdle;
-import Common.STCustomer;
-import Common.STManager;
-import Common.STCashier;
-import java.util.List;
 import Configurations.Configurations;
 import javax.swing.table.DefaultTableModel;
 import Communication.CClient;
 import Communication.CServer;
-import java.util.function.Function;
 
 /**
  *
@@ -24,10 +13,10 @@ import java.util.function.Function;
 public class OCC extends javax.swing.JFrame {
 
     String simulationState;
-    STCustomer[] costumersState;
-    STCustomer costumerState; 
-    STManager managerState;
-    STCashier cashierState;
+    String[] costumersState;
+    String costumerState; 
+    String managerState;
+    String cashierState;
     DefaultTableModel model;
     static Configurations confs = new Configurations();
     CClient cclient = null;
@@ -35,20 +24,18 @@ public class OCC extends javax.swing.JFrame {
 
     /**
      * Creates new form OCC
+     * @param serverPort server port
      */
-    public OCC() {
+    public OCC(int serverPort) {
         initComponents();
-        initOCC();
+        initOCC(serverPort);
     }
 
-    private void initOCC() {
+    private void initOCC(int serverPort) {
         this.simulationState = "END";
-        
-        cserver = new CServer(6669);
+        cserver = new CServer(serverPort);
         cserver.openServer();
-        cserver.setOccObject(this);
         cserver.start();
-        
     }
 
     /**
@@ -132,7 +119,7 @@ public class OCC extends javax.swing.JFrame {
         
         jLabelPort.setText("Port");
 
-        jPortInput.setText("6666");
+        jPortInput.setText("6669");
 
         jHostInput.setText("localhost");
 
@@ -345,10 +332,10 @@ public class OCC extends javax.swing.JFrame {
         
         System.out.println(confs.getConfigurations());       
         for(int i = 0; i <= confs.getTotalNumberOfCostumers(); i++){
-            initializeState("Costumer", i, costumerState.IDLE );
+            initializeState("Costumer", i, "Idle" );
         }
-        initializeState("Manager", 0, managerState.END );
-        initializeState("Cashier", 0, cashierState.END );         
+        initializeState("Manager", 0, "Idle" );
+        initializeState("Cashier", 0, "Idle" );         
         this.cclient.sendMessage(confs.getConfigurations());
         
     }// GEN-LAST:event_jButtonStartActionPerformed
@@ -412,7 +399,7 @@ public class OCC extends javax.swing.JFrame {
         }
     }// GEN-LAST:event_jButtonEndActionPerformed
 
-   public void updateState(String tab, Object state, int id){
+   public static void updateState(String tab, String state, int id){
         switch(tab){
             case "Costumer":
                 jTableCostumers.setValueAt(state, id, 1);
@@ -428,7 +415,7 @@ public class OCC extends javax.swing.JFrame {
         }
    }
    
-    public void updateState(String tab, Object state){
+    public static void updateState(String tab, String state){
         switch(tab){
             case "Costumer":
                 jTableCostumers.setValueAt(state, 0, 1);
@@ -491,7 +478,7 @@ public class OCC extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
+        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code">
         // (optional) ">
         /*
          * If Nimbus (introduced in Java SE 6) is not available, stay with the default
@@ -519,11 +506,19 @@ public class OCC extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new OCC().setVisible(true);
+                int serverPort = Configurations.SERVER_PORT;
+                if(args.length == 1){
+                    try{
+                        serverPort = Integer.parseInt(args[0]);
+                    }catch (NumberFormatException ex){
+                        System.out.println("Invalid parameter!\nParameters: [Optional: serverPort]\n");
+                    }
+                } else if (args.length > 1){
+                    System.out.println("Invalid parameters!\nParameters: [Optional: serverPort]\n");
+                }
+                new OCC(serverPort).setVisible(true);
             }
         });
-
-        
     }
 
     // Variables declaration - do not modify
@@ -550,9 +545,9 @@ public class OCC extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jSupervisorMode;
     private javax.swing.JComboBox<Integer> jSupervisorTimeOut;
     private javax.swing.JTabbedPane jTabbedStatus;
-    private javax.swing.JTable jTableCashier;
-    private javax.swing.JTable jTableCostumers;
-    private javax.swing.JTable jTableManager;
+    private static javax.swing.JTable jTableCashier;
+    private static javax.swing.JTable jTableCostumers;
+    private static javax.swing.JTable jTableManager;
     private javax.swing.JComboBox<Integer> jcostumerMovementTimeOut;
     private javax.swing.JSpinner jnumberOfCostumers;
     // End of variables declaration

@@ -19,7 +19,7 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
     private final Condition suspend;
     private boolean isPayed;
     private boolean isSuspended;
-    private final int timeoutPayment;
+    private int timeoutPayment;
     private boolean stop;
     private boolean end;
 
@@ -32,6 +32,11 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
         this.isSuspended = false;
         this.stop = false;
         this.end = false;
+    }
+
+    @Override
+    public void setTimeoutPayment(int timeoutPayment) {
+        this.timeoutPayment = timeoutPayment;
     }
     
     @Override

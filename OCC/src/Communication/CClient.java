@@ -1,20 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Communication;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 /**
  * Criar cliente para enviar comandos para o OCC.
- * @author omp
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class CClient {
-    private String hostName;
-    private int portNumber;
+    private final String hostName;
+    private final int portNumber;
     private Socket echoSocket;
 
     public CClient(String hostName, int portNumber) {
@@ -24,9 +21,10 @@ public class CClient {
     
     public boolean openServer() {
         try {
+            System.out.println(portNumber);
             this.echoSocket = new Socket(this.hostName, this.portNumber);
             return true;
-        } catch(Exception e){
+        } catch(IOException e){
             System.out.println(e);
             return false;
         }
@@ -34,16 +32,16 @@ public class CClient {
     
     public void sendMessage(String Message){
         try {
-            DataOutputStream dout=new DataOutputStream(this.echoSocket.getOutputStream());  
-            dout.writeUTF(Message);  
-            dout.flush();  
-            dout.close();
-        } catch(Exception e){System.out.println(e);}
+            try (DataOutputStream dout = new DataOutputStream(this.echoSocket.getOutputStream())) {
+                dout.writeUTF(Message);
+                dout.flush();
+            }
+        } catch(IOException e){System.out.println(e);}
     }
     
     public void closeServer() {
         try {
             this.echoSocket.close();
-        } catch(Exception e){System.out.println(e);}
+        } catch(IOException e){System.out.println(e);}
     }
 }

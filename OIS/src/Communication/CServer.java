@@ -1,26 +1,24 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Communication;
 
-import Main.OIS;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+
 
 /**
  * Criar Server para receber comandos do OCC.
  *
- * @author omp
+ * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
-public class CServer extends Thread{
+public class CServer{
 
     private volatile boolean isRunning = true;
-    private int portNumber;
+    private final int portNumber;
     private ServerSocket serverSocket;
-
+    private Socket socket;
+    
     public CServer(int portNumber) {
         this.portNumber = portNumber;
     }
@@ -28,22 +26,34 @@ public class CServer extends Thread{
     public void openServer() {
         try {
             this.serverSocket = new ServerSocket(this.portNumber);
-        } catch(Exception e){System.out.println(e);}
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
     }
     
-    public void awaitMessages(){
+    public void awaitConnection(){
         try {
-            Socket s = this.serverSocket.accept();//establishes connection   
-            DataInputStream dis=new DataInputStream(s.getInputStream());  
-            String  str=(String)dis.readUTF();  
-            System.out.println("message= "+str);
-        } catch(Exception e){System.out.println(e);}
+            socket = this.serverSocket.accept();//establishes connection   
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
+    }
+    
+    public String awaitMessages(){
+        String str = null;
+        try {
+            try (DataInputStream dis = new DataInputStream(socket.getInputStream())) {
+                str=(String)dis.readUTF();
+            }
+        } catch(IOException e){System.out.println(e);}
+        return str;
     }
     
     public void closeServer() {
         try {
+            this.socket.close();
             this.serverSocket.close();
-        } catch(Exception e){System.out.println(e);}
+        } catch(IOException e){System.out.println(e);}
     }
     
     public void parseMessage(String msg){
@@ -64,27 +74,4 @@ public class CServer extends Thread{
             }
         }
     }
-
-    public void resolveMessages(){
-        String msg="";
-        try {
-            Socket s = this.serverSocket.accept();//establishes connection   
-            DataInputStream dis=new DataInputStream(s.getInputStream());
-            while(!msg.equals("stop") && isRunning && dis.available() > 0){
-                msg = (String)dis.readUTF();
-                parseMessage(msg);
-                System.out.println("message= " + msg);
-            }
-        } catch(Exception e){System.out.println(e);}
-    }
-    
-    @Override
-    public void run() {
-        resolveMessages();
-    }
-    
-    public void kill() {
-       isRunning = false;
-   }
-   
 }    

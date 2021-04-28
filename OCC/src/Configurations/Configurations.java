@@ -13,7 +13,8 @@ public class Configurations implements IConfigurations {
 
     final static Integer[] movementTimeOutPossibilities = {0, 100, 250, 500, 1000};
     final static Integer[] operatingTimeOutPossibilities = {0, 100, 250, 500, 1000, 2500, 5000};
-
+    public static final int SERVER_PORT = 6666;
+    
     //TimeOuts defined in ms
     private int totalNumberOfCostumers;
     private int movementTimeOut;

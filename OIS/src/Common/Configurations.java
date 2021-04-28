@@ -17,6 +17,6 @@ public class Configurations {
     public static final int TIMEOUT_MOVEMENT = 100;
     public static final int TIMEOUT_PAYMENT = 100;
     public static final int TIMEOUT_AUTHORIZATION = 100;
-    
+    public static final int SERVER_PORT = 6669;
     private Configurations() {}; // To avoid instantiation
 }

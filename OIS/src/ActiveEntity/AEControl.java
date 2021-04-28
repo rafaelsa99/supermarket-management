@@ -2,6 +2,7 @@
 
 package ActiveEntity;
 
+import Communication.CServer;
 import SACashier.ICashier_Control;
 import SACorridor.ICorridor_Control;
 import SACorridorHall.ICorridorHall_Control;
@@ -39,12 +40,13 @@ public class AEControl extends Thread implements IControl{
     private final IPaymentHall_Control iPaymentHall;
     // área partilhada PaymentBox
     private final IPaymentBox_Control iPaymentBox;
-    // Comunication Server 
+    // communication server
+    private final CServer cServer;
     
     public AEControl(ICustomer_Control iCustomer, IManager_Control iManager, ICashier_Control iCashier, 
                      IOutsideHall_Control iOutsideHall, IEntranceHall_Control iEntranceHall, 
                      ICorridorHall_Control[] iCorridorHall, ICorridor_Control[] iCorridor, 
-                     IPaymentHall_Control iPaymentHall, IPaymentBox_Control iPaymentBox) {
+                     IPaymentHall_Control iPaymentHall, IPaymentBox_Control iPaymentBox, CServer cs) {
         this.iCustomer = iCustomer;
         this.iManager = iManager;
         this.iCashier = iCashier;
@@ -54,19 +56,26 @@ public class AEControl extends Thread implements IControl{
         this.iCorridor = iCorridor;
         this.iPaymentHall = iPaymentHall;
         this.iPaymentBox = iPaymentBox;
+        this.cServer = cs;
     }
     
     @Override
-    public void startSimulation( int nCustomers, Socket socket ) {
+    public void startSimulation( int nCustomers, int movementTimeout, int paymentTimeout, boolean operationMode, int operationTimeout ) {
         iOutsideHall.start();
         iEntranceHall.start();
         for (int i = 0; i < iCorridorHall.length; i++) {
             iCorridorHall[i].start();
             iCorridor[i].start();   
+            iCorridor[i].setTimeoutMovement(movementTimeout);
         }
         iPaymentHall.start();
+        iPaymentBox.setTimeoutPayment(paymentTimeout);
         iPaymentBox.start();
         iCustomer.start(nCustomers);
+        if(operationMode)
+            iManager.auto(operationTimeout);
+        else
+            iManager.manual();
         iManager.start(nCustomers);
         iCashier.start();
         System.out.println("CONTROL: Start");
@@ -136,40 +145,53 @@ public class AEControl extends Thread implements IControl{
     }
     
     @Override
+    public void managerStep(){
+        iManager.step();
+    }
+    
+    @Override
     public void run() {
-        // ver qual a msg recebida, executar comando e responder
-        
-        /*PARA TESTE*/    
-        try {  
-            sleep(500, 500);
-        } catch (InterruptedException ex) {
+        String msg;
+        cServer.awaitConnection();
+        while(true){
+            msg = cServer.awaitMessages();
+            if(msg.substring(0, 2).equals("ED"))
+                break;
+            new Command(msg).start();
         }
+        cServer.closeServer();
+    }
+    
+    class Command extends Thread{
         
-        startSimulation(20, null);
-        try { 
-            sleep(1500, 1500);
-        } catch (InterruptedException ex) {
+        private final String command;
+
+        public Command(String command) {
+            this.command = command;
         }
-        
-        suspendSimulation();
-        try { 
-            sleep(1500, 1500);
-        } catch (InterruptedException ex) {
-        }
-        
-        resumeSimulation();
-        try { 
-            sleep(3000, 3000);
-        } catch (InterruptedException ex) {
-        }
-        //endSimulation();
-        stopSimulation();
-        try { 
-            sleep(3000, 3000);
-        } catch (InterruptedException ex) {
-        }
-        
-        startSimulation(40, null);
-        /*FIM TESTE*/
+
+        @Override
+        public void run() {
+            String type = command.substring(0, 2);
+            switch(type){
+                case "RE": resumeSimulation();
+                    break;
+                case "SU": suspendSimulation();
+                    break;
+                case "ST": stopSimulation();
+                    break;
+                case "NX": managerStep();
+                    break;
+                case "NC":
+                    String[] configs = command.split("\\|");
+                    int nc = Integer.parseInt((configs[0].split(":"))[1]);
+                    int ct = Integer.parseInt((configs[1].split(":"))[1]);
+                    int pt = Integer.parseInt((configs[2].split(":"))[1]);
+                    boolean om = Boolean.parseBoolean((configs[3].split(":"))[1]);
+                    int ot = Integer.parseInt((configs[4].split(":"))[1]);
+                    startSimulation(nc, ct, pt, om, ot);
+                    break;
+            }
+        } 
     }
 }
