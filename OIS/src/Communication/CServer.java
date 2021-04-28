@@ -35,7 +35,7 @@ public class CServer{
         try { 
                 s = serverSocket.accept();
 	    } catch (IOException e) {
-            System.err.println("Could not listen on port " + portNumber);
+            System.out.println("Could not listen on port " + portNumber);
         }
         return s;
     }

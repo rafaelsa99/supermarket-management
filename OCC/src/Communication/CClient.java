@@ -36,7 +36,7 @@ public class CClient {
             echoSocket.close();
             return true;
         } catch(IOException e){
-            System.err.println("Couldn't get I/O for the connection to " + hostName);
+            System.out.println("Couldn't get I/O for the connection to " + hostName);
             return false;
         }
     }
@@ -53,9 +53,9 @@ public class CClient {
         ) {
            out.print(message);
         } catch (UnknownHostException e) {
-            System.err.println("Don't know about host " + hostName);
+            System.out.println("Don't know about host " + hostName);
         } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to " + hostName);
+            System.out.println("Couldn't get I/O for the connection to " + hostName);
         }
     }
 }
