@@ -25,7 +25,7 @@ public class MyServer extends Thread {
 //    }
 
         //int portNumber = Integer.parseInt(args[0]);
-        int portNumber = 9999;
+        int portNumber = 6669;
         boolean listening = true;
         
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 

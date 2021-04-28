@@ -18,17 +18,17 @@ public class ProcessProtocol {
         
         if(!theInput.equals("stop")){
             type = theInput.substring(0, 2);
-             System.out.println(type);
+            System.out.println(theInput);
             switch(type){
                 case "MA":
-                    OCC.updateState("Manager", theInput.substring(3));
+                    OCC.updateState("MA", theInput.substring(3));
                     break;
                 case "CT":
                     aux = theInput.substring(3).split(":");
-                    OCC.updateState("Customer", aux[1], Integer.parseInt(aux[0]));
+                    OCC.updateState("CT", aux[1], Integer.parseInt(aux[0]));
                     break;
                 case "CA":
-                    OCC.updateState("Cashier", theInput.substring(3));
+                    OCC.updateState("CH", theInput.substring(3));
                     break;
                 default:
                     System.out.println("Unexpected Type");
