@@ -7,7 +7,7 @@ import Communication.CClient;
 import Communication.CServer;
 
 /**
- *
+ * OCC Main class.
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class OCC extends javax.swing.JFrame {
@@ -469,6 +469,7 @@ public class OCC extends javax.swing.JFrame {
     }
     
     /**
+     * Main function.
      * @param args the command line arguments
      */
     public static void main(String args[]) {
