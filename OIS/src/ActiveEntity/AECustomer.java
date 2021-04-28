@@ -15,17 +15,13 @@ import SAPaymentBox.IPaymentBox_Customer;
 import SAPaymentHall.IPaymentHall_Customer;
 
 /**
- * Não pretende implementar a entidade activa Customer. Serve apenas para dar
- * pistas como o Thread Custumer deve recorrer a àreas partilhadas para gerir as
- * transições de estado.
- *
+ * Represents the Customer Thread.
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class AECustomer extends Thread {
 
     // id do customer
     private final int customerId;
-
     // área partilhada Customer
     private final ICustomer_Customer iCustomer;
     // área partilhada Manager
@@ -66,16 +62,16 @@ public class AECustomer extends Thread {
         this.cClient = cc;
     }
 
+    /**
+     * Life cycle of the customer.
+     */
     @Override
     public void run() {
         STCustomer stCustomer;
         int corridorPos;
         int corridorNumber;
         while (true) {
-            // thread avança para Idle
-            //cClient.sendMessage("CA|" + customerId + ":Idle");
             stCustomer = iCustomer.idle(customerId);
-            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.END)
                 return;
             // se simulação activa (não suspend, não stop, não end), thread avança para o outsideHall
@@ -84,7 +80,6 @@ public class AECustomer extends Thread {
                 graphicalID = OIS.appendCostumerToInterface(OIS.jListOutsideHall, customerId);
                 stCustomer = iOutsideHall.enter(customerId);
             }
-            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.STOP){
                 OIS.removeCustomerFromInterfaceInvoke(OIS.jListOutsideHall, graphicalID);
                 continue;
@@ -98,7 +93,6 @@ public class AECustomer extends Thread {
                 stCustomer = iEntranceHall.enter(customerId);
             }
             corridorNumber = stCustomer.getValue();
-            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             //notifica manager que saiu do entrance hall e há espaço livre
             iManager.entranceHall_freeSlot();
             if(stCustomer == STCustomer.STOP){
@@ -116,7 +110,6 @@ public class AECustomer extends Thread {
                 stCustomer = iCorridorHall[corridorNumber].enter(customerId);
             }
             iManager.corridorHall_freeSlot(corridorNumber);
-            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.STOP){
                 OIS.removeCustomerFromInterfaceInvoke(OIS.corridoHall[corridorNumber], graphicalID);
                 continue;
@@ -143,7 +136,6 @@ public class AECustomer extends Thread {
                     cClient.sendMessage("CT|" + customerId + ":Corridor " + corridorNumber + " in position " + corridorPos);
                     graphicalID = OIS.moveCostumer(OIS.corridor[corridorNumber][corridorPos - 1], OIS.corridor[corridorNumber][corridorPos], graphicalID, customerId);
                 }
-                System.out.println("CUSTOMER " + customerId + ": MOVEMENT " + stCustomer);
             }
             iCorridorHall[corridorNumber].freeSlot();
             if(stCustomer == STCustomer.STOP){
@@ -160,7 +152,6 @@ public class AECustomer extends Thread {
                 iCashier.paymentHall_freeSlot();
                 SACorridor.freeSlot();
             }
-            System.out.println("CUSTOMER " + customerId + ": " + stCustomer);
             if(stCustomer == STCustomer.STOP){
                 OIS.removeCustomerFromInterfaceInvoke(OIS.jListPaymentHall, graphicalID);
                 continue;

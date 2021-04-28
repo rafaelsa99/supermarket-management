@@ -2,6 +2,7 @@
 package SACustomer;
 
 import Common.STCustomer;
+import Communication.CClient;
 import List.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -20,8 +21,10 @@ public class SACustomer implements ICustomer_Customer,
     private final boolean[] leave;
     private boolean end;
     private boolean simulationActive;
+    //Communication Client
+    private final CClient cClient;
     
-    public SACustomer(int maxCustomers) {
+    public SACustomer(int maxCustomers, CClient cc) {
         rl = new ReentrantLock(true);
         list = new List(maxCustomers, true);
         setEmpty = rl.newCondition();
@@ -34,6 +37,7 @@ public class SACustomer implements ICustomer_Customer,
         }
         end = false;
         simulationActive = false;
+        cClient = cc;
     }
     @Override
     public STCustomer idle( int customerId ) {
@@ -44,7 +48,7 @@ public class SACustomer implements ICustomer_Customer,
             if(list.getCount() == stay.length){
                 setEmpty.signal();
                 if(simulationActive){
-                    System.out.println("SHOPPING SIMULATION ENDED"); // Enviar mensagem para o OCC
+                    cClient.sendMessage("ED");
                     simulationActive = false;
                 }
             }

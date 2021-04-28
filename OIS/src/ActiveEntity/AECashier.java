@@ -9,13 +9,10 @@ import SAPaymentHall.IPaymentHall_Cashier;
 import SAPaymentBox.IPaymentBox_Cashier;
         
 /**
- *
+ * Represents the Cashier Thread.
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 
-/**
- * Represents the Cashier Thread
- */
 public class AECashier extends Thread{
     // área partilhada PaymentHall
     private final IPaymentHall_Cashier iPaymentHall;
@@ -39,23 +36,19 @@ public class AECashier extends Thread{
 
     
     /**
-   * LyfeCycle of the Cashier Therad
+   * Life cycle of the Cashier Thread.
    */
-
     @Override
     public void run() {
         STCashier stCashier;
         while(true){
-            cClient.sendMessage("CA|Idle");
             stCashier = iCashier.idle();
-            System.out.println("CASHIER: " + stCashier);
             if(stCashier == STCashier.END)
                 return;
             if(stCashier == STCashier.PAYMENT_HALL){
                 cClient.sendMessage("CA|Payment Hall");
                 graphicalID = OIS.moveCashier(OIS.jListIdle, OIS.jListPaymentHall, graphicalID);
                 stCashier = iPaymentHall.accept();
-                System.out.println("CASHIER: " + stCashier);
                 if(stCashier == STCashier.STOP){
                     graphicalID = OIS.moveCashier(OIS.jListPaymentHall, OIS.jListIdle, graphicalID);
                     continue;
@@ -66,7 +59,6 @@ public class AECashier extends Thread{
                     cClient.sendMessage("CA|Payment Box");
                     graphicalID = OIS.moveCashier(OIS.jListPaymentHall, OIS.jListPaymentBox, graphicalID);
                     stCashier = iPaymentBox.payment();
-                    System.out.println("CASHIER: " + stCashier);
                     graphicalID = OIS.moveCashier(OIS.jListPaymentBox, OIS.jListIdle, graphicalID);
                     if(stCashier == STCashier.STOP)
                         continue;
@@ -74,6 +66,7 @@ public class AECashier extends Thread{
                         return;
                 }
             }
+            cClient.sendMessage("CA|Idle");
         }
     }
     

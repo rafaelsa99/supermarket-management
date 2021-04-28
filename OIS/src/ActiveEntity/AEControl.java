@@ -18,15 +18,12 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 /**
- * 
+ * Represents the Control Thread.
+ * Responsible for executing the commands received by the OCC.
+ * Ex: start, stop, end, etc....
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 
-/**
- * Represents the Control Thread
- * Responsable for executing the commands received by the OCC
- * Ex: start, stop, end, etc....
- */
 public class AEControl extends Thread implements IControl{
 
     // área partilhada Customer
@@ -71,10 +68,12 @@ public class AEControl extends Thread implements IControl{
     
     
     /**
-    * Start a simulation based on the params received by the OCC
+    * Start a simulation based on the parameters received by the OCC
     * @param nCustomers The number of Costumers to be used in the simulation
-    * @param socket The socket object to be used in the simulation
-    * 
+     * @param movementTimeout customer movement timeout
+     * @param paymentTimeout customer payment timeout
+     * @param operationMode manager operation mode
+     * @param operationTimeout manager operation timeout
     */
     @Override
     public void startSimulation( int nCustomers, int movementTimeout, int paymentTimeout, boolean operationMode, int operationTimeout ) {
@@ -95,11 +94,10 @@ public class AEControl extends Thread implements IControl{
             iManager.manual();
         iManager.start(nCustomers);
         iCashier.start();
-        System.out.println("CONTROL: Start");
     }
     
     /**
-    * Stops the Simulation
+    * Stops the Simulation.
     */
     @Override
     public void stopSimulation() {
@@ -113,15 +111,13 @@ public class AEControl extends Thread implements IControl{
         }
         iPaymentHall.stop();
         iPaymentBox.stop();
-        System.out.println("CONTROL: Stop");
     }
     
     /**
-    * Ends the Simulation
+    * Ends the Simulation.
     */
     @Override
     public void endSimulation() {
-        // terminar restantes Customers e outras AE
         iManager.end();
         iCashier.end();
         iOutsideHall.end();
@@ -132,13 +128,11 @@ public class AEControl extends Thread implements IControl{
         }
         iPaymentHall.end();
         iPaymentBox.end();
-        // terminar Customers em idle
         iCustomer.end();
-        System.out.println("CONTROL: End");
     }
     
     /**
-    * Suspends the Simulation
+    * Suspends the Simulation.
     */
     @Override
     public void suspendSimulation(){
@@ -152,11 +146,10 @@ public class AEControl extends Thread implements IControl{
         }
         iPaymentHall.suspend();
         iPaymentBox.suspend();
-        System.out.println("CONTROL: Suspend");
     }
     
     /**
-    * Resumes the Simulation
+    * Resumes the Simulation.
     */
     @Override
     public void resumeSimulation(){
@@ -170,17 +163,18 @@ public class AEControl extends Thread implements IControl{
         }
         iPaymentHall.resume();
         iPaymentBox.resume();
-        System.out.println("CONTROL: Resume");
     }
     
     /**
-    * Run the thread simulation, responsable to change the state of the simulation
-    */
+     * Manager step, if operation mode is manual.
+     */
     @Override
     public void managerStep(){
         iManager.step();
     }
-    
+    /**
+    * Run the thread simulation, responsible to change the state of the simulation.
+    */
     @Override
     public void run() {
         Socket socket;

@@ -14,12 +14,12 @@ import javax.swing.SwingUtilities;
  */
 public class OCC extends javax.swing.JFrame {
 
-    String simulationState;
+    static String simulationState;
     String[] costumersState;
     String costumerState; 
     String managerState;
     String cashierState;
-    DefaultTableModel model;
+    static DefaultTableModel model;
     static Configurations confs = new Configurations();
     CClient cclient = null;
     CServer cserver;
@@ -82,7 +82,7 @@ public class OCC extends javax.swing.JFrame {
 
         setSize(new java.awt.Dimension(0, 0));
 
-        jnumberOfCostumers.setModel(new javax.swing.SpinnerNumberModel(10, 0, 99, 1));
+        jnumberOfCostumers.setModel(new javax.swing.SpinnerNumberModel(10, 1, 99, 1));
 
         jLabelNCostumers.setText("Number Of Costumers");
 
@@ -306,16 +306,11 @@ public class OCC extends javax.swing.JFrame {
     }// </editor-fold>                                             
 
     private void jManualSupervisorActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jManualSupervisorActionPerformed
-        // TODO add your handling code here:
-        //System.out.println("Next");
         this.cclient.sendMessage("NX");
     }// GEN-LAST:event_jManualSupervisorActionPerformed
 
     private void jButtonStartActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonStartActionPerformed
-        // TODO add your handling code here:
         this.simulationState = "START";
-        //System.out.println("Start");
-        // Socket Server that update 
         
         jButtonStart.setEnabled(false);
         jButtonSuspend.setEnabled(true);
@@ -332,7 +327,6 @@ public class OCC extends javax.swing.JFrame {
             confs.setOperatingMode(true);
         }
         
-        System.out.println(confs.getConfigurations());       
         for(int i = 0; i < confs.getTotalNumberOfCostumers(); i++){
             initializeState("CT", i, "Idle" );
         }
@@ -343,9 +337,7 @@ public class OCC extends javax.swing.JFrame {
     }// GEN-LAST:event_jButtonStartActionPerformed
 
     private void jButtonResumeActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonResumeActionPerformed
-        // TODO add your handling code here:
         this.simulationState = "RESUME";
-        System.out.println("Resume");
         jButtonResume.setEnabled(false);
         jButtonSuspend.setEnabled(true);
         this.cclient.sendMessage("RE");
@@ -353,9 +345,7 @@ public class OCC extends javax.swing.JFrame {
     
     
     private void jButtonSuspendActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSuspendActionPerformed
-        // TODO add your handling code here:
         this.simulationState = "SUSPEND";
-        System.out.println("Suspend");
         jButtonResume.setEnabled(true);
         jButtonSuspend.setEnabled(false);
         this.cclient.sendMessage("SU");
@@ -363,9 +353,7 @@ public class OCC extends javax.swing.JFrame {
     
     
     private void jButtonStopActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonStopActionPerformed
-        // TODO add your handling code here:
         this.simulationState = "STOP";
-        System.out.println("Stop");
         jButtonStop.setEnabled(false);
         jButtonResume.setEnabled(false);
         jButtonSuspend.setEnabled(false);
@@ -376,16 +364,14 @@ public class OCC extends javax.swing.JFrame {
     }// GEN-LAST:event_jButtonStopActionPerformed
     
     private void jButtonEndActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonEndActionPerformed
-        // TODO add your handling code here:
         this.simulationState = "END";
-        System.out.println("End");                 
-        this.cclient.sendMessage("ED");
+        if(cclient != null)
+            this.cclient.sendMessage("ED");
         this.cserver.closeServer();  
         System.exit(0);
     }// GEN-LAST:event_jButtonEndActionPerformed
     
     private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonEndActionPerformed
-        // TODO add your handling code here:
         this.cclient = new CClient(jHostInput.getText(), Integer.parseInt(jPortInput.getText()));
         if(this.cclient.openServer()){
             jButtonStart.setEnabled(true);
@@ -397,71 +383,84 @@ public class OCC extends javax.swing.JFrame {
     }// GEN-LAST:event_jButtonEndActionPerformed
 
    public static void updateState(String tab, String state, int id){
+       if(!simulationState.equals("STOP")) {
         switch(tab){
-            case "CT":
-                try {
-                    SwingUtilities.invokeAndWait(() -> {
-                        jTableCostumers.setValueAt(state, id, 1);
-                    });
-                } catch (InterruptedException | InvocationTargetException ex) {
-                    System.out.println(ex.toString());
-                }
-                break;
-            case "MA":
-                try {
-                    SwingUtilities.invokeAndWait(() -> {
-                        jTableManager.setValueAt(state, id, 1);
-                    });
-                } catch (InterruptedException | InvocationTargetException ex) {
-                    System.out.println(ex.toString());   
-                }
-                break;
-            case "CH":
-                try {
-                    SwingUtilities.invokeAndWait(() -> {
-                        jTableCashier.setValueAt(state, id, 1);
-                    });
-                } catch (InterruptedException | InvocationTargetException ex) {
-                    System.out.println(ex.toString());   
-                }
-            default:
-                break;
-        }
+             case "CT":
+                 try {
+                     SwingUtilities.invokeAndWait(() -> {
+                         jTableCostumers.setValueAt(state, id, 1);
+                     });
+                 } catch (InterruptedException | InvocationTargetException ex) {
+                     System.out.println(ex.toString());
+                 }
+                 break;
+             case "MA":
+                 try {
+                     SwingUtilities.invokeAndWait(() -> {
+                         jTableManager.setValueAt(state, id, 1);
+                     });
+                 } catch (InterruptedException | InvocationTargetException ex) {
+                     System.out.println(ex.toString());   
+                 }
+                 break;
+             case "CH":
+                 try {
+                     SwingUtilities.invokeAndWait(() -> {
+                         jTableCashier.setValueAt(state, id, 1);
+                     });
+                 } catch (InterruptedException | InvocationTargetException ex) {
+                     System.out.println(ex.toString());   
+                 }
+             default:
+                 break;
+         }
+       }
+   }
+   
+   public static void shoppingSimulationEnded(){
+       simulationState = "STOP";
+       jButtonStop.setEnabled(false);
+       jButtonResume.setEnabled(false);
+       jButtonSuspend.setEnabled(false);
+       jButtonStart.setEnabled(true); 
+       cleanTables();
    }
    
     public static void updateState(String tab, String state){
-        switch(tab){
-            case "CT":
-                try {
-                    SwingUtilities.invokeAndWait(() -> {
-                    jTableCostumers.setValueAt(state, 0, 1);
-                    });
-                } catch (InterruptedException | InvocationTargetException ex) {
-                    System.out.println(ex.toString());   
-                }
-                
-                break;
-            case "MA":
-                try {
-                    SwingUtilities.invokeAndWait(() -> {
-                    jTableManager.setValueAt(state, 0, 1);
-                    });
-                } catch (InterruptedException | InvocationTargetException ex) {
-                    System.out.println(ex.toString());   
-                }
+        if(!simulationState.equals("STOP")) {
+            switch(tab){
+                case "CT":
+                    try {
+                        SwingUtilities.invokeAndWait(() -> {
+                        jTableCostumers.setValueAt(state, 0, 1);
+                        });
+                    } catch (InterruptedException | InvocationTargetException ex) {
+                        System.out.println(ex.toString());   
+                    }
 
-                break;
-            case "CH":
-                try {
-                    SwingUtilities.invokeAndWait(() -> {
-                    jTableCashier.setValueAt(state, 0, 1);
-                    });
-                } catch (InterruptedException | InvocationTargetException ex) {
-                    System.out.println(ex.toString());   
-                }
-                break;
-            default:
-                break;
+                    break;
+                case "MA":
+                    try {
+                        SwingUtilities.invokeAndWait(() -> {
+                        jTableManager.setValueAt(state, 0, 1);
+                        });
+                    } catch (InterruptedException | InvocationTargetException ex) {
+                        System.out.println(ex.toString());   
+                    }
+
+                    break;
+                case "CH":
+                    try {
+                        SwingUtilities.invokeAndWait(() -> {
+                        jTableCashier.setValueAt(state, 0, 1);
+                        });
+                    } catch (InterruptedException | InvocationTargetException ex) {
+                        System.out.println(ex.toString());   
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
    }
    
@@ -484,7 +483,7 @@ public class OCC extends javax.swing.JFrame {
         }
    }
     
-   public void cleanTables(){
+   public static void cleanTables(){
         model = (DefaultTableModel) jTableCostumers.getModel();
         model.setRowCount(0);
         model = (DefaultTableModel) jTableManager.getModel();
@@ -558,11 +557,11 @@ public class OCC extends javax.swing.JFrame {
 
     // Variables declaration - do not modify
     private javax.swing.JButton jButtonConnect;
-    private javax.swing.JButton jButtonEnd;
-    private javax.swing.JButton jButtonResume;
-    private javax.swing.JButton jButtonStart;
-    private javax.swing.JButton jButtonStop;
-    private javax.swing.JButton jButtonSuspend;
+    private static javax.swing.JButton jButtonEnd;
+    private static javax.swing.JButton jButtonResume;
+    private static javax.swing.JButton jButtonStart;
+    private static javax.swing.JButton jButtonStop;
+    private static javax.swing.JButton jButtonSuspend;
     private javax.swing.JTextField jHostInput;
     private javax.swing.JLabel jLabelCMTimeOut;
     private javax.swing.JLabel jLabelConnectionStatus;

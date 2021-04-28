@@ -22,7 +22,6 @@ public class CClient {
     
     public boolean openServer() {
         try {
-            System.out.println(portNumber);
             Socket echoSocket = new Socket(this.hostName, this.portNumber);
             echoSocket.close();
             return true;
@@ -41,11 +40,9 @@ public class CClient {
            out.print(message);
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
-            System.exit(1);
         } catch (IOException e) {
             System.err.println("Couldn't get I/O for the connection to " +
                 hostName);
-            System.exit(1);
         }
     }
 }

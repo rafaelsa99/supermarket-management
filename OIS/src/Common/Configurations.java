@@ -7,7 +7,7 @@ package Common;
  */
 public class Configurations {
     
-    public static final int MAX_CUSTOMERS = 99;
+    public static final int MAX_CUSTOMERS = 100;
     public static final int N_CORRIDOR = 3;
     public static final int SIZE_ENTRANCE_HALL = 6;
     public static final int SIZE_CORRIDOR_HALL = 3;

@@ -60,6 +60,9 @@ public class CMultiServerThread extends Thread {
                 case "CA":
                     OCC.updateState("CH", theInput.substring(3));
                     break;
+                case "ED":
+                    OCC.shoppingSimulationEnded();
+                    break;
                 default:
                     System.out.println("Unexpected Type");
                     break;

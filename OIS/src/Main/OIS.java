@@ -37,8 +37,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
@@ -719,7 +717,6 @@ public class OIS extends javax.swing.JFrame {
             rl.lock();
             model = (DefaultListModel)list.getModel();
             JLabel actual;
-            System.out.println(index + " " + model.getSize());
             for(int i = 0; i < model.getSize(); i++){
                 actual = (JLabel) model.get(i);
                 if(actual.getToolTipText().equals(index)){
@@ -793,7 +790,7 @@ public class OIS extends javax.swing.JFrame {
         final STCustomer[] corridorNumbers = {STCustomer.CORRIDOR_1, 
                                      STCustomer.CORRIDOR_2, 
                                      STCustomer.CORRIDOR_3};
-        final SACustomer saCustomer = new SACustomer(Configurations.MAX_CUSTOMERS);
+        final SACustomer saCustomer = new SACustomer(Configurations.MAX_CUSTOMERS, cclient);
         final SAManager saManager = new SAManager(Configurations.N_CORRIDOR, 
                                                   Configurations.SIZE_ENTRANCE_HALL, 
                                                   Configurations.SIZE_CORRIDOR_HALL,

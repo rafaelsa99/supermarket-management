@@ -10,7 +10,7 @@ import SAOutsideHall.IOutsideHall_Manager;
 
 
 /**
- *
+ * Represents the manager thread.
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class AEManager extends Thread{
@@ -35,21 +35,20 @@ public class AEManager extends Thread{
         this.cClient = cc;
     }
 
+    /**
+     * Life cycle of the manager.
+     */
     @Override
     public void run() {
         STManager stManager;
         
         while(true){
             // thread avança para Idle
-            cClient.sendMessage("MA|Idle");
             stManager = iManager.idle();
-            if(stManager == STManager.END){
-                System.out.println("MANAGER: END");
+            if(stManager == STManager.END)
                 return;
-            }
             switch(stManager){
                 case ENTRANCE_HALL: 
-                    System.out.println("MANAGER: OUTSIDE_HALL");
                     cClient.sendMessage("MA|Outside Hall");
                     graphicalID = OIS.moveManager(OIS.jListIdle, OIS.jListOutsideHall, graphicalID);
                     iOutsideHall.accept();
@@ -58,13 +57,13 @@ public class AEManager extends Thread{
                 case CORRIDOR_HALL_1:
                 case CORRIDOR_HALL_2:
                 case CORRIDOR_HALL_3:
-                    System.out.println("MANAGER: ENTRANCE_HALL");
                     cClient.sendMessage("MA|Entrance Hall");
                     graphicalID = OIS.moveManager(OIS.jListIdle, OIS.jListEntranceHall, graphicalID);
                     iEntranceHall.accept(stManager);
                     graphicalID = OIS.moveManager(OIS.jListEntranceHall, OIS.jListIdle, graphicalID);
                     break;
             }
+            cClient.sendMessage("MA|Idle");
         }
     }    
 }
