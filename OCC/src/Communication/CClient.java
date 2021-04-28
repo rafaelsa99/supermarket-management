@@ -1,9 +1,13 @@
 
 package Communication;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Criar cliente para enviar comandos para o OCC.
@@ -12,7 +16,6 @@ import java.net.Socket;
 public class CClient {
     private final String hostName;
     private final int portNumber;
-    private Socket echoSocket;
 
     public CClient(String hostName, int portNumber) {
         this.hostName = hostName;
@@ -22,26 +25,33 @@ public class CClient {
     public boolean openServer() {
         try {
             System.out.println(portNumber);
-            this.echoSocket = new Socket(this.hostName, this.portNumber);
+            Socket echoSocket = new Socket(this.hostName, this.portNumber);
+            echoSocket.close();
             return true;
         } catch(IOException e){
-            System.out.println(e);
+            System.err.println("Couldn't get I/O for the connection to " +
+                hostName);
             return false;
         }
     }
     
-    public void sendMessage(String Message){
-        try {
-            try (DataOutputStream dout = new DataOutputStream(this.echoSocket.getOutputStream())) {
-                dout.writeUTF(Message);
-                dout.flush();
+public void sendMessage(String message){
+       try (
+            Socket kkSocket = new Socket(hostName, portNumber);
+            PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
+        ) {
+           BufferedReader stdIn =
+                new BufferedReader(new StringReader(message));
+            if (stdIn.readLine() != null) {
+                out.println(stdIn.readLine());
             }
-        } catch(IOException e){System.out.println(e);}
-    }
-    
-    public void closeServer() {
-        try {
-            this.echoSocket.close();
-        } catch(IOException e){System.out.println(e);}
+        } catch (UnknownHostException e) {
+            System.err.println("Don't know about host " + hostName);
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("Couldn't get I/O for the connection to " +
+                hostName);
+            System.exit(1);
+        }
     }
 }
