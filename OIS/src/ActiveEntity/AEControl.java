@@ -6,7 +6,6 @@ import Communication.CServer;
 import SACashier.ICashier_Control;
 import SACorridor.ICorridor_Control;
 import SACorridorHall.ICorridorHall_Control;
-import java.net.Socket;
 import SACustomer.ICustomer_Control;
 import SAEntranceHall.IEntranceHall_Control;
 import SAManager.IManager_Control;
@@ -184,8 +183,8 @@ public class AEControl extends Thread implements IControl{
             if(msg.substring(0, 2).equals("ED"))
                 break;
             new Command(msg).start();
-        }
         cServer.closeServer();
+        }
     }
     
     class Command extends Thread{

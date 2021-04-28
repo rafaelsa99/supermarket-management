@@ -24,7 +24,7 @@ public class AECashier extends Thread{
     // área partilhada PaymentBox
     private final IPaymentBox_Cashier iPaymentBox;
     //Graphical ID
-    private int graphicalID;
+    private String graphicalID;
     //Communication Client
     private final CClient cClient;
     

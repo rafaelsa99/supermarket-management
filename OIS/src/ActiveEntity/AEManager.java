@@ -22,7 +22,7 @@ public class AEManager extends Thread{
     // área partilhada EntranceHall
     private final IEntranceHall_Manager iEntranceHall;
     //Graphical ID
-    private int graphicalID;
+    private String graphicalID;
     //Communication Client
     private final CClient cClient;
 
@@ -60,9 +60,9 @@ public class AEManager extends Thread{
                 case CORRIDOR_HALL_3:
                     System.out.println("MANAGER: ENTRANCE_HALL");
                     cClient.sendMessage("MA|Entrance Hall");
-                    graphicalID = OIS.moveManager(OIS.jListIdle, OIS.jListPaymentHall, graphicalID);
+                    graphicalID = OIS.moveManager(OIS.jListIdle, OIS.jListEntranceHall, graphicalID);
                     iEntranceHall.accept(stManager);
-                    graphicalID = OIS.moveManager(OIS.jListPaymentHall, OIS.jListIdle, graphicalID);
+                    graphicalID = OIS.moveManager(OIS.jListEntranceHall, OIS.jListIdle, graphicalID);
                     break;
             }
         }

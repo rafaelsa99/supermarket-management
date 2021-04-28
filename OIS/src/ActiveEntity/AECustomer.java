@@ -45,7 +45,7 @@ public class AECustomer extends Thread {
     // área partilhada PaymentBox
     private final IPaymentBox_Customer iPaymentBox;
     //Graphical ID
-    private int graphicalID;
+    private String graphicalID;
     //Communication Client
     private final CClient cClient;
 
@@ -178,6 +178,7 @@ public class AECustomer extends Thread {
             }
             if(stCustomer == STCustomer.END)
                 return;
+            OIS.removeCustomerFromInterface(OIS.jListPaymentBox, graphicalID);
         }
     }
 }
