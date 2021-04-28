@@ -5,6 +5,8 @@ import Configurations.Configurations;
 import javax.swing.table.DefaultTableModel;
 import Communication.CClient;
 import Communication.CServer;
+import java.lang.reflect.InvocationTargetException;
+import javax.swing.SwingUtilities;
 
 /**
  * OCC Main class.
@@ -331,11 +333,11 @@ public class OCC extends javax.swing.JFrame {
         }
         
         System.out.println(confs.getConfigurations());       
-        for(int i = 0; i <= confs.getTotalNumberOfCostumers(); i++){
-            initializeState("Costumer", i, "Idle" );
+        for(int i = 0; i < confs.getTotalNumberOfCostumers(); i++){
+            initializeState("CT", i, "Idle" );
         }
-        initializeState("Manager", 0, "Idle" );
-        initializeState("Cashier", 0, "Idle" );         
+        initializeState("MA", 0, "Idle" );
+        initializeState("CH", 0, "Idle" );         
         this.cclient.sendMessage(confs.getConfigurations());
         
     }// GEN-LAST:event_jButtonStartActionPerformed
@@ -396,15 +398,32 @@ public class OCC extends javax.swing.JFrame {
 
    public static void updateState(String tab, String state, int id){
         switch(tab){
-            case "Costumer":
-                jTableCostumers.setValueAt(state, id, 1);
+            case "CT":
+                try {
+                    SwingUtilities.invokeAndWait(() -> {
+                        jTableCostumers.setValueAt(state, id, 1);
+                    });
+                } catch (InterruptedException | InvocationTargetException ex) {
+                    System.out.println(ex.toString());
+                }
                 break;
-            case "Manager":
-                jTableManager.setValueAt(state, id, 1);
+            case "MA":
+                try {
+                    SwingUtilities.invokeAndWait(() -> {
+                        jTableManager.setValueAt(state, id, 1);
+                    });
+                } catch (InterruptedException | InvocationTargetException ex) {
+                    System.out.println(ex.toString());   
+                }
                 break;
-            case "Cashier":
-                jTableCashier.setValueAt(state, id, 1);
-                break;
+            case "CH":
+                try {
+                    SwingUtilities.invokeAndWait(() -> {
+                        jTableCashier.setValueAt(state, id, 1);
+                    });
+                } catch (InterruptedException | InvocationTargetException ex) {
+                    System.out.println(ex.toString());   
+                }
             default:
                 break;
         }
@@ -412,14 +431,34 @@ public class OCC extends javax.swing.JFrame {
    
     public static void updateState(String tab, String state){
         switch(tab){
-            case "Costumer":
-                jTableCostumers.setValueAt(state, 0, 1);
+            case "CT":
+                try {
+                    SwingUtilities.invokeAndWait(() -> {
+                    jTableCostumers.setValueAt(state, 0, 1);
+                    });
+                } catch (InterruptedException | InvocationTargetException ex) {
+                    System.out.println(ex.toString());   
+                }
+                
                 break;
-            case "Manager":
-                jTableManager.setValueAt(state, 0, 1);
+            case "MA":
+                try {
+                    SwingUtilities.invokeAndWait(() -> {
+                    jTableManager.setValueAt(state, 0, 1);
+                    });
+                } catch (InterruptedException | InvocationTargetException ex) {
+                    System.out.println(ex.toString());   
+                }
+
                 break;
-            case "Cashier":
-                jTableCashier.setValueAt(state, 0, 1);
+            case "CH":
+                try {
+                    SwingUtilities.invokeAndWait(() -> {
+                    jTableCashier.setValueAt(state, 0, 1);
+                    });
+                } catch (InterruptedException | InvocationTargetException ex) {
+                    System.out.println(ex.toString());   
+                }
                 break;
             default:
                 break;
@@ -428,15 +467,15 @@ public class OCC extends javax.swing.JFrame {
    
     public void initializeState(String tab, int id, Object state){
         switch(tab){
-            case "Costumer":
+            case "CT":
                 model = (DefaultTableModel) jTableCostumers.getModel();
                 model.addRow(new Object[]{id,state});
                 break;
-            case "Manager":
+            case "MA":
                 model = (DefaultTableModel) jTableManager.getModel();
                 model.addRow(new Object[]{id,state});
                 break;
-            case "Cashier":
+            case "CH":
                 model = (DefaultTableModel) jTableCashier.getModel();
                 model.addRow(new Object[]{id,state});
                 break;
