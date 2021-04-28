@@ -35,4 +35,13 @@ public interface IControl {
      * Manager step, if operation mode is manual.
      */
     public void managerStep();
+    /**
+     * Updates the manager operation mode to auto
+     * @param timeout manager timeout
+     */
+    public void managerAuto(int timeout);
+    /**
+     * Updates the manager operation mode to manual
+     */
+    public void managerManual();
 }

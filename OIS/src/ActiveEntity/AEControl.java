@@ -3,6 +3,7 @@
 package ActiveEntity;
 
 import Communication.CServer;
+import Main.OIS;
 import SACashier.ICashier_Control;
 import SACorridor.ICorridor_Control;
 import SACorridorHall.ICorridorHall_Control;
@@ -129,6 +130,7 @@ public class AEControl extends Thread implements IControl{
         iPaymentHall.end();
         iPaymentBox.end();
         iCustomer.end();
+        OIS.endSimulation();
     }
     
     /**
@@ -171,6 +173,19 @@ public class AEControl extends Thread implements IControl{
     @Override
     public void managerStep(){
         iManager.step();
+    }
+    /**
+     * Updates the manager operation mode to auto
+     * @param timeout manager timeout
+     */
+    public void managerAuto(int timeout){
+        iManager.auto(timeout);
+    }
+    /**
+     * Updates the manager operation mode to manual
+     */
+    public void managerManual(){
+        iManager.manual();
     }
     /**
     * Run the thread simulation, responsible to change the state of the simulation.
@@ -219,6 +234,12 @@ public class AEControl extends Thread implements IControl{
                 case "ST": stopSimulation();
                     break;
                 case "NX": managerStep();
+                    break;
+                case "OM": String[] config = command.split("\\|");
+                    boolean omo = Boolean.parseBoolean((config[0].split(":"))[1]);
+                    int oti = Integer.parseInt((config[1].split(":"))[1]);
+                    if(omo) managerAuto(oti);
+                    else managerManual();
                     break;
                 case "NC":
                     String[] configs = command.split("\\|");

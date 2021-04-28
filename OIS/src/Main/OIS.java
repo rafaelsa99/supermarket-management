@@ -746,6 +746,12 @@ public class OIS extends javax.swing.JFrame {
         }
     }
     
+    public static void endSimulation(){
+        SwingUtilities.invokeLater(() -> {
+            System.exit(0);
+        });
+    }
+    
     class ListItemRenderer extends DefaultListCellRenderer {
         private static final long serialVersionUID = -7799441088157759804L;
         private JLabel label;

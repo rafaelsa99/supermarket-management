@@ -14,15 +14,11 @@ import javax.swing.SwingUtilities;
  */
 public class OCC extends javax.swing.JFrame {
 
-    static String simulationState;
-    String[] costumersState;
-    String costumerState; 
-    String managerState;
-    String cashierState;
-    static DefaultTableModel model;
-    static Configurations confs = new Configurations();
-    CClient cclient = null;
-    CServer cserver;
+    private static String simulationState;
+    private static DefaultTableModel model;
+    private static final Configurations confs = new Configurations();
+    private CClient cclient = null;
+    private CServer cserver;
 
     /**
      * Creates new form OCC
@@ -34,7 +30,7 @@ public class OCC extends javax.swing.JFrame {
     }
 
     private void initOCC(int serverPort) {
-        this.simulationState = "END";
+        OCC.simulationState = "END";
         cserver = new CServer(serverPort);
         cserver.openServer();
         cserver.start();
@@ -136,55 +132,44 @@ public class OCC extends javax.swing.JFrame {
         jButtonSuspend.setEnabled(false);
         jButtonStop.setEnabled(false);
         jButtonStart.setEnabled(false);
-        
-        jButtonResume.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonResumeActionPerformed(evt);
-            }
+        jPaymentTimeOut.setSelectedIndex(1);
+        jSupervisorTimeOut.setSelectedIndex(1);
+        jButtonResume.addActionListener((java.awt.event.ActionEvent evt) -> {
+            jButtonResumeActionPerformed(evt);
         });
 
 
-        jButtonStart.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonStartActionPerformed(evt);
-            }
+        jButtonStart.addActionListener((java.awt.event.ActionEvent evt) -> {
+            jButtonStartActionPerformed(evt);
         });
 
-        jButtonSuspend.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSuspendActionPerformed(evt);
-            }
+        jButtonSuspend.addActionListener((java.awt.event.ActionEvent evt) -> {
+            jButtonSuspendActionPerformed(evt);
         });
 
-        jButtonStop.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonStopActionPerformed(evt);
-            }
+        jButtonStop.addActionListener((java.awt.event.ActionEvent evt) -> {
+            jButtonStopActionPerformed(evt);
         });
 
-        jButtonEnd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonEndActionPerformed(evt);
-            }
+        jButtonEnd.addActionListener((java.awt.event.ActionEvent evt) -> {
+            jButtonEndActionPerformed(evt);
         });
 
 
-        jManualSupervisor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jManualSupervisorActionPerformed(evt);
-            }
+        jManualSupervisor.addActionListener((java.awt.event.ActionEvent evt) -> {
+            jManualSupervisorActionPerformed(evt);
         });
         
-        jSupervisorMode.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jSupervisorModeActionPerformed(evt);
-            }
+        jSupervisorMode.addActionListener((java.awt.event.ActionEvent evt) -> {
+            jSupervisorModeActionPerformed(evt);
+        });
+        
+        jSupervisorTimeOut.addActionListener((java.awt.event.ActionEvent evt) -> {
+            jSupervisorTimeoutActionPerformed(evt);
         });
 
-        jButtonConnect.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonConnectActionPerformed(evt);
-            }
+        jButtonConnect.addActionListener((java.awt.event.ActionEvent evt) -> {
+            jButtonConnectActionPerformed(evt);
         });
 
         jTableCostumers.setModel(new javax.swing.table.DefaultTableModel(
@@ -310,7 +295,7 @@ public class OCC extends javax.swing.JFrame {
     }// GEN-LAST:event_jManualSupervisorActionPerformed
 
     private void jButtonStartActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonStartActionPerformed
-        this.simulationState = "START";
+        OCC.simulationState = "START";
         
         jButtonStart.setEnabled(false);
         jButtonSuspend.setEnabled(true);
@@ -337,7 +322,7 @@ public class OCC extends javax.swing.JFrame {
     }// GEN-LAST:event_jButtonStartActionPerformed
 
     private void jButtonResumeActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonResumeActionPerformed
-        this.simulationState = "RESUME";
+        OCC.simulationState = "RESUME";
         jButtonResume.setEnabled(false);
         jButtonSuspend.setEnabled(true);
         this.cclient.sendMessage("RE");
@@ -345,7 +330,7 @@ public class OCC extends javax.swing.JFrame {
     
     
     private void jButtonSuspendActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSuspendActionPerformed
-        this.simulationState = "SUSPEND";
+        OCC.simulationState = "SUSPEND";
         jButtonResume.setEnabled(true);
         jButtonSuspend.setEnabled(false);
         this.cclient.sendMessage("SU");
@@ -353,7 +338,7 @@ public class OCC extends javax.swing.JFrame {
     
     
     private void jButtonStopActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonStopActionPerformed
-        this.simulationState = "STOP";
+        OCC.simulationState = "STOP";
         jButtonStop.setEnabled(false);
         jButtonResume.setEnabled(false);
         jButtonSuspend.setEnabled(false);
@@ -364,7 +349,7 @@ public class OCC extends javax.swing.JFrame {
     }// GEN-LAST:event_jButtonStopActionPerformed
     
     private void jButtonEndActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonEndActionPerformed
-        this.simulationState = "END";
+        OCC.simulationState = "END";
         if(cclient != null)
             this.cclient.sendMessage("ED");
         this.cserver.closeServer();  
@@ -497,11 +482,21 @@ public class OCC extends javax.swing.JFrame {
         if(jSupervisorMode.getSelectedItem().toString().equals("Manual")){
             jSupervisorTimeOut.setEnabled(false);
             jManualSupervisor.setEnabled(true);
+            confs.setOperatingMode(false);
         }else{
             jSupervisorTimeOut.setEnabled(true);
             jManualSupervisor.setEnabled(false);
+            confs.setOperatingMode(true);
+            confs.setOperatingTimeOut(Integer.parseInt(jSupervisorTimeOut.getSelectedItem().toString()));
         }
-        if(!this.simulationState.equals("END")){
+        if(!OCC.simulationState.equals("END")){
+            this.cclient.sendMessage(confs.getOperatingMode());
+        }
+    }
+    
+    private void jSupervisorTimeoutActionPerformed(java.awt.event.ActionEvent evt){
+        confs.setOperatingTimeOut(Integer.parseInt(jSupervisorTimeOut.getSelectedItem().toString()));
+        if(!OCC.simulationState.equals("END")){
             this.cclient.sendMessage(confs.getOperatingMode());
         }
     }
@@ -538,20 +533,18 @@ public class OCC extends javax.swing.JFrame {
         // </editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                int serverPort = Configurations.SERVER_PORT;
-                if(args.length == 1){
-                    try{
-                        serverPort = Integer.parseInt(args[0]);
-                    }catch (NumberFormatException ex){
-                        System.out.println("Invalid parameter!\nParameters: [Optional: serverPort]\n");
-                    }
-                } else if (args.length > 1){
-                    System.out.println("Invalid parameters!\nParameters: [Optional: serverPort]\n");
+        java.awt.EventQueue.invokeLater(() -> {
+            int serverPort = Configurations.SERVER_PORT;
+            if(args.length == 1){
+                try{
+                    serverPort = Integer.parseInt(args[0]);
+                }catch (NumberFormatException ex){
+                    System.out.println("Invalid parameter!\nParameters: [Optional: serverPort]\n");
                 }
-                new OCC(serverPort).setVisible(true);
+            } else if (args.length > 1){
+                System.out.println("Invalid parameters!\nParameters: [Optional: serverPort]\n");
             }
+            new OCC(serverPort).setVisible(true);
         });
     }
 
