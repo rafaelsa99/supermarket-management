@@ -44,7 +44,7 @@ public class AECustomer extends Thread {
     // área partilhada PaymentBox
     private final IPaymentBox_Customer iPaymentBox;
     //Graphical ID
-    private int graphicalID;
+    private String graphicalID;
 
     public AECustomer(int customerId, ICustomer_Customer customer, IOutsideHall_Customer outsideHall, 
                       IEntranceHall_Customer entranceHall, ICorridorHall_Customer[] corridorHall,
@@ -104,6 +104,7 @@ public class AECustomer extends Thread {
             if(stCustomer == STCustomer.CORRIDOR_HALL_1 || 
                stCustomer == STCustomer.CORRIDOR_HALL_2 ||
                stCustomer == STCustomer.CORRIDOR_HALL_3){
+                System.out.println(corridorNumber);
                 graphicalID = OIS.moveCostumer(OIS.jListEntranceHall, OIS.corridoHall[corridorNumber], graphicalID, customerId);
                 stCustomer = iCorridorHall[corridorNumber].enter(customerId);
             }
@@ -166,6 +167,7 @@ public class AECustomer extends Thread {
             }
             if(stCustomer == STCustomer.END)
                 return;
+            OIS.removeCustomerFromInterface(OIS.jListPaymentBox, graphicalID);
         }
     }
 }

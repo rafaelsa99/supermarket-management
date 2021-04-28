@@ -171,7 +171,7 @@ public class AEControl extends Thread implements IControl{
         } catch (InterruptedException ex) {
         }
         
-        startSimulation(20, null);
+        startSimulation(50, null);
         try { 
             sleep(1500, 1500);
         } catch (InterruptedException ex) {

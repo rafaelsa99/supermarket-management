@@ -593,6 +593,11 @@ public class OIS extends javax.swing.JFrame {
         );
 
         pack();
+        
+        corridor = new JList[][]{ { jListCorridor10, jListCorridor11, jListCorridor12, jListCorridor13, jListCorridor14, jListCorridor15, jListCorridor16, jListCorridor17, jListCorridor18, jListCorridor19},
+                                                       { jListCorridor20, jListCorridor21, jListCorridor22, jListCorridor23, jListCorridor24, jListCorridor25, jListCorridor26, jListCorridor27, jListCorridor28, jListCorridor29},
+                                                       { jListCorridor30, jListCorridor31, jListCorridor32, jListCorridor33, jListCorridor34, jListCorridor35, jListCorridor36, jListCorridor37, jListCorridor38, jListCorridor39}};
+        corridoHall = new JList[]{ jListCorridorHall1, jListCorridorHall2, jListCorridorHall3};
     }// </editor-fold>
 
     private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {
@@ -620,65 +625,90 @@ public class OIS extends javax.swing.JFrame {
     }
     
     //Return da posição onde foi inserido o cliente
-    public static int appendCostumerToInterface(JList list, int idCostumer){
+    synchronized public static String appendCostumerToInterface(JList list, int idCostumer){
         model = (DefaultListModel)list.getModel();
         ImageIcon image = new javax.swing.ImageIcon(OIS.class.getResource("/Assets/customer_50x50.png")); // NOI18N
         JLabel label = new JLabel();
         label.setIcon(image);
         label.setText(String.valueOf(idCostumer));
+        label.setToolTipText(String.valueOf("00" + String.valueOf(idCostumer).concat(String.valueOf(model.size()))));
         model.addElement(label);
-        return model.size() - 1;
+        return "00" + String.valueOf(idCostumer).concat(String.valueOf(model.size()-1));
     }
     
-    public static int appendManagerToInterface(JList list){
+    synchronized public static String appendManagerToInterface(JList list){
         model = (DefaultListModel)list.getModel();
         ImageIcon image = new javax.swing.ImageIcon(OIS.class.getResource("/Assets/manager_50x50.png")); // NOI18N
         JLabel label = new JLabel();
         label.setIcon(image);
         label.setText("M");
+        label.setToolTipText(String.valueOf("11" + String.valueOf(model.size())));
         model.addElement(label);
-        return model.size() - 1;
+        return "11" + String.valueOf(model.size()-1);
     }
     
-    public static int appendCashierToInterface(JList list){
+    synchronized public static String appendCashierToInterface(JList list){
         model = (DefaultListModel)list.getModel();
         ImageIcon image = new javax.swing.ImageIcon(OIS.class.getResource("/Assets/cashier_50x50.png")); // NOI18N
         JLabel label = new JLabel();
         label.setIcon(image);
         label.setText("C");
+        label.setToolTipText(String.valueOf("22" + String.valueOf(model.size())));
         model.addElement(label);
-        return model.size() - 1;
+        return "22" + String.valueOf(model.size()-1);
     }
     
     //A interface cria uma linha para cada movimento, é preciso manter o track, isto é em que linha está um dado customer(id)
-    public static int moveCostumer(JList previous, JList next, int previousIndex, int idCostumer){
+    synchronized public static String moveCostumer(JList previous, JList next, String previousIndex, int idCostumer){
         removeCustomerFromInterface(previous, previousIndex);
         return appendCostumerToInterface(next, idCostumer);
     }
     
-    public static int moveManager(JList previous, JList next, int previousIndex){
+    synchronized public static String moveManager(JList previous, JList next, String previousIndex){
         removeManagerFromInterface(previous, previousIndex);
         return appendManagerToInterface(next);
     }
         
-    public static int moveCashier(JList previous, JList next, int previousIndex){
+    synchronized public static String moveCashier(JList previous, JList next, String previousIndex){
         removeCashierFromInterface(previous, previousIndex);
         return appendCashierToInterface(next);
     }
     
-    public static void removeCashierFromInterface(JList list, int index){
+    synchronized public static void removeCashierFromInterface(JList list, String index){
         model = (DefaultListModel)list.getModel();
-        model.remove(index);
+        JLabel actual;
+        for(int i = 0; i < model.getSize(); i++){
+            actual = (JLabel) model.get(i);
+            if(actual.getToolTipText().equals(index)){
+                model.removeElementAt(i);
+                break;
+            }
+        }
     }
     
-    public static void removeCustomerFromInterface(JList list, int index){
+    synchronized public static void removeCustomerFromInterface(JList list, String index){
         model = (DefaultListModel)list.getModel();
-        model.remove(index);
+        JLabel actual;
+        for(int i = 0; i < model.getSize(); i++){
+            actual = (JLabel) model.get(i);
+            if(actual.getToolTipText().equals(index)){
+                model.removeElementAt(i);
+                break;
+            }
+        }
     }
         
-    public static void removeManagerFromInterface(JList list, int index){
+    synchronized public static void removeManagerFromInterface(JList list, String index){
         model = (DefaultListModel)list.getModel();
-        model.remove(index);
+        JLabel actual;
+        for(int i = 0; i < model.getSize(); i++){
+            int test = model.getSize();
+            actual = (JLabel) model.get(i);
+            if(actual.getToolTipText().equals(index)){
+                model.removeElementAt(i);
+                break;
+            }
+        }
     }
     
     class ListItemRenderer extends DefaultListCellRenderer {
@@ -706,7 +736,7 @@ public class OIS extends javax.swing.JFrame {
             label.setHorizontalAlignment(JLabel.CENTER);
             label.setIcon(input.getIcon());
             label.setText(input.getText());
-            label.setToolTipText("");
+            label.setToolTipText(input.getToolTipText());
 
             if (selected) {
                 label.setBackground(backgroundSelectionColor);
@@ -863,39 +893,39 @@ public class OIS extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelPaymentHall;
     private javax.swing.JLabel jLabelPort;
     private javax.swing.JLabel jLabelTitle;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor10;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor11;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor12;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor13;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor14;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor15;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor16;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor17;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor18;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor19;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor20;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor21;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor22;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor23;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor24;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor25;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor26;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor27;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor28;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor29;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor30;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor31;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor32;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor33;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor34;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor35;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor36;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor37;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor38;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridor39;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridorHall1;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridorHall2;
-    private static javax.swing.JList<javax.swing.JLabel> jListCorridorHall3;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor10;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor11;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor12;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor13;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor14;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor15;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor16;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor17;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor18;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor19;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor20;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor21;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor22;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor23;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor24;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor25;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor26;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor27;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor28;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor29;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor30;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor31;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor32;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor33;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor34;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor35;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor36;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor37;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor38;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridor39;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridorHall1;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridorHall2;
+    public static javax.swing.JList<javax.swing.JLabel> jListCorridorHall3;
     public static javax.swing.JList jListEntranceHall;
     public static javax.swing.JList<javax.swing.JLabel> jListIdle;
     public static javax.swing.JList jListOutsideHall;
@@ -906,9 +936,7 @@ public class OIS extends javax.swing.JFrame {
     private static javax.swing.JScrollPane jPaymentHall;
     private javax.swing.JTextField jPortInput;
 
-    public static JList[][] corridor = new JList[][]{ { jListCorridor10, jListCorridor11, jListCorridor12, jListCorridor13, jListCorridor14, jListCorridor15, jListCorridor16, jListCorridor17, jListCorridor18, jListCorridor19},
-                                                       { jListCorridor20, jListCorridor21, jListCorridor22, jListCorridor23, jListCorridor24, jListCorridor25, jListCorridor26, jListCorridor27, jListCorridor28, jListCorridor29},
-                                                       { jListCorridor30, jListCorridor31, jListCorridor32, jListCorridor33, jListCorridor34, jListCorridor35, jListCorridor36, jListCorridor37, jListCorridor38, jListCorridor39}};
-    public static JList[] corridoHall = new JList[]{ jListCorridorHall1, jListCorridorHall2, jListCorridorHall3};
+    public static JList[][] corridor;
+    public static JList[] corridoHall;
     // End of variables declaration
 }
