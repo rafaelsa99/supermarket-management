@@ -9,21 +9,32 @@ package Main;
  *
  * @author luisc
  */
+import Communication.CMultiServerThread;
 import java.io.*;
 import java.net.*;
 
-public class MyServer {
+public class MyServer extends Thread {
 
+    private Socket socket = null;
+        
     public static void main(String[] args) {
-        try {
-            ServerSocket ss = new ServerSocket(6666);
-            Socket s = ss.accept();//establishes connection   
-            DataInputStream dis = new DataInputStream(s.getInputStream());
-            String str = (String) dis.readUTF();
-            System.out.println("message= " + str);
-            ss.close();
-        } catch (Exception e) {
-            System.out.println(e);
+
+//    if (args.length != 1) {
+//        System.err.println("Usage: java KKMultiServer <port number>");
+//        System.exit(1);
+//    }
+
+        //int portNumber = Integer.parseInt(args[0]);
+        int portNumber = 9999;
+        boolean listening = true;
+        
+        try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
+            while (listening) {
+	            new CMultiServerThread(serverSocket.accept()).start();
+	        }
+	    } catch (IOException e) {
+            System.err.println("Could not listen on port " + portNumber);
+            System.exit(-1);
         }
-    }
+    }       
 }

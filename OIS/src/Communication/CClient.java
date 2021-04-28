@@ -1,9 +1,13 @@
 
 package Communication;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Criar cliente para enviar comandos para o OCC.
@@ -29,13 +33,24 @@ public class CClient {
         }
     }
     
-    public void sendMessage(String Message){
-        try {
-            try (DataOutputStream dout = new DataOutputStream(this.echoSocket.getOutputStream())) {
-                dout.writeUTF(Message);
-                dout.flush();
+public void sendMessage(String message){
+        try (
+            PrintWriter out = new PrintWriter(echoSocket.getOutputStream(), true);
+        ) {
+            BufferedReader stdIn =
+                new BufferedReader(new StringReader(message));
+            if (stdIn.readLine() != null) {
+                System.out.println("Client: " + stdIn.readLine());
+                out.println(stdIn.readLine());
             }
-        } catch(IOException e){System.out.println(e);}
+        } catch (UnknownHostException e) {
+            System.err.println("Don't know about host " + hostName);
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("Couldn't get I/O for the connection to " +
+                hostName);
+            System.exit(1);
+        }
     }
     
     /*public void closeServer() {

@@ -376,14 +376,9 @@ public class OCC extends javax.swing.JFrame {
     private void jButtonEndActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonEndActionPerformed
         // TODO add your handling code here:
         this.simulationState = "END";
-        System.out.println("End");
-        this.cserver.kill();
-        this.cserver.closeServer();
-        
-        if(cclient != null){
-            this.cclient.sendMessage("ED");
-            this.cclient.closeServer();
-        }
+        System.out.println("End");                 
+        this.cclient.sendMessage("ED");
+        this.cserver.closeServer();  
         System.exit(0);
     }// GEN-LAST:event_jButtonEndActionPerformed
     
