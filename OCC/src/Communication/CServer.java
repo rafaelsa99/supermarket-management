@@ -45,4 +45,11 @@ public class CServer extends Thread{
             this.serverSocket.close();
         } catch(IOException e){System.out.println(e);}
     }  
+
+    @Override
+    public void run() {
+        awaitMessages();
+    }
+    
+    
 }    

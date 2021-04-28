@@ -1,11 +1,8 @@
 
 package Communication;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -25,24 +22,23 @@ public class CClient {
     
     public boolean openServer() {
         try {
-            this.echoSocket = new Socket(this.hostName, this.portNumber);
+            System.out.println(portNumber);
+            Socket echoSocket = new Socket(this.hostName, this.portNumber);
+            echoSocket.close();
             return true;
         } catch(IOException e){
-            System.out.println(e);
+            System.err.println("Couldn't get I/O for the connection to " +
+                hostName);
             return false;
         }
     }
     
-public void sendMessage(String message){
-        try (
-            PrintWriter out = new PrintWriter(echoSocket.getOutputStream(), true);
+    public void sendMessage(String message){
+       try (
+            Socket kkSocket = new Socket(hostName, portNumber);
+            PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
         ) {
-            BufferedReader stdIn =
-                new BufferedReader(new StringReader(message));
-            if (stdIn.readLine() != null) {
-                System.out.println("Client: " + stdIn.readLine());
-                out.println(stdIn.readLine());
-            }
+           out.print(message);
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
@@ -52,10 +48,4 @@ public void sendMessage(String message){
             System.exit(1);
         }
     }
-    
-    /*public void closeServer() {
-        try {
-            this.echoSocket.close();
-        } catch(IOException e){System.out.println(e);}
-    }*/
 }

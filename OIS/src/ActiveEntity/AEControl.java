@@ -12,6 +12,10 @@ import SAManager.IManager_Control;
 import SAOutsideHall.IOutsideHall_Control;
 import SAPaymentBox.IPaymentBox_Control;
 import SAPaymentHall.IPaymentHall_Control;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 
 /**
  * 
@@ -45,6 +49,8 @@ public class AEControl extends Thread implements IControl{
     private final IPaymentBox_Control iPaymentBox;
     // communication server
     private final CServer cServer;
+    //flag to end thread
+    private boolean end;
     
     public AEControl(ICustomer_Control iCustomer, IManager_Control iManager, ICashier_Control iCashier, 
                      IOutsideHall_Control iOutsideHall, IEntranceHall_Control iEntranceHall, 
@@ -60,6 +66,7 @@ public class AEControl extends Thread implements IControl{
         this.iPaymentHall = iPaymentHall;
         this.iPaymentBox = iPaymentBox;
         this.cServer = cs;
+        this.end = false;
     }
     
     
@@ -176,30 +183,41 @@ public class AEControl extends Thread implements IControl{
     
     @Override
     public void run() {
-        String msg;
-        startSimulation(20, 100, 100, true, 100);
-        cServer.awaitConnection();
-        while(true){
-            msg = cServer.awaitMessages();
-            if(msg.substring(0, 2).equals("ED"))
-                break;
-            new Command(msg).start();
-        cServer.closeServer();
+        Socket socket;
+        while(!end){
+            socket = cServer.awaitMessages();
+            new ClientThread(socket).start();
         }
+        cServer.closeServer();
     }
     
-    class Command extends Thread{
+    class ClientThread extends Thread{
         
-        private final String command;
+        private final Socket socket;
 
-        public Command(String command) {
-            this.command = command;
+        public ClientThread(Socket socket) {
+            this.socket = socket;
         }
 
         @Override
         public void run() {
+            try (
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                socket) {
+                String inputLine;
+                while ((inputLine = in.readLine()) != null)
+                    processCommand(inputLine);
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+        }
+        
+        private void processCommand(String command){
             String type = command.substring(0, 2);
             switch(type){
+                case "ED": end = true;
+                    endSimulation();
+                    break;
                 case "RE": resumeSimulation();
                     break;
                 case "SU": suspendSimulation();
@@ -218,6 +236,6 @@ public class AEControl extends Thread implements IControl{
                     startSimulation(nc, ct, pt, om, ot);
                     break;
             }
-        } 
+        }
     }
 }

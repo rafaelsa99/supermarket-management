@@ -17,7 +17,6 @@ public class CServer{
     private volatile boolean isRunning = true;
     private final int portNumber;
     private ServerSocket serverSocket;
-    private Socket socket;
     
     public CServer(int portNumber) {
         this.portNumber = portNumber;
@@ -31,47 +30,20 @@ public class CServer{
         }
     }
     
-    public void awaitConnection(){
-        try {
-            socket = this.serverSocket.accept();//establishes connection   
-        } catch (IOException ex) {
-            System.out.println(ex);
+    public Socket awaitMessages(){
+        Socket s = null;
+        try { 
+                s = serverSocket.accept();
+	    } catch (IOException e) {
+            System.err.println("Could not listen on port " + portNumber);
+            System.exit(-1);
         }
-    }
-    
-    public String awaitMessages(){
-        String str = null;
-        try {
-            try (DataInputStream dis = new DataInputStream(socket.getInputStream())) {
-                str=(String)dis.readUTF();
-            }
-        } catch(IOException e){System.out.println(e);}
-        return str;
+        return s;
     }
     
     public void closeServer() {
         try {
-            this.socket.close();
             this.serverSocket.close();
         } catch(IOException e){System.out.println(e);}
-    }
-    
-    public void parseMessage(String msg){
-        
-        String[] aux;
-        String type;//Manager = MA, Customer = CT, Cashier = CA
-        if(!msg.equals("stop")){
-            type = msg.substring(0, 2);
-             System.out.println(type);
-            switch(type){
-                case "MA":
-                    break;
-                case "CT":
-                    break;
-                default:
-                    System.out.println("Unexpected Type");
-                    break;
-            }
-        }
     }
 }    

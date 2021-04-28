@@ -1,11 +1,8 @@
 
 package Communication;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -35,16 +32,12 @@ public class CClient {
         }
     }
     
-public void sendMessage(String message){
+    public void sendMessage(String message){
        try (
             Socket kkSocket = new Socket(hostName, portNumber);
             PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
         ) {
-           BufferedReader stdIn =
-                new BufferedReader(new StringReader(message));
-            if (stdIn.readLine() != null) {
-                out.println(stdIn.readLine());
-            }
+           out.print(message);
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
