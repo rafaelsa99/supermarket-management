@@ -12,8 +12,11 @@ import SAPaymentBox.IPaymentBox_Cashier;
  *
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
+
+/**
+ * Represents the Cashier Thread
+ */
 public class AECashier extends Thread{
-    
     // área partilhada PaymentHall
     private final IPaymentHall_Cashier iPaymentHall;
     // área partilhada Cashier
@@ -33,6 +36,11 @@ public class AECashier extends Thread{
         this.cClient = cc;
         graphicalID = OIS.appendCashierToInterface(OIS.jListIdle);
     }
+
+    
+    /**
+   * LyfeCycle of the Cashier Therad
+   */
 
     @Override
     public void run() {
