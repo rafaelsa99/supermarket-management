@@ -2,7 +2,7 @@
 package Common;
 
 /**
- *
+ * Enumerator of Manager State
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public enum STManager {

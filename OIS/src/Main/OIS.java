@@ -45,6 +45,8 @@ import javax.swing.JList;
 import javax.swing.SwingUtilities;
 
 /*
+/* OIS Main Class
+/* 
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class OIS extends javax.swing.JFrame {
@@ -600,7 +602,9 @@ public class OIS extends javax.swing.JFrame {
         }   
     }
     
-    //Return da posição onde foi inserido o cliente
+    /**
+     * Returns position of Costumer in the interface
+     */
     public static String appendCostumerToInterface(JList list, int idCostumer){
         String graphicalID = "";
         try {
@@ -619,6 +623,9 @@ public class OIS extends javax.swing.JFrame {
         return graphicalID;
     }
     
+    /**
+     * Returns position of Manager in the interface
+     */
     public static String appendManagerToInterface(JList list){
         String graphicalID = "";
         try {
@@ -637,6 +644,9 @@ public class OIS extends javax.swing.JFrame {
         return graphicalID;
     }
     
+    /**
+     * Returns position of Cashier in the interface
+     */
     public static String appendCashierToInterface(JList list){
         String graphicalID = "";
         try{
@@ -655,7 +665,10 @@ public class OIS extends javax.swing.JFrame {
         return graphicalID;
     }
     
-    //A interface cria uma linha para cada movimento, é preciso manter o track, isto é em que linha está um dado customer(id)
+    /**
+     * Move Costumer between Lists
+     * The interface creates a line for each movement, to keep track of each position it's used the index where the costumer it's located
+     */
     public static String moveCostumer(JList previous, JList next, String previousIndex, int idCostumer){
         try {
             SwingUtilities.invokeAndWait(() -> {
@@ -666,6 +679,10 @@ public class OIS extends javax.swing.JFrame {
         return appendCostumerToInterface(next, idCostumer);
     }
     
+    /**
+    * Move Manager between Lists
+    * The interface creates a line for each movement, to keep track of each position it's used the index where the manager it's located
+    */
     public static String moveManager(JList previous, JList next, String previousIndex){
         try {
             SwingUtilities.invokeAndWait(() -> {
@@ -675,7 +692,11 @@ public class OIS extends javax.swing.JFrame {
             System.out.println(ex.toString());        }
         return appendManagerToInterface(next);
     }
-        
+    
+    /**
+    * Move Cashier between Lists
+    * The interface creates a line for each movement, to keep track of each position it's used the index where the cashier it's located
+    */    
     public static String moveCashier(JList previous, JList next, String previousIndex){
         try {
             SwingUtilities.invokeAndWait(() -> {
@@ -686,6 +707,9 @@ public class OIS extends javax.swing.JFrame {
         return appendCashierToInterface(next);
     }
     
+    /**
+    * Remove Cashier from interface List
+    */
     public static void removeCashierFromInterface(JList list, String index){
         try{
             rl.lock();
@@ -703,6 +727,9 @@ public class OIS extends javax.swing.JFrame {
         }
     }
     
+    /**
+    * Remove Customer Invoke
+    */
     public static void removeCustomerFromInterfaceInvoke(JList list, String index){
         try {
             SwingUtilities.invokeAndWait(() -> {
@@ -712,6 +739,9 @@ public class OIS extends javax.swing.JFrame {
             System.out.println(ex.toString());        }
     }
     
+    /**
+    * Remove Customer from interface List
+    */
     private static void removeCustomerFromInterface(JList list, String index){
         try{
             rl.lock();
@@ -728,7 +758,10 @@ public class OIS extends javax.swing.JFrame {
             rl.unlock();
         }
     }
-        
+    
+    /**
+    * Remove Manager from interface List
+    */
     public static void removeManagerFromInterface(JList list, String index){
         try{
             rl.lock();
@@ -746,12 +779,18 @@ public class OIS extends javax.swing.JFrame {
         }
     }
     
+    /**
+    * Safe End Simulation
+    */
     public static void endSimulation(){
         SwingUtilities.invokeLater(() -> {
             System.exit(0);
         });
     }
     
+    /**
+    * Custom List Item Renderer
+    */
     class ListItemRenderer extends DefaultListCellRenderer {
         private static final long serialVersionUID = -7799441088157759804L;
         private JLabel label;
@@ -792,6 +831,9 @@ public class OIS extends javax.swing.JFrame {
         
     }
     
+    /**
+    * Life cycle of the Complete OIS.
+    */
     public void runOIS(){
         final STCustomer[] corridorNumbers = {STCustomer.CORRIDOR_1, 
                                      STCustomer.CORRIDOR_2, 
@@ -835,18 +877,6 @@ public class OIS extends javax.swing.JFrame {
                                                   saOutsideHall, saEntranceHall, saCorridorHall, 
                                                   saCorridor, saPaymentHall, sAPaymentBox, cserver);
         aeControl.start();
-        
-        /*try {
-            aeManager.join();
-            aeCashier.join();
-            for (int i = 0; i < Configurations.MAX_CUSTOMERS; i++) {
-                aeCustomer[i].join();
-            }
-            aeControl.join();
-        } catch (InterruptedException ex) {
-            System.err.println(ex.toString());
-        }
-        System.out.println("MAIN: ALL ENDED");*/
     }
     
     /**

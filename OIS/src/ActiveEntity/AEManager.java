@@ -15,15 +15,25 @@ import SAOutsideHall.IOutsideHall_Manager;
  */
 public class AEManager extends Thread{
     
-    // área partilhada Manager
+    /**
+    * Manager Shared Area
+    */
     private final IManager_Manager iManager;
-    // área partilhada OutsideHall
+    /**
+    * OutsideHall Shared Area
+    */
     private final IOutsideHall_Manager iOutsideHall;
-    // área partilhada EntranceHall
+    /**
+    * EntranceHall Shared Area
+    */
     private final IEntranceHall_Manager iEntranceHall;
-    //Graphical ID
+    /**
+    * Grafical Interface ID
+    */
     private String graphicalID;
-    //Communication Client
+    /**
+    * Communication Socket Client Object
+    */
     private final CClient cClient;
 
     public AEManager(IManager_Manager iManager, IOutsideHall_Manager iOutsideHall, 
