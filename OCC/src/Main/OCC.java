@@ -14,14 +14,19 @@ import javax.swing.SwingUtilities;
  */
 public class OCC extends javax.swing.JFrame {
 
+    /** State of the simulation */
     private static String simulationState;
+    /** Swing Default Table Model */
     private static DefaultTableModel model;
+    /** Simulation Configurations */
     private static final Configurations confs = new Configurations();
+    /** Communication Client */
     private CClient cclient = null;
+    /** Communication Server */
     private CServer cserver;
 
     /**
-     * Creates new form OCC
+     * Instantiate OCC.
      * @param serverPort server port
      */
     public OCC(int serverPort) {
@@ -29,6 +34,11 @@ public class OCC extends javax.swing.JFrame {
         initOCC(serverPort);
     }
 
+    /**
+     * Initialize OCC.
+     * Create communication server.
+     * @param serverPort server port
+     */
     private void initOCC(int serverPort) {
         OCC.simulationState = "END";
         cserver = new CServer(serverPort);
@@ -241,7 +251,7 @@ public class OCC extends javax.swing.JFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabelHost)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jHostInput, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jHostInput, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(12, 12, 12)
                             .addComponent(jLabelPort)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -290,10 +300,17 @@ public class OCC extends javax.swing.JFrame {
         pack();
     }// </editor-fold>                                             
 
+    /**
+     * Action for "Next Customer" Button.
+     * @param evt event
+     */
     private void jManualSupervisorActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jManualSupervisorActionPerformed
         this.cclient.sendMessage("NX");
     }// GEN-LAST:event_jManualSupervisorActionPerformed
-
+    /**
+     * Action for "Start" Button.
+     * @param evt event
+     */
     private void jButtonStartActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonStartActionPerformed
         OCC.simulationState = "START";
         
@@ -320,7 +337,10 @@ public class OCC extends javax.swing.JFrame {
         this.cclient.sendMessage(confs.getConfigurations());
         
     }// GEN-LAST:event_jButtonStartActionPerformed
-
+    /**
+     * Action for "Resume" Button.
+     * @param evt event
+     */
     private void jButtonResumeActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonResumeActionPerformed
         OCC.simulationState = "RESUME";
         jButtonResume.setEnabled(false);
@@ -328,7 +348,10 @@ public class OCC extends javax.swing.JFrame {
         this.cclient.sendMessage("RE");
     }// GEN-LAST:event_jButtonResumeActionPerformed
     
-    
+    /**
+     * Action for "Suspend" Button.
+     * @param evt event
+     */
     private void jButtonSuspendActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSuspendActionPerformed
         OCC.simulationState = "SUSPEND";
         jButtonResume.setEnabled(true);
@@ -336,7 +359,10 @@ public class OCC extends javax.swing.JFrame {
         this.cclient.sendMessage("SU");
     }// GEN-LAST:event_jButtonSuspendActionPerformed
     
-    
+    /**
+     * Action for "Stop" Button.
+     * @param evt event
+     */
     private void jButtonStopActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonStopActionPerformed
         OCC.simulationState = "STOP";
         jButtonStop.setEnabled(false);
@@ -345,9 +371,12 @@ public class OCC extends javax.swing.JFrame {
         jButtonStart.setEnabled(true); 
         cleanTables();
         this.cclient.sendMessage("ST");
-        //updateState("Costumer", 0, managerState.CORRIDOR_HALL_3 );
     }// GEN-LAST:event_jButtonStopActionPerformed
     
+    /**
+     * Action for "End" Button.
+     * @param evt event
+     */
     private void jButtonEndActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonEndActionPerformed
         OCC.simulationState = "END";
         if(cclient != null)
@@ -356,6 +385,10 @@ public class OCC extends javax.swing.JFrame {
         System.exit(0);
     }// GEN-LAST:event_jButtonEndActionPerformed
     
+    /**
+     * Action for "Connect" Button.
+     * @param evt event
+     */
     private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonEndActionPerformed
         this.cclient = new CClient(jHostInput.getText(), Integer.parseInt(jPortInput.getText()));
         if(this.cclient.openServer()){
@@ -367,6 +400,12 @@ public class OCC extends javax.swing.JFrame {
         }
     }// GEN-LAST:event_jButtonEndActionPerformed
 
+    /**
+     * Update state of an entity in the simulation.
+     * @param tab entity
+     * @param state new state of the entity
+     * @param id entity id on the table
+     */
    public static void updateState(String tab, String state, int id){
        if(!simulationState.equals("STOP")) {
         switch(tab){
@@ -401,7 +440,10 @@ public class OCC extends javax.swing.JFrame {
          }
        }
    }
-   
+   /**
+     * Shopping simulation has ended. 
+     * Reset interface.
+     */
    public static void shoppingSimulationEnded(){
        simulationState = "STOP";
        jButtonStop.setEnabled(false);
@@ -410,7 +452,11 @@ public class OCC extends javax.swing.JFrame {
        jButtonStart.setEnabled(true); 
        cleanTables();
    }
-   
+   /**
+     * Update state of an entity in the simulation.
+     * @param tab entity
+     * @param state new state of the entity
+     */
     public static void updateState(String tab, String state){
         if(!simulationState.equals("STOP")) {
             switch(tab){
@@ -448,7 +494,12 @@ public class OCC extends javax.swing.JFrame {
             }
         }
    }
-   
+   /**
+    * Initialize state of an entity
+    * @param tab entity
+    * @param id id of the entity
+    * @param state state of the entity
+    */
     public void initializeState(String tab, int id, Object state){
         switch(tab){
             case "CT":
@@ -467,7 +518,9 @@ public class OCC extends javax.swing.JFrame {
                 break;
         }
    }
-    
+    /**
+     * Clean table of simulation states.
+     */
    public static void cleanTables(){
         model = (DefaultTableModel) jTableCostumers.getModel();
         model.setRowCount(0);
@@ -477,7 +530,19 @@ public class OCC extends javax.swing.JFrame {
         model.setRowCount(0);
    }
    
-    
+   /**
+    * Ends the simulation.
+    */
+   public static void endSimulation(){
+        SwingUtilities.invokeLater(() -> {
+            System.exit(0);
+        });
+    }
+   
+    /**
+     * Action for changing supervisor operation mode.
+     * @param evt event
+     */
     private void jSupervisorModeActionPerformed(java.awt.event.ActionEvent evt){
         if(jSupervisorMode.getSelectedItem().toString().equals("Manual")){
             jSupervisorTimeOut.setEnabled(false);
@@ -493,7 +558,10 @@ public class OCC extends javax.swing.JFrame {
             this.cclient.sendMessage(confs.getOperatingMode());
         }
     }
-    
+    /**
+     * Action for changing supervisor operation timeout.
+     * @param evt event
+     */
     private void jSupervisorTimeoutActionPerformed(java.awt.event.ActionEvent evt){
         confs.setOperatingTimeOut(Integer.parseInt(jSupervisorTimeOut.getSelectedItem().toString()));
         if(!OCC.simulationState.equals("END")){

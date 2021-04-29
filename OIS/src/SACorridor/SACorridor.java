@@ -7,33 +7,61 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- *
+ * Shared area for the corridor.
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class SACorridor implements ICorridor_Control,
                                    ICorridor_Customer {
     
+    /** Reentrant Lock for synchronization */
     private final ReentrantLock rl;
+    /** array of conditions for customers wait for the movement */
     private final Condition[] movement;
+    /** condition if fifo is corridor is full */
     private final Condition full;
+    /** condition if simulation is suspended */
     private final Condition suspend;
-    private final STCustomer corridorNumber; // Number of the corridor 
+    /** Number of the corridor */
+    private final STCustomer corridorNumber;
+    /** timeout for the movement of the customer */
     private int timeoutMovement;
+    /** array of flags indicating if each customer can move */
     private final boolean[] canMove;
+    /** array indicating the position of each customer in the corridor */
     private final int[] customerPosition;
+    /** auxiliary array to indicating the mapping of the customer id with the index in the class arrays */
     private final int[] customerIdx;
+    /** number of steps in the corridor */
     private final int stepsSize;
+    /** flag indicating that the simulation is suspended */ 
     private boolean isSuspended;
+    /** flag indicating that the simulation has stopped */ 
     private boolean stop;
+    /** flag indicating that the simulation has ended */ 
     private boolean end;
+    /** number of customers in the corridor */ 
     private int numCustomersOnCorridor;
+    /** Reentrant Lock for synchronization with the static variables */
     private static ReentrantLock rls;
+    /** flag indicating if there is space in the payment hall */
     private static boolean emptySpacePaymentHall;
+    /** FIFO for customers wait for space in payment hall */
     private static FIFO fifo;
+    /** number of empty spaces in the payment hall */
     private static int emptySpacesPaymentHall;
+    /** size of the payment hall */
     private static int sizePaymentHall;
     
-    
+    /**
+     * Shared area corridor instantiation.
+     * @param maxCostumers maximum number of customers in the corridor
+     * @param sizePaymentHall size of the payment hall
+     * @param stepsSize number of steps in the corridor
+     * @param timeoutMovement timeout for the customer movement
+     * @param nCorridors number of corridors in the simulation
+     * @param corridorNumber corridor number
+     * @param totalCustomers total of customers in the simulation
+     */
     public SACorridor(int maxCostumers, int sizePaymentHall, int stepsSize, int timeoutMovement, int nCorridors, STCustomer corridorNumber, int totalCustomers) {
         this.corridorNumber = corridorNumber;
         this.rl = new ReentrantLock(true);
@@ -61,7 +89,11 @@ public class SACorridor implements ICorridor_Control,
         SACorridor.fifo = new FIFO(nCorridors * maxCostumers);
         
     }
-
+     /**
+      * Customer enters the corridor in the position 0.
+      * @param customerId customer id
+      * @return the number of the corridor
+      */
     @Override
     public STCustomer enter(int customerId) {
         try{
@@ -88,11 +120,23 @@ public class SACorridor implements ICorridor_Control,
         }
         return corridorNumber;
     }
-
+    
+    /**
+     * Set the customer movement timeout.
+     * @param timeoutMovement movement timeout
+     */
+    @Override
     public void setTimeoutMovement(int timeoutMovement) {
         this.timeoutMovement = timeoutMovement;
     }
     
+    /**
+     * Customer waits for his turn and moves to the next position in the corridor.
+     * If reached the end, check if there is space in payment hall.
+     * If there is leave the corridor, otherwise waits.
+     * @param customerId customer id
+     * @return corridor number to continue in the corridor ; PAYMENT_HALL to leave the corridor
+     */
     @Override
     public STCustomer move(int customerId) {
         try{
@@ -168,7 +212,9 @@ public class SACorridor implements ICorridor_Control,
         }
         return corridorNumber;
     }
-    
+    /**
+     * Indicates there is a new slot available in the payment hall.
+     */
     public static void freeSlot() {
         try{
             SACorridor.rls.lock();
@@ -181,7 +227,9 @@ public class SACorridor implements ICorridor_Control,
         }
         SACorridor.fifo.out();
     }
-    
+    /**
+     * Suspend the simulation.
+     */
     @Override
     public void suspend() {
         SACorridor.fifo.suspend();
@@ -192,7 +240,9 @@ public class SACorridor implements ICorridor_Control,
             rl.unlock();
         }
     }
-
+    /**
+     * Resume the simulation.
+     */
     @Override
     public void resume() {
         try {
@@ -207,7 +257,9 @@ public class SACorridor implements ICorridor_Control,
         }
         SACorridor.fifo.resume();
     }
-
+    /**
+     * Stop the simulation.
+     */
     @Override
     public void stop() {
         try {
@@ -225,7 +277,9 @@ public class SACorridor implements ICorridor_Control,
         }
         SACorridor.fifo.removeAll();
     }
-
+    /**
+     * End the simulation.
+     */
     @Override
     public void end() {
         try {
@@ -243,7 +297,9 @@ public class SACorridor implements ICorridor_Control,
         }
         SACorridor.fifo.removeAll();
     }
- 
+    /**
+     * Start the simulation.
+     */
     @Override
     public void start() {
         try{

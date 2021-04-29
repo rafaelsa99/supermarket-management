@@ -6,21 +6,35 @@ import FIFO.FIFO;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- *
+ * Shared area for the Corridor Hall.
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class SACorridorHall implements ICorridorHall_Control,
                                        ICorridorHall_Customer {
     
+    /** Reentrant Lock for synchronization */
     private final ReentrantLock rl;
+    /** FIFO for customers */
     private final FIFO fifo;
-    private final STCustomer corridorNumber; // Number of the corridor to which the corridor hall is associated
-    private boolean emptySpaceCorridor; // Flag to indicate if there is space in the Corridor
-    private int emptySpacesCorridor; // Number of spaces available in the Corridor
+    /** Number of the corridor to which the corridor hall is associated */
+    private final STCustomer corridorNumber;
+    /** Flag to indicate if there is space in the Corridor */
+    private boolean emptySpaceCorridor;
+    /** Number of spaces available in the Corridor */
+    private int emptySpacesCorridor;
+    /** flag indicating that the simulation has stopped */ 
     private boolean stop;
+    /** /** flag indicating that the simulation has ended */
     private boolean end;
+    /** size of the corridor */
     private final int sizeCorridor;
     
+    /**
+     * Shared area corridor hall instantiation.
+     * @param maxCostumers size of the corridor hall
+     * @param corridorNumber number of the corridor
+     * @param sizeCorridor size of the corridor
+     */
     public SACorridorHall(int maxCostumers, STCustomer corridorNumber, int sizeCorridor) {
         this.fifo = new FIFO(maxCostumers);
         this.corridorNumber = corridorNumber;
@@ -32,6 +46,11 @@ public class SACorridorHall implements ICorridorHall_Control,
         this.end = false;
     }
     
+    /**
+     * Customer enters and awaits for space in the corridor.
+     * @param customerId customer id
+     * @return the number of the corridor to go
+     */
     @Override
     public STCustomer enter(int customerId) {
         
@@ -55,6 +74,9 @@ public class SACorridorHall implements ICorridorHall_Control,
         return corridorNumber;
     }
 
+    /**
+     * Indicates that there is a new slot available in the corridor.
+     */
     @Override
     public void freeSlot() {
         try{
@@ -68,17 +90,23 @@ public class SACorridorHall implements ICorridorHall_Control,
         }
         this.fifo.out(); // Call the next customer to enter in the corridor
     }
-    
+    /**
+     * Suspend the simulation.
+     */
     @Override
     public void suspend() {
         this.fifo.suspend();
     }
-
+    /**
+     * Resume the simulation.
+     */
     @Override
     public void resume() {
         this.fifo.resume();
     }
-
+    /**
+     * Stop the simulation.
+     */
     @Override
     public void stop() {
         try{
@@ -89,7 +117,9 @@ public class SACorridorHall implements ICorridorHall_Control,
         }
         fifo.removeAll();
     }
-
+    /**
+     * End the simulation.
+     */
     @Override
     public void end() {
         try{
@@ -100,7 +130,9 @@ public class SACorridorHall implements ICorridorHall_Control,
         }
         fifo.removeAll();
     }
-
+    /**
+     * Start the simulation.
+     */
     @Override
     public void start() {
         try{

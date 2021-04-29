@@ -1,6 +1,7 @@
 
 package Communication;
 
+import Main.OCC;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -54,8 +55,10 @@ public class CClient {
            out.print(message);
         } catch (UnknownHostException e) {
             System.out.println("Don't know about host " + hostName);
+            OCC.endSimulation();
         } catch (IOException e) {
             System.out.println("Couldn't get I/O for the connection to " + hostName);
+            OCC.endSimulation();
         }
     }
 }

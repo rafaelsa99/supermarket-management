@@ -7,22 +7,33 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- *
+ * Shared area for the Payment Box.
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class SAPaymentBox implements IPaymentBox_Cashier,
                                      IPaymentBox_Control,
                                      IPaymentBox_Customer {
-
+    /** Reentrant Lock for synchronization */
     private final ReentrantLock rl;
+    /** Condition for cashier wait for payment */
     private final Condition payment;
+    /** Condition for waiting the resume of the simulation */
     private final Condition suspend;
+    /** flag indicating if the customer has payed */
     private boolean isPayed;
+    /** flag indicating if simulation is suspended */
     private boolean isSuspended;
+    /** timeout for the customer to pay */
     private int timeoutPayment;
+    /** flag indicating if the simulation has stopped */
     private boolean stop;
+    /** flag indicating if the customer has ended */
     private boolean end;
 
+    /**
+     * Shared area for the Payment Box.
+     * @param timeoutPayment timeout of the customer to pay
+     */
     public SAPaymentBox(int timeoutPayment) {
         this.rl = new ReentrantLock(true);
         this.payment = rl.newCondition();
@@ -33,12 +44,18 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
         this.stop = false;
         this.end = false;
     }
-
+    /**
+     * Set the customer timeout to pay
+     * @param timeoutPayment customer timeout
+     */
     @Override
     public void setTimeoutPayment(int timeoutPayment) {
         this.timeoutPayment = timeoutPayment;
     }
-    
+    /**
+     * Cashier waits for the payment to be done.
+     * @return IDLE, the next state of the cashier
+     */
     @Override
     public STCashier payment() {
         try{
@@ -51,19 +68,23 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             if(end)
                 return STCashier.END;
         } catch (InterruptedException ex){
-            System.err.println(ex.toString());
+            System.out.println(ex.toString());
         } finally{
             rl.unlock();
         }
         return STCashier.IDLE;
     }
-
+    /**
+     * Customer enters on payment hall and simulates payment.
+     * @param costumerId customer id
+     * @return IDLE, the next state of the customer
+     */
     @Override
     public STCustomer enter(int costumerId) {
         try {
             Thread.sleep(timeoutPayment);
         } catch (InterruptedException ex) {
-            System.err.println(ex.toString());
+            System.out.println(ex.toString());
         }
         try{
             rl.lock();
@@ -76,13 +97,15 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             isPayed = true;
             payment.signal();
         } catch (InterruptedException ex){
-            System.err.println(ex.toString());
+            System.out.println(ex.toString());
         } finally{
             rl.unlock();
         }
         return STCustomer.IDLE;
     }
-    
+    /**
+     * Suspend the simulation.
+     */
     @Override
     public void suspend() {
         try{
@@ -92,7 +115,9 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             rl.unlock();
         }
     }
-
+    /**
+     * Resume the simulation.
+     */
     @Override
     public void resume() {
         try{
@@ -104,7 +129,9 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             rl.unlock();
         }
     }
-
+    /**
+     * Stop the simulation.
+     */
     @Override
     public void stop() {
         try{
@@ -118,7 +145,9 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             rl.unlock();
         }
     }
-
+    /**
+     * End of the simulation.
+     */
     @Override
     public void end() {
         try{
@@ -132,7 +161,9 @@ public class SAPaymentBox implements IPaymentBox_Cashier,
             rl.unlock();
         }
     }
-    
+    /**
+     * Start the simulation.
+     */
     @Override
     public void start() {
         try{

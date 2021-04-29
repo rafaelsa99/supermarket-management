@@ -6,31 +6,53 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- *
+ * Shared area of the manager.
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class SAManager implements IManager_Control,
                                   IManager_Customer,
                                   IManager_Manager {
 
-   
+    /** Reentrant Lock for synchronization */
     private final ReentrantLock rl;
+    /** condition to wait on state idle */
     private final Condition idle;
-    private int emptySpacesEntranceHall; // Number of spaces available in the Entrance Hall
-    private final int[] emptySpacesCorridorHall; // Number of spaces available in the Corridor Halls
-    private int numCustomersOutsideHall; //Number of customers left to accept in the Outside Hall
-    private int numCustomersEntranceHall; // Number of customers left to accept in the Entrance Hall
-    private boolean entranceHallHasEmptySpace; // Flag to indicate if there is space in Entrance Hall
-    private boolean corridorHallHasEmptySpace; // Flag to indicate if there is space in any Corridor Hall
+    /** Number of spaces available in the Entrance Hall */
+    private int emptySpacesEntranceHall;
+    /** Number of spaces available in the Corridor Halls */
+    private final int[] emptySpacesCorridorHall;
+    /** Number of customers left to accept in the Outside Hall */
+    private int numCustomersOutsideHall;
+    /** Number of customers left to accept in the Entrance Hall */
+    private int numCustomersEntranceHall; 
+    /** Flag to indicate if there is space in Entrance Hall */
+    private boolean entranceHallHasEmptySpace;
+    /** Flag to indicate if there is space in any Corridor Hall */
+    private boolean corridorHallHasEmptySpace;
+    /** flag indicating that the simulation is suspended */
     private boolean isSuspended;
+    /** flag indicating that the simulation has stopped */
     private boolean stop;
+    /** flag indicating that the simulation has ended */
     private boolean end;
+    /** flag indicating that the operation mode is auto */
     private boolean isAuto;
+    /** flag indicating that the manager can accept the next customer in manual */
     private boolean step;
+    /** timeout for the manager if in auto */
     private int timeout;
+    /** size of the entrance hall */
     private final int sizeEntranceHall;
+    /** size of the corridor halls */
     private final int sizeCorridorHall;
 
+    /**
+     * Shared area manager instantiation.
+     * @param nCorridors
+     * @param sizeEntranceHall
+     * @param sizeCorridorHall
+     * @param timeout 
+     */
     public SAManager(int nCorridors, int sizeEntranceHall, int sizeCorridorHall, int timeout) {
         rl = new ReentrantLock(true);
         idle = rl.newCondition();
@@ -51,7 +73,10 @@ public class SAManager implements IManager_Control,
         this.isAuto = true;
         this.step = false;
     }
-
+    /**
+     * Start the simulation.
+     * @param nCustomers number of customers of the simulation
+     */
     @Override
     public void start(int nCustomers) {
         try{
@@ -70,7 +95,9 @@ public class SAManager implements IManager_Control,
             rl.unlock();
         }
     }
-
+    /**
+     * Suspend the simulation.
+     */
     @Override
     public void suspend() {
         try{
@@ -80,7 +107,9 @@ public class SAManager implements IManager_Control,
             rl.unlock();
         }
     }
-
+    /**
+     * Resume the simulation.
+     */
     @Override
     public void resume() {
         try{
@@ -91,7 +120,9 @@ public class SAManager implements IManager_Control,
             rl.unlock();
         }
     }
-
+    /**
+     * Stop the simulation.
+     */
     @Override
     public void stop() {
         try{
@@ -105,7 +136,9 @@ public class SAManager implements IManager_Control,
             rl.unlock();
         }
     }
-
+    /**
+     * End the simulation.
+     */
     @Override
     public void end() {
         try{
@@ -119,7 +152,9 @@ public class SAManager implements IManager_Control,
             rl.unlock();
         }
     }
-
+    /**
+     * Indicates that a new slot is available on the entrance hall.
+     */
     @Override
     public void entranceHall_freeSlot() {
         try{
@@ -131,7 +166,10 @@ public class SAManager implements IManager_Control,
             rl.unlock();
         }
     }
-
+    /**
+     * Indicates that a new slot is available on a corridor hall.
+     * @param numCorridor corridor hall number
+     */
     @Override
     public void corridorHall_freeSlot(int numCorridor) {
         try{
@@ -143,7 +181,12 @@ public class SAManager implements IManager_Control,
             rl.unlock();
         }
     }
-
+    /**
+     * Manager is in idle.
+     * Waits for simulation to begin, for authorization for accept customer,
+     * or for free slots to accept customers.
+     * @return ENTRANCE_HALL or one of the CORRIDOR_HALL, indicating the destination of the next customer to accept.
+     */
     @Override
     public STManager idle() {
         STManager stManager = STManager.IDLE;
@@ -204,7 +247,10 @@ public class SAManager implements IManager_Control,
         }
         return stManager;
     }
-    
+    /**
+     * Set the operation mode to auto.
+     * @param timeout operation timeout
+     */
     @Override
     public void auto(int timeout) {
         try{
@@ -216,7 +262,9 @@ public class SAManager implements IManager_Control,
             rl.unlock();
         }
     }
-    
+    /**
+     * Set the operation mode to manual.
+     */
     @Override
     public void manual() {
         try{
@@ -228,7 +276,9 @@ public class SAManager implements IManager_Control,
             rl.unlock();
         }
     }
-    
+    /**
+     * Authorization to accept the next customer on manual.
+     */
     @Override
     public void step() {
         try{

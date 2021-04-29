@@ -8,22 +8,35 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * Shared area for the customer.
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class SACustomer implements ICustomer_Customer,
                                ICustomer_Control {
-
+    /** Reentrant Lock for synchronization */
     private final ReentrantLock rl;
+    /** array of conditions for the customers wait to be called for the simulation */
     private final Condition[] stay;
+    /** condition for control wait to all customers be on idle */
     private final Condition setEmpty;
+    /** condition for control wait for a customer to leave the SA */
     private final Condition customerLeaving;
+    /** List for the customers ordered by id */
     private final List list;
+    /** array of flags indicating if a customer can leave */
     private final boolean[] leave;
+    /** flag indicating that the simulation has ended */
     private boolean end;
+    /** flag indicating that the simulation is active */
     private boolean simulationActive;
-    //Communication Client
+    /** Communication Client */
     private final CClient cClient;
     
+    /**
+     * Shared area customer instantiation
+     * @param maxCustomers total customers
+     * @param cc communication client
+     */
     public SACustomer(int maxCustomers, CClient cc) {
         rl = new ReentrantLock(true);
         list = new List(maxCustomers, true);
@@ -39,6 +52,12 @@ public class SACustomer implements ICustomer_Customer,
         simulationActive = false;
         cClient = cc;
     }
+    
+    /**
+     * Customers wait to be called for the shopping simulation,
+     * @param customerId customer id
+     * @return OUTSIDE_HALL, the next state of the customer
+     */
     @Override
     public STCustomer idle( int customerId ) {
         STCustomer stCustomer = STCustomer.IDLE;
@@ -66,6 +85,10 @@ public class SACustomer implements ICustomer_Customer,
         }
         return stCustomer;
     }
+    /**
+     * Start the simulation.
+     * @param nCustomers number of customers to the simulation
+     */
     @Override
     public void start( int nCustomers ) {
         try{
@@ -86,6 +109,9 @@ public class SACustomer implements ICustomer_Customer,
             rl.unlock();
         }
     }
+    /**
+     * End the simulation.
+     */
     @Override
     public void end() {
         try{
