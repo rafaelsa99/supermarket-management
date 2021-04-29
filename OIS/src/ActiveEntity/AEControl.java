@@ -27,29 +27,65 @@ import java.net.Socket;
 
 public class AEControl extends Thread implements IControl{
 
-    // área partilhada Customer
+    /**
+    * Customer Shared Area
+    */
     private final ICustomer_Control iCustomer;
-    // área partilhada Manager
+   /**
+    * Manager Shared Area
+    */
     private final IManager_Control iManager;
-    // área partilhada Cashier
+    /**
+    * Cashier Shared Area
+    */
     private final ICashier_Control iCashier;
-    // área partilhada OutsideHall
+    /**
+    * OutsideHall Shared Area
+    */
     private final IOutsideHall_Control iOutsideHall;
-    // área partilhada EntranceHall
+    /**
+    * EntranceHall Shared Area
+    */
     private final IEntranceHall_Control iEntranceHall;
-    // área partilhada CorridorHall
+    /**
+    * CorridorHall Shared Area
+    */
     private final ICorridorHall_Control[] iCorridorHall;
-    // área partilhada Corridor
+    /**
+    * Corridor Shared Area
+    */
     private final ICorridor_Control[] iCorridor;
-    // área partilhada PaymentHall
+    /**
+    * PaymentHall Shared Area
+    */
     private final IPaymentHall_Control iPaymentHall;
-    // área partilhada PaymentBox
+    /**
+    * PaymentBox Shared Area
+    */
     private final IPaymentBox_Control iPaymentBox;
-    // communication server
+    /**
+    * Communication Server Object
+    */
     private final CServer cServer;
-    //flag to end thread
+    /**
+    *  End thread flag
+    */
     private boolean end;
     
+    
+    /**
+    * Entity Constructor
+    * @param iCustomer Customer Shared Area Interface
+    * @param iManager Manager Shared Area Interface
+    * @param iCashier Cashier Shared Area Interface
+    * @param iOutsideHall Outside Hall Shared Area Interface
+    * @param iEntranceHall Entrance Hall Shared Area Interface
+    * @param iCorridorHall Corridor Hall List Shared Area Interfaces
+    * @param iCorridor Corridor List Shared Area Interface
+    * @param iPaymentHall Payment Hall Shared Area Interface
+    * @param iPaymentBox Payemnt Box Shared Area Interface
+    * @param cs Socket Server Communication Object
+    */
     public AEControl(ICustomer_Control iCustomer, IManager_Control iManager, ICashier_Control iCashier, 
                      IOutsideHall_Control iOutsideHall, IEntranceHall_Control iEntranceHall, 
                      ICorridorHall_Control[] iCorridorHall, ICorridor_Control[] iCorridor, 
@@ -178,12 +214,14 @@ public class AEControl extends Thread implements IControl{
      * Updates the manager operation mode to auto
      * @param timeout manager timeout
      */
+    @Override
     public void managerAuto(int timeout){
         iManager.auto(timeout);
     }
     /**
      * Updates the manager operation mode to manual
      */
+    @Override
     public void managerManual(){
         iManager.manual();
     }
@@ -200,14 +238,26 @@ public class AEControl extends Thread implements IControl{
         cServer.closeServer();
     }
     
+    
+    /**
+    * Responsable Process Message received by the OCC
+    */
     class ClientThread extends Thread{
-        
+        /**
+        * Socket Object
+        */
         private final Socket socket;
-
+        /**
+        * Client Thread Constructor
+        * @param socket Receive Client socket Object 
+        */
         public ClientThread(Socket socket) {
             this.socket = socket;
         }
 
+        /**
+        * Life cycle of the ClientThread Thread.
+        */
         @Override
         public void run() {
             try (
@@ -221,6 +271,9 @@ public class AEControl extends Thread implements IControl{
             }
         }
         
+        /**
+        * Responsable to process input messages and call each task
+        */
         private void processCommand(String command){
             String type = command.substring(0, 2);
             switch(type){

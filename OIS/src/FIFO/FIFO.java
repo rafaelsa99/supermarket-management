@@ -4,10 +4,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Não pretende ser a versão final do FIFO. Cada grupo deve usar o FIFO que mais 
- * lhe convier. Tb pode e deve alterar o aqui apresentado.
- * 
- * Nesta versão, os Customers entram no fifo e dp ficam a aguardar autorização
+ * Os Customers entram no fifo e dp ficam a aguardar autorização
  * para sair. Tudo isto ocorre no método in.
  * 
  * A autorização para sair é dada pela Manager em out. Dp de ser dada a 

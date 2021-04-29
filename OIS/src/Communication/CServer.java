@@ -8,7 +8,7 @@ import java.net.Socket;
 
 
 /**
- * Criar Server para receber comandos do OCC.
+ * Socket Server responsable by receiveing messages from clients
  *
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
@@ -18,10 +18,17 @@ public class CServer{
     private final int portNumber;
     private ServerSocket serverSocket;
     
+    /**
+    * CServer Constructor
+    * @param portNumber Port Number
+    */
     public CServer(int portNumber) {
         this.portNumber = portNumber;
     }
     
+    /**
+    * Open Server to receive Connections
+    */
     public void openServer() {
         try {
             this.serverSocket = new ServerSocket(this.portNumber);
@@ -30,16 +37,22 @@ public class CServer{
         }
     }
     
+    /**
+    * Await to receive messages
+    */
     public Socket awaitMessages(){
         Socket s = null;
         try { 
-                s = serverSocket.accept();
+            s = serverSocket.accept();
 	    } catch (IOException e) {
             System.out.println("Could not listen on port " + portNumber);
         }
         return s;
     }
     
+    /**
+    * Close Socket Server
+    */
     public void closeServer() {
         try {
             this.serverSocket.close();

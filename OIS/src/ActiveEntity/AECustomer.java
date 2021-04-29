@@ -19,32 +19,70 @@ import SAPaymentHall.IPaymentHall_Customer;
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
 public class AECustomer extends Thread {
-
-    // id do customer
+    /**
+    * id do customer
+    */
     private final int customerId;
-    // área partilhada Customer
+    /**
+    * Customer Shared Area
+    */
     private final ICustomer_Customer iCustomer;
-    // área partilhada Manager
+    /**
+    * Manager Shared Area
+    */
     private final IManager_Customer iManager;
-    // área partilhada Cashier
+    /**
+    * Cashier Shared Area
+    */
     private final ICashier_Customer iCashier;
-    // área partilhada OutsideHall
+    /**
+    * OutsideHall Shared Area
+    */
     private final IOutsideHall_Customer iOutsideHall;
-    // área partilhada EntranceHall
+    /**
+    * EntranceHall Shared Area
+    */
     private final IEntranceHall_Customer iEntranceHall;
-    // área partilhada CorridorHall
+    /**
+    * CorridorHall Shared Area List
+    */
     private final ICorridorHall_Customer[] iCorridorHall;
-    // área partilhada Corridor
+    /**
+    * Corridor Shared Area List
+    */
     private final ICorridor_Customer[] iCorridor;
-    // área partilhada PaymentHall
+    /**
+    * PaymentHall Shared Area
+    */
     private final IPaymentHall_Customer iPaymentHall;
-    // área partilhada PaymentBox
+    /**
+    * PaymentBox Shared Area
+    */
     private final IPaymentBox_Customer iPaymentBox;
-    //Graphical ID
+    /**
+    * Grafical Interface ID
+    */
     private String graphicalID;
-    //Communication Client
+    /**
+    * Communication Socket Client Object
+    */
     private final CClient cClient;
 
+    
+    /**
+    * Entity Constructor
+    * @param customerId Customer ID
+    * @param customer Customer Shared Area Interface
+    * @param outsideHall Outside Hall Shared Area Interface
+    * @param entranceHall Entrance Hall Shared Area Interface   
+    * @param corridorHall Corridor Hall List Shared Area Interfaces
+    * @param corridor Corridor List Shared Area Interface
+    * @param paymentHall Payment Hall Shared Area Interface
+    * @param paymentBox Payemnt Box Shared Area Interface
+    * @param cashier Cashier Shared Area Interface
+    * @param manager Manager Shared Area Interface
+    * @param cc Socket Client Communication Object
+    */
     public AECustomer(int customerId, ICustomer_Customer customer, IOutsideHall_Customer outsideHall, 
                       IEntranceHall_Customer entranceHall, ICorridorHall_Customer[] corridorHall,
                       ICorridor_Customer[] corridor, IPaymentHall_Customer paymentHall,
@@ -74,7 +112,9 @@ public class AECustomer extends Thread {
             stCustomer = iCustomer.idle(customerId);
             if(stCustomer == STCustomer.END)
                 return;
-            // se simulação activa (não suspend, não stop, não end), thread avança para o outsideHall
+            /**
+            * If Simulation Active (Not suspend, Not stop, Not end), thread go to outsideHall
+            */
             if(stCustomer == STCustomer.OUTSIDE_HALL){
                 cClient.sendMessage("CT|" + customerId + ":Outside Hall");
                 graphicalID = OIS.appendCostumerToInterface(OIS.jListOutsideHall, customerId);
@@ -86,14 +126,18 @@ public class AECustomer extends Thread {
             }
             if(stCustomer == STCustomer.END)
                 return;
-            // se simulação activa (não suspend, não stop, não end), thread avança para o entranceHall
+            /**
+            * If Simulation Active (Not suspend, Not stop, Not end), thread go to entranceHall
+            */
             if(stCustomer == STCustomer.ENTRANCE_HALL){
                 cClient.sendMessage("CT|" + customerId + ":Entrance Hall");
                 graphicalID = OIS.moveCostumer(OIS.jListOutsideHall, OIS.jListEntranceHall, graphicalID, customerId);
                 stCustomer = iEntranceHall.enter(customerId);
             }
             corridorNumber = stCustomer.getValue();
-            //notifica manager que saiu do entrance hall e há espaço livre
+            /**
+            * Notificate manager of empty space in entrance hall
+            */
             iManager.entranceHall_freeSlot();
             if(stCustomer == STCustomer.STOP){
                 OIS.removeCustomerFromInterfaceInvoke(OIS.jListEntranceHall, graphicalID);
@@ -101,7 +145,9 @@ public class AECustomer extends Thread {
             }
             if(stCustomer == STCustomer.END)
                 return;
-            //Entra no CorridorHall que lhe foi atribuido
+            /**
+            * Enter in the attributed CorridorHall
+            */
             if(stCustomer == STCustomer.CORRIDOR_HALL_1 || 
                stCustomer == STCustomer.CORRIDOR_HALL_2 ||
                stCustomer == STCustomer.CORRIDOR_HALL_3){
@@ -117,7 +163,9 @@ public class AECustomer extends Thread {
             if(stCustomer == STCustomer.END)
                 return;
             corridorPos = 0;
-            //Entra no Corridor que lhe foi atribuido
+            /**
+            * Enter in the attributed Corridor
+            */
             if(stCustomer == STCustomer.CORRIDOR_1 || 
                stCustomer == STCustomer.CORRIDOR_2 ||
                stCustomer == STCustomer.CORRIDOR_3){

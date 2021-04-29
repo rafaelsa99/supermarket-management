@@ -6,6 +6,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * Cashier Shared Area
  *
  * @author Rafael Sá (104552), Luís Laranjeira (81526)
  */
@@ -23,6 +24,10 @@ public class SACashier implements ICashier_Cashier,
     private boolean end;
     private final int sizePaymentHall;
 
+    
+    /**
+    * Cashier Shared Area Constructor
+    */
     public SACashier(int sizePaymentHall) {
         this.rl = new ReentrantLock(true);
         this.idle = rl.newCondition();
@@ -35,6 +40,9 @@ public class SACashier implements ICashier_Cashier,
         this.stop = false;
     }
 
+    /**
+    * Cashier Idle State
+    */
     @Override
     public STCashier idle() {
         STCashier stCashier = STCashier.IDLE;
@@ -59,6 +67,9 @@ public class SACashier implements ICashier_Cashier,
         return stCashier;
     }
 
+    /**
+    * Cashier Let Costumer In
+    */
     @Override
     public void paymentHall_customerIn() {
         try{
@@ -70,6 +81,9 @@ public class SACashier implements ICashier_Cashier,
         }
     }
 
+    /**
+    * Payment Hall Release Slot
+    */
     @Override
     public void paymentHall_freeSlot() {
         try{
@@ -82,6 +96,9 @@ public class SACashier implements ICashier_Cashier,
         }
     }
     
+    /**
+    * Start Cashier Shared Area
+    */
     @Override
     public void start() {
         try{
@@ -97,6 +114,9 @@ public class SACashier implements ICashier_Cashier,
         }
     }
 
+    /**
+    * Suspend Cashier Shared Area
+    */
     @Override
     public void suspend() {
         try{
@@ -107,6 +127,9 @@ public class SACashier implements ICashier_Cashier,
         }
     }
 
+    /**
+    * Resume Cashier Shared Area
+    */
     @Override
     public void resume() {
         try{
@@ -118,6 +141,9 @@ public class SACashier implements ICashier_Cashier,
         }
     }
 
+    /**
+    * Stop Cashier Shared Area
+    */
     @Override
     public void stop() {
         try{
@@ -132,6 +158,9 @@ public class SACashier implements ICashier_Cashier,
         }
     }
 
+    /**
+    * End Cashier Shared Area
+    */
     @Override
     public void end() {
         try{

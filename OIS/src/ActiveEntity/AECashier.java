@@ -14,17 +14,34 @@ import SAPaymentBox.IPaymentBox_Cashier;
  */
 
 public class AECashier extends Thread{
-    // área partilhada PaymentHall
+    /**
+    * Shared Area PaymentHall
+    */
     private final IPaymentHall_Cashier iPaymentHall;
-    // área partilhada Cashier
+    /**
+    * Shared Area Cashier
+    */
     private final ICashier_Cashier iCashier;
-    // área partilhada PaymentBox
+    /**
+    * Shared Area PaymentBox
+    */
     private final IPaymentBox_Cashier iPaymentBox;
-    //Graphical ID
+    /**
+    * Grafical Interface ID
+    */
     private String graphicalID;
-    //Communication Client
+    /**
+    * Communication Client Object
+    */
     private final CClient cClient;
     
+    /**
+    * Entity Constructor
+    * @param iPaymentHall Payment Hall Shared Area Interface
+    * @param iCashier Cashier Shared Area Interface
+    * @param iPaymentBox Payemnt Box Shared Area Interface
+    * @param cc Client Communication Object
+    */
     public AECashier(IPaymentHall_Cashier iPaymentHall, ICashier_Cashier iCashier,
                      IPaymentBox_Cashier iPaymentBox, CClient cc) {
         this.iPaymentHall = iPaymentHall;
